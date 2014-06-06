@@ -2,7 +2,7 @@ CC = g++
 SRC = src/main.cpp src/mesh.cpp src/raytracing.cpp
 LIBS = -lGL -lGLU -lglut
 INCLUDE = -I.
-EXEC = bin/raytracer
+EXEC = Default/computer_graphics
 
 # Source: http://stackoverflow.com/questions/714100/os-detecting-makefile
 ifeq ($(OS),Windows_NT)

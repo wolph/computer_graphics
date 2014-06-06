@@ -21,3 +21,5 @@
 *.app
 raytracer
 .*
+/Default
+/Debug
