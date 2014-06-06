@@ -1,8 +1,8 @@
 CC = g++
-SRC = main.cpp mesh.cpp raytracing.cpp
+SRC = src/main.cpp src/mesh.cpp src/raytracing.cpp
 LIBS = -lGL -lGLU -lglut
 INCLUDE = -I.
-EXEC = raytracer
+EXEC = bin/raytracer
 
 # Source: http://stackoverflow.com/questions/714100/os-detecting-makefile
 ifeq ($(OS),Windows_NT)
@@ -36,6 +36,7 @@ endif
 
 
 all:
+	mkdir -p bin
 	$(CC) $(SRC) -o $(EXEC) $(LIBS) $(INCLUDE)
 
 run: all
