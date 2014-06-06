@@ -36,7 +36,7 @@ endif
 
 
 all:
-	mkdir -p bin
+	mkdir -p Default
 	$(CC) $(SRC) -o $(EXEC) $(LIBS) $(INCLUDE)
 
 run: all
