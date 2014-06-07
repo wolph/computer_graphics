@@ -2,7 +2,8 @@ CC = g++
 SRC = src/main.cpp src/mesh.cpp src/raytracing.cpp
 LIBS = -lGL -lGLU -lglut
 INCLUDE = -I.
-EXEC = Default/computer_graphics
+EXEC = Debug/computer_graphics
+CCFLAGS = -Os -g3
 
 # Source: http://stackoverflow.com/questions/714100/os-detecting-makefile
 ifeq ($(OS),Windows_NT)
@@ -19,7 +20,7 @@ else
         CCFLAGS += -D LINUX
     endif
     ifeq ($(UNAME_S),Darwin)
-        CCFLAGS += -D OSX
+        CCFLAGS += -D OSX -D GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
 		LIBS = -framework OpenGL -framework GLUT
     endif
     UNAME_P := $(shell uname -p)
@@ -34,10 +35,9 @@ else
     endif
 endif
 
-
 all:
-	mkdir -p Default
-	$(CC) $(SRC) -o $(EXEC) $(LIBS) $(INCLUDE)
+	mkdir -p Debug
+	$(CC) $(SRC) -o $(EXEC) $(CCFLAGS) $(LIBS) $(INCLUDE)
 
 run: all
 	./$(EXEC)
