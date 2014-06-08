@@ -8,10 +8,50 @@
 #include <math.h>
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
 const unsigned int LINE_LEN = 256;
+
+/**
+ * @brief Checks if the file ends with a new line (required for Windows/Linux compatibility
+ * @return true - if file ends with a new line
+ */
+bool newLineAtEndOfFile(const char* filename){
+    bool result = true;
+
+    FILE *f = fopen(filename, "r");
+    fseek(f, -4, SEEK_END);
+    char last[4];
+    fread(last, 1, 4, f);
+    fclose(f);
+
+    int count = 0;
+    for(int i = 0;i < 4;++i){
+        std::string str1(&(last[i]), 1);
+        std::string str2("\n");
+
+        if(str1.compare(str2) == 0)
+            ++count;
+    }
+    if(count < 2)
+        result = false;
+
+    return result;
+}
+
+/**
+ * @brief Adds a new line to the end of file if none exists. Otherwise code will crash on linux
+ * @param filename - The name of the input file
+ */
+void addNewLine(const char* filename){
+    if(!newLineAtEndOfFile(filename)){
+        std::ofstream out;
+        out.open(filename, std::ios::app);
+        out << std::endl;
+    }
+}
 
 /************************************************************
  * Normal calculations
@@ -134,8 +174,10 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
     }
     memset(&s, 0, LINE_LEN);
 
+#ifndef WIN32
+    addNewLine(filename);
+#endif
     FILE * in;
-
     in = fopen(filename, "r");
 
     while(in && !feof(in) && fgets(s, LINE_LEN, in)){
@@ -251,13 +293,17 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
                 if(*p0 != '\0'){
                     switch(component){
                         case 0: // vertex
-                            vhandles.push_back(atoi(p0) - 1);
+                        {
+                            int tmp = atoi(p0) - 1;
+                            vhandles.push_back(tmp);
+                        }
                             break;
 
                         case 1: // texture coord
-                            //assert(!vhandles.empty());
-                            //assert((unsigned int)(atoi(p0)-1) < texcoords.size());
-                            texhandles.push_back(atoi(p0) - 1);
+                        {
+                            int tmp = atoi(p0) - 1;
+                            texhandles.push_back(tmp);
+                        }
                             break;
 
                         case 2: // normal
@@ -285,15 +331,21 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
                 //to have a more uniform mesh, we add randomization
                 unsigned int k = (false) ? (rand() % vhandles.size()) : 0;
                 for(unsigned int i = 0;i < vhandles.size() - 2;++i){
+                    const int v0 = (k + 0) % vhandles.size();
+                    const int v1 = (k + i + 1) % vhandles.size();
+                    const int v2 = (k + i + 2) % vhandles.size();
+
+                    const int t0 = (k + 0) % vhandles.size();
+                    const int t1 = (k + i + 1) % vhandles.size();
+                    const int t2 = (k + i + 2) % vhandles.size();
+
+                    const int m = (materialIndex.find(matname))->second;
+
                     triangles.push_back(
-                            Triangle(vhandles[(k + 0) % vhandles.size()],
-                                    texhandles[(k + 0) % vhandles.size()],
-                                    vhandles[(k + i + 1) % vhandles.size()],
-                                    texhandles[(k + i + 1) % vhandles.size()],
-                                    vhandles[(k + i + 2) % vhandles.size()],
-                                    texhandles[(k + i + 2) % vhandles.size()]));
-                    triangleMaterials.push_back(
-                            (materialIndex.find(matname))->second);
+                            Triangle(vhandles[v0], texhandles[t0], vhandles[v1],
+                                    texhandles[t1], vhandles[v2],
+                                    texhandles[t2]));
+                    triangleMaterials.push_back(m);
                 }
             }else if(vhandles.size() == 3){
                 triangles.push_back(
@@ -314,6 +366,9 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
 
 bool Mesh::loadMtl(const char * filename,
         std::map<string, unsigned int> & materialIndex){
+#ifndef WIN32
+    addNewLine(filename);
+#endif
     FILE * _in;
     _in = fopen(filename, "r");
     if(!_in){
