@@ -23,3 +23,5 @@ raytracer
 /Default
 /Debug
 frameworks
+*.dSYM
+*.xcodeproj
