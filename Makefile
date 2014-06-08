@@ -1,9 +1,15 @@
 CC = g++
-SRC = src/main.cpp src/mesh.cpp src/raytracing.cpp
+SRC = src/*.cpp
 LIBS = -lGL -lGLU -lglut
 INCLUDE = -I.
-EXEC = Debug/computer_graphics
-CCFLAGS = -Os -g3
+
+OUTDIR = Debug/
+EXEC = $(OUTDIR)computer_graphics
+CCFLAGS = -O0 -g3
+
+ifndef BASEDIR
+	BASEDIR = ./
+endif
 
 # Source: http://stackoverflow.com/questions/714100/os-detecting-makefile
 ifeq ($(OS),Windows_NT)
@@ -36,11 +42,15 @@ else
 endif
 
 all:
-	mkdir -p Debug
+	cd $(BASEDIR) && \
+	mkdir -p Debug && \
 	$(CC) $(SRC) -o $(EXEC) $(CCFLAGS) $(LIBS) $(INCLUDE)
 
 run: all
+	cd $(BASEDIR) && \
 	./$(EXEC)
 
 clean:
-	rm -rf $(EXEC) *~
+	cd $(BASEDIR) && \
+	rm -rf $(OUTDIR) $(EXEC) *~
+

@@ -19,9 +19,11 @@ void init()
 	//Nonetheless, if they come from Blender, they should.
 	//there is a difference between windows written objs and Linux written objs.
 	//hence, some models might not yet work well.
-    //MyMesh.loadMesh("cube.obj", true);
     //MyMesh.loadMesh("cube2.obj", true);
+
     MyMesh.loadMesh("mesh/monkey.obj", true);
+
+//    MyMesh.loadMesh("cube.obj", true);
 	MyMesh.computeVertexNormals();
 
 	//one first move: initialize the first light source
