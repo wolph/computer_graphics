@@ -385,14 +385,15 @@ bool Mesh::loadMtl(const char * filename,
     bool indef = false;
 
     memset(line, 0, LINE_LEN);
-    while(_in && !feof(_in) && fgets(line, LINE_LEN, _in)){
+    while(_in && !feof(_in)){
+        fgets(line, LINE_LEN, _in);
         if(line[0] == '#') // skip comments
                 {
             memset(line, 0, LINE_LEN);
             continue;
         }
 
-        else if(isspace(line[0])){
+        else if(isspace(line[0]) || line[0] == '\0'){
             if(indef && !key.empty() && mat.is_valid()){
                 if(materialIndex.find(key) == materialIndex.end()){
                     mat.set_name(key);
@@ -401,8 +402,11 @@ bool Mesh::loadMtl(const char * filename,
                 }
                 mat.cleanup();
             }
+            if(line[0] == '\0')
+                break;
         }else if(strncmp(line, "newmtl ", 7) == 0) // begin new material definition
                 {
+
             char *p0 = line + 6, *p1;
             while(isspace(*++p0))
                 ;
