@@ -14,45 +14,6 @@ using namespace std;
 
 const unsigned int LINE_LEN = 256;
 
-/**
- * @brief Checks if the file ends with a new line (required for Windows/Linux compatibility
- * @return true - if file ends with a new line
- */
-bool newLineAtEndOfFile(const char* filename){
-    bool result = true;
-
-    FILE *f = fopen(filename, "r");
-    fseek(f, -4, SEEK_END);
-    char last[4];
-    fread(last, 1, 4, f);
-    fclose(f);
-
-    int count = 0;
-    for(int i = 0;i < 4;++i){
-        std::string str1(&(last[i]), 1);
-        std::string str2("\n");
-
-        if(str1.compare(str2) == 0)
-            ++count;
-    }
-    if(count < 2)
-        result = false;
-
-    return result;
-}
-
-/**
- * @brief Adds a new line to the end of file if none exists. Otherwise code will crash on linux
- * @param filename - The name of the input file
- */
-void addNewLine(const char* filename){
-    if(!newLineAtEndOfFile(filename)){
-        std::ofstream out;
-        out.open(filename, std::ios::app);
-        out << std::endl;
-    }
-}
-
 /************************************************************
  * Normal calculations
  ************************************************************/
@@ -174,9 +135,6 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
     }
     memset(&s, 0, LINE_LEN);
 
-#ifndef WIN32
-    addNewLine(filename);
-#endif
     FILE * in;
     in = fopen(filename, "r");
 
@@ -366,9 +324,6 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
 
 bool Mesh::loadMtl(const char * filename,
         std::map<string, unsigned int> & materialIndex){
-#ifndef WIN32
-    addNewLine(filename);
-#endif
     FILE * _in;
     _in = fopen(filename, "r");
     if(!_in){
@@ -443,7 +398,6 @@ bool Mesh::loadMtl(const char * filename,
             mat.set_illum(illum);
         }else if(strncmp(line, "map_Kd ", 7) == 0) // map images
                 {
-
             std::string t = &(line[7]);
             if(!t.empty() && t[t.length() - 1] == '\n'){
                 t.erase(t.length() - 1);
