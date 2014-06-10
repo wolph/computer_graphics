@@ -10,6 +10,10 @@
 #include "mesh.h"
 #include "traqueboule.h"
 
+#ifdef PNG
+#include "to_png.cpp"
+#endif
+
 Vec3Df MyCameraPosition;
 
 std::vector<Vec3Df> MyLightPositions;
@@ -17,8 +21,10 @@ std::vector<Vec3Df> MyLightPositions;
 //image class just dumped to hide...
 class RGBValue{
 public:
-    RGBValue(float rI = 0, float gI = 0, float bI = 0) : r(rI), g(gI), b(bI){
-    };
+    RGBValue(float rI = 0, float gI = 0, float bI = 0) :
+            r(rI), g(gI), b(bI){
+    }
+    ;
 
     float operator[](int i) const{
         switch(i){
@@ -303,7 +309,16 @@ void keyboard(unsigned char key, int x, int y){
 
             cout << "Raytracing" << endl;
 
+#ifdef PNG
+            bitmap_t result;
+            result.width = WindowSize_X;
+            result.height = WindowSize_Y;
+            result.pixels = (pixel_t*)calloc(sizeof(pixel_t),
+                    result.width * result.height);
+
+#else
             Image result(WindowSize_X, WindowSize_Y);
+#endif
             Vec3Df origin00, dest00;
             Vec3Df origin01, dest01;
             Vec3Df origin10, dest10;
@@ -315,7 +330,7 @@ void keyboard(unsigned char key, int x, int y){
             produceRay(WindowSize_X - 1, 0, &origin10, &dest10);
             produceRay(WindowSize_X - 1, WindowSize_Y - 1, &origin11, &dest11);
 
-            for(unsigned int y = 0;y < WindowSize_Y;++y)
+            for(unsigned int y = 0;y < WindowSize_Y;++y){
                 for(unsigned int x = 0;x < WindowSize_X;++x){
                     //svp, decidez vous memes quels parametres vous allez passer à la fonction
                     //e.g., maillage, triangles, sphères etc.
@@ -332,10 +347,21 @@ void keyboard(unsigned char key, int x, int y){
                                     * (xscale * dest01 + (1 - xscale) * dest11);
 
                     Vec3Df rgb = performRayTracing(origin, dest);
+#ifdef PNG
+                    pixel_t *pixel = pixel_at(&result, x, y);
+                    pixel->red = floor(255. * rgb[0]);
+                    pixel->green = floor(256. * rgb[1]);
+                    pixel->blue = floor(256. * rgb[2]);
+#else
                     result.setPixel(x, y, RGBValue(rgb[0], rgb[1], rgb[2]));
+#endif
                 }
-
+            }
+#ifdef PNG
+            save_png_to_file(&result, "result.png");
+#else
             result.writeImage("result.ppm");
+#endif
             break;
         }
         case 27:     // touche ESC

@@ -19,9 +19,10 @@ void init(){
     //hence, some models might not yet work well.
     //MyMesh.loadMesh("cube2.obj", true);
 
-    MyMesh.loadMesh("mesh/monkey.obj", true);
+//    MyMesh.loadMesh("mesh/monkey.obj", true);
+    MyMesh.loadMesh("mesh/dodgeColorTest.obj", true);
 
-//    MyMesh.loadMesh("cube.obj", true);
+    //    MyMesh.loadMesh("cube.obj", true);
     MyMesh.computeVertexNormals();
 
     //one first move: initialize the first light source
@@ -32,6 +33,7 @@ void init(){
 
 //return the color of your pixel.
 Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
+
     return Vec3Df(1, 0, 0);
 }
 
@@ -42,7 +44,7 @@ void yourDebugDraw(){
     //as an example:
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glDisable(GL_LIGHTING);
-    glColor3f(0, 1, 1);
+    glColor3f(1, 0, 1);
     glBegin(GL_LINES);
     glVertex3f(testRayOrigin[0], testRayOrigin[1], testRayOrigin[2]);
     glVertex3f(testRayDestination[0], testRayDestination[1],

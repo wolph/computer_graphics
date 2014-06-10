@@ -26,8 +26,8 @@ else
         CCFLAGS += -D LINUX -L /usr/lib/nvidia-331
     endif
     ifeq ($(UNAME_S),Darwin)
-        CCFLAGS += -D OSX -D GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
-		LIBS = -framework OpenGL -framework GLUT
+        CCFLAGS += -D OSX -D PNG -D GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
+		LIBS = -framework OpenGL -framework GLUT -lpng
     endif
     UNAME_P := $(shell uname -p)
     ifeq ($(UNAME_P),x86_64)
