@@ -1,5 +1,5 @@
 CC = g++
-SRC = src/*.cpp
+SRC = src/*.cpp src/implementations/*.cpp
 LIBS = -lGL -lGLU -lglut
 INCLUDE = -I.
 
