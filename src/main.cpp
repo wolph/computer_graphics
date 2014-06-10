@@ -350,8 +350,8 @@ void keyboard(unsigned char key, int x, int y){
 #ifdef PNG
                     pixel_t *pixel = pixel_at(&result, x, y);
                     pixel->red = floor(255. * rgb[0]);
-                    pixel->green = floor(256. * rgb[1]);
-                    pixel->blue = floor(256. * rgb[2]);
+                    pixel->green = floor(255. * rgb[1]);
+                    pixel->blue = floor(255. * rgb[2]);
 #else
                     result.setPixel(x, y, RGBValue(rgb[0], rgb[1], rgb[2]));
 #endif

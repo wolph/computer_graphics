@@ -19,8 +19,8 @@ void init(){
     //hence, some models might not yet work well.
     //MyMesh.loadMesh("cube2.obj", true);
 
-//    MyMesh.loadMesh("mesh/monkey.obj", true);
-    MyMesh.loadMesh("mesh/dodgeColorTest.obj", true);
+    MyMesh.loadMesh("mesh/monkey.obj", true);
+//    MyMesh.loadMesh("mesh/dodgeColorTest.obj", true);
 
     //    MyMesh.loadMesh("cube.obj", true);
     MyMesh.computeVertexNormals();
@@ -33,7 +33,7 @@ void init(){
 
 //return the color of your pixel.
 Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
-    Vec3Df color = Vec3Df(1, 0, 0);
+    Vec3Df color = Vec3Df(0, 1, 0);
     color = performRayTracingArend(color, origin, dest);
     color = performRayTracingEwoud(color, origin, dest);
     color = performRayTracingLeon(color, origin, dest);
@@ -43,7 +43,7 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     color = performRayTracingRutger(color, origin, dest);
     color = performRayTracingVince(color, origin, dest);
     color = performRayTracingYmte(color, origin, dest);
-    return Vec3Df(1, 0, 0);
+    return color;
 }
 
 void yourDebugDraw(){
