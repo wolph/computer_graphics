@@ -106,8 +106,8 @@ enum {
 };
 unsigned int type = MODEL;
 
-unsigned int WindowSize_X = 800;  // largeur fenetre
-unsigned int WindowSize_Y = 800;  // hauteur fenetre
+unsigned int WindowSize_X = 1000;  // largeur fenetre
+unsigned int WindowSize_Y = 1000;  // hauteur fenetre
 
 unsigned int RayTracingResolutionX = 800;  // largeur fenetre
 unsigned int RayTracingResolutionY = 800;  // largeur fenetre
@@ -189,7 +189,7 @@ int main(int argc, char** argv){
     // Initialisation du point de vue
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(0, 0, -4);
+    glTranslatef(0, 0, -2);
     tbInitTransform();     // initialisation du point de vue
     tbHelp();                      // affiche l'aide sur la traqueboule
     MyCameraPosition = getCameraPosition();
@@ -258,7 +258,7 @@ void reshape(int w, int h){
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     //glOrtho (-1.1, 1.1, -1.1,1.1, -1000.0, 1000.0);
-    gluPerspective(50, (float)w / h, 1, 10);
+    gluPerspective(50, (float)w / h, 0.01, 10);
     glMatrixMode(GL_MODELVIEW);
 }
 
