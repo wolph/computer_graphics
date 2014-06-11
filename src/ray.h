@@ -8,13 +8,14 @@
 #ifndef RAY_H_
 #define RAY_H_
 
+#include "./Vec3D.h"
 #include "mesh.h"
 
 class Ray{
 private:
     Vec3Df orig;
     Vec3Df dest;
-    Vec3Df color = Vec3Df(0, 1, 0);
+    Vec3Df color;
 
 public:
     Ray();
