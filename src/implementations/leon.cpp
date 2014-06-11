@@ -2,6 +2,6 @@
 #include "leon.h"
 
 Vec3Df performRayTracingLeon(Ray ray){
-    return ray;
+	return Vec3Df(1, 1, 1);
 }
 
