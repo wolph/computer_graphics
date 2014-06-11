@@ -44,7 +44,7 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     ray = performRayTracingRutger(ray);
     ray = performRayTracingVince(ray);
     ray = performRayTracingYmte(ray);
-    return ray;
+    return ray.getColor();
 }
 
 void yourDebugDraw(){
