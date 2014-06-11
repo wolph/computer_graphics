@@ -1,8 +1,8 @@
 
 #ifndef RUTGER_H
 #define RUTGER_H
-#include "../mesh.h"
+#include "../ray.h"
 
-Vec3Df performRayTracingRutger(Vec3Df & color, const Vec3Df & origin, const Vec3Df & dest);
+Vec3Df performRayTracingRutger(Ray ray);
 
 #endif

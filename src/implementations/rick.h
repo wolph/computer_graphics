@@ -1,8 +1,8 @@
 
 #ifndef RICK_H
 #define RICK_H
-#include "../mesh.h"
+#include "../ray.h"
 
-Vec3Df performRayTracingRick(Vec3Df & color, const Vec3Df & origin, const Vec3Df & dest);
+Vec3Df performRayTracingRick(Ray ray);
 
 #endif

@@ -1,8 +1,8 @@
 
 #ifndef MAX_H
 #define MAX_H
-#include "../mesh.h"
+#include "../ray.h"
 
-Vec3Df performRayTracingMax(Vec3Df & color, const Vec3Df & origin, const Vec3Df & dest);
+Vec3Df performRayTracingMax(Ray ray);
 
 #endif

@@ -1,8 +1,8 @@
 
 #ifndef LEON_H
 #define LEON_H
-#include "../mesh.h"
+#include "../ray.h"
 
-Vec3Df performRayTracingLeon(Vec3Df & color, const Vec3Df & origin, const Vec3Df & dest);
+Vec3Df performRayTracingLeon(Ray ray);
 
 #endif

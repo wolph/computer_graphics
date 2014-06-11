@@ -1,8 +1,8 @@
 
 #ifndef EWOUD_H
 #define EWOUD_H
-#include "../mesh.h"
+#include "../ray.h"
 
-Vec3Df performRayTracingEwoud(Vec3Df & color, const Vec3Df & origin, const Vec3Df & dest);
+Vec3Df performRayTracingEwoud(Ray ray);
 
 #endif

@@ -1,8 +1,8 @@
 
 #ifndef YMTE_H
 #define YMTE_H
-#include "../mesh.h"
+#include "../ray.h"
 
-Vec3Df performRayTracingYmte(Vec3Df & color, const Vec3Df & origin, const Vec3Df & dest);
+Vec3Df performRayTracingYmte(Ray ray);
 
 #endif
