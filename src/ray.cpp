@@ -10,6 +10,17 @@
 Ray::Ray(){
 }
 
+Ray::Ray(const Vec3Df orig, const Vec3Df dest){
+    this->orig = orig;
+    this->dest = dest;
+}
+
+Ray::Ray(Vec3Df color, const Vec3Df orig, const Vec3Df dest){
+    this->color = color;
+    this->orig = orig;
+    this->dest = dest;
+}
+
 Ray::~Ray(){
 }
 
@@ -38,6 +49,6 @@ bool Ray::intersect(Vec3Df triangle){
 //     if ((tmin > r.tmax) || (tmax < r.tmin)) return false;
 //     if (r.tmin < tmin) r.tmin = tmin;
 //     if (r.tmax > tmax) r.tmax = tmax;
-     return true;
+    return true;
 }
 

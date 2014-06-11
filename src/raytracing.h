@@ -2,6 +2,7 @@
 #define RAYTRACING_H
 #include <vector>
 #include "mesh.h"
+#include "ray.h"
 //Welcome to your assignment...
 //this is an important file, raytracing.cpp is what you need to fill out
 

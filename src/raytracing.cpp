@@ -34,17 +34,17 @@ void init(){
 
 //return the color of your pixel.
 Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
-    Vec3Df color = Vec3Df(0, 1, 0);
-    color = performRayTracingArend(color, origin, dest);
-    color = performRayTracingEwoud(color, origin, dest);
-    color = performRayTracingLeon(color, origin, dest);
-    color = performRayTracingMax(color, origin, dest);
-    color = performRayTracingQu(color, origin, dest);
-    color = performRayTracingRick(color, origin, dest);
-    color = performRayTracingRutger(color, origin, dest);
-    color = performRayTracingVince(color, origin, dest);
-    color = performRayTracingYmte(color, origin, dest);
-    return color;
+    Ray ray = Ray(origin, dest);
+    ray = performRayTracingArend(ray);
+    ray = performRayTracingEwoud(ray);
+    ray = performRayTracingLeon(ray);
+    ray = performRayTracingMax(ray);
+    ray = performRayTracingQu(ray);
+    ray = performRayTracingRick(ray);
+    ray = performRayTracingRutger(ray);
+    ray = performRayTracingVince(ray);
+    ray = performRayTracingYmte(ray);
+    return ray;
 }
 
 void yourDebugDraw(){
