@@ -153,7 +153,7 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
             }
             {
                 std::string file = path_.append(t);    //mtlfile);
-                file = file.substr(0, file.size()-1);
+                //file = file.substr(0, file.size()-1);
                 std::cerr << "DEBUG Material file: " << file << std::endl;
                 printf("Load material file %s\n", file.c_str());
                 loadMtl(file.c_str(), materialIndex);

@@ -23,7 +23,9 @@ ifeq ($(OS),Windows_NT)
 else
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
-        CCFLAGS += -D LINUX -L /usr/lib/nvidia-331
+        CCFLAGS += -D LINUX 
+	CCFLAGS	+= -L /usr/lib/nvidia-319
+	CCFLAGS += -L /usr/lib/nvidia-331
     endif
     ifeq ($(UNAME_S),Darwin)
         CCFLAGS += -D OSX -D PNG -D GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
