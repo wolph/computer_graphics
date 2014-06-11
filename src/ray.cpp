@@ -13,7 +13,7 @@ Ray::Ray(){
 Ray::Ray(const Vec3Df orig, const Vec3Df dest){
     this->orig = orig;
     this->dest = dest;
-	this->setColor(Vec3Df(1,0,1));
+    this->color = Vec3Df(0, 1, 0);
 }
 
 Ray::Ray(Vec3Df color, const Vec3Df orig, const Vec3Df dest){

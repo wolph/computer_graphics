@@ -3,6 +3,6 @@
 #define MAX_H
 #include "../ray.h"
 
-Vec3Df performRayTracingMax(Ray ray);
+Ray performRayTracingMax(Ray ray);
 
 #endif

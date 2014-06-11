@@ -3,6 +3,6 @@
 #define VINCE_H
 #include "../ray.h"
 
-Vec3Df performRayTracingVince(Ray ray);
+Ray performRayTracingVince(Ray ray);
 
 #endif

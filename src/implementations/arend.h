@@ -3,6 +3,6 @@
 #define AREND_H
 #include "../ray.h"
 
-Vec3Df performRayTracingArend(Ray ray);
+Ray performRayTracingArend(Ray ray);
 
 #endif

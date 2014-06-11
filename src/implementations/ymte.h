@@ -3,6 +3,6 @@
 #define YMTE_H
 #include "../ray.h"
 
-Vec3Df performRayTracingYmte(Ray ray);
+Ray performRayTracingYmte(Ray ray);
 
 #endif

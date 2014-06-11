@@ -3,6 +3,6 @@
 #define RUTGER_H
 #include "../ray.h"
 
-Vec3Df performRayTracingRutger(Ray ray);
+Ray performRayTracingRutger(Ray ray);
 
 #endif

@@ -3,6 +3,6 @@
 #define EWOUD_H
 #include "../ray.h"
 
-Vec3Df performRayTracingEwoud(Ray ray);
+Ray performRayTracingEwoud(Ray ray);
 
 #endif

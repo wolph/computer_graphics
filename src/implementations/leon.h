@@ -3,6 +3,6 @@
 #define LEON_H
 #include "../ray.h"
 
-Vec3Df performRayTracingLeon(Ray ray);
+Ray performRayTracingLeon(Ray ray);
 
 #endif

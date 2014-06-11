@@ -3,6 +3,6 @@
 #define QU_H
 #include "../ray.h"
 
-Vec3Df performRayTracingQu(Ray ray);
+Ray performRayTracingQu(Ray ray);
 
 #endif
