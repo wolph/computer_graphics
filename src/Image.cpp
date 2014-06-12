@@ -16,16 +16,15 @@ Image::~Image(){
 }
 
 void Image::setPixel(int i, int j, float r, float g, float b){
-    int k = _width * j + i;
-    _image[3 * (k++)] = r;
-    _image[3 * (k++)] = g;
-    _image[3 * (k++)] = b;
+    _image[3 * (_width * j + i)] = r;
+    _image[3 * (_width * j + i) + 1] = g;
+    _image[3 * (_width * j + i) + 2] = b;
 }
 
 void Image::setPixel(int i, int j, Vec3Df rgb){
-    int k = _width * j + i;
-    for(int l = 0;l < PIXEL_SIZE;l++)
-        _image[3 * (k++)] = rgb[l];
+    _image[3 * (_width * j + i)] = rgb[0];
+    _image[3 * (_width * j + i) + 1] = rgb[1];
+    _image[3 * (_width * j + i) + 2] = rgb[2];
 }
 
 bool Image::writeImage(const char * filename){
@@ -61,10 +60,10 @@ bool Image::writeImage(const char * filename){
     /* Set image attributes. */
 
     png_set_IHDR(png_ptr, info_ptr, _width, _height, COLOR_DEPTH,
-    PNG_COLOR_TYPE_RGB,
-    PNG_INTERLACE_NONE,
-    PNG_COMPRESSION_TYPE_DEFAULT,
-    PNG_FILTER_TYPE_DEFAULT);
+            PNG_COLOR_TYPE_RGB,
+            PNG_INTERLACE_NONE,
+            PNG_COMPRESSION_TYPE_DEFAULT,
+            PNG_FILTER_TYPE_DEFAULT);
 
     /* Initialize rows of PNG. */
 
@@ -78,7 +77,7 @@ bool Image::writeImage(const char * filename){
         row_pointers[y] = row;
         for(x = 0;x < _width;++x){
             for(z = 0;z < PIXEL_SIZE;z++)
-                *row++ = _image[i++] * 255.0f;
+            *row++ = _image[i++] * 255.0f;
         }
     }
 
@@ -101,7 +100,7 @@ bool Image::writeImage(const char * filename){
     std::vector<unsigned char> imageC(_image.size());
 
     for(unsigned int i = 0;i < _image.size();++i)
-    imageC[i] = (unsigned char)(_image[i] * 255.0f);
+        imageC[i] = (unsigned char)(_image[i] * 255.0f);
 
     int t = fwrite(&(imageC[0]), _width * _height * PIXEL_SIZE, 1, file);
     if(t != 1){

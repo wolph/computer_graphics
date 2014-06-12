@@ -8,14 +8,14 @@
 #ifndef IMAGE_H_
 #define IMAGE_H_
 
-#define PIXEL_SIZE 3
-#define COLOR_DEPTH 8
-
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <vector>
 #include "Vec3D.h"
+
+#define PIXEL_SIZE 3
+#define COLOR_DEPTH 8
 
 #ifdef PNG
 #include <png.h>
