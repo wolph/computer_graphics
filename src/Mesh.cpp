@@ -130,39 +130,30 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
 
     while(in && !feof(in) && fgets(s, LINE_LEN, in)){
         // comment
-        if(s[0] == '#' || isspace(s[0]))
+        if(s[0] == '#' || isspace(s[0]) || s[0] == '\0')
             continue;
 
         // material file
         else if(strncmp(s, "mtllib ", 7) == 0){
-#ifdef WIN32
             char mtlfile[128];
-            std::string t=&(s[7]);
-            if (!t.empty() && t[t.length()-1] == '\n'){
-                t.erase(t.length()-1);
-            }
-            {
-                std::string file = path_.append(t);    //mtlfile);
-                //file = file.substr(0, file.size()-1);
-                std::cerr << "DEBUG Material file: " << file << std::endl;
-                printf("Load material file %s\n", file.c_str());
-                loadMtl(file.c_str(), materialIndex);
-            }
-#else
             char *p0 = s + 6, *p1;
             while(isspace(*++p0))
                 ;
             p1 = p0;
-            while(!isspace(*p1))
-                ++p1;
-            *p1 = '\0';
-            {
-                std::string file = path_.append(p0);
-                file = file.substr(0, file.size());
-                printf("Load material file %s\n", file.c_str());
-                loadMtl(file.c_str(), materialIndex);
+            std::string t = p1;
+            int i;
+            for(i = 0;i < t.length();++i){
+                if(t[i] < 32 || t[i] == 255){
+                    break;
+                }
             }
-#endif
+            std::string file;
+            if(t.length() == i)
+                file = path_.append(t);
+            else
+                file = path_.append(t.substr(0, i));
+            printf("Load material file %s\n", file.c_str());
+            loadMtl(file.c_str(), materialIndex);
         }
         // usemtl
         else if(strncmp(s, "usemtl ", 7) == 0){
