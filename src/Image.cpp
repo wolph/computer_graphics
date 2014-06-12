@@ -5,7 +5,7 @@
  *      Author: rick
  */
 
-#include "Image.h"
+#include "Image.hpp"
 
 Image::Image(int width, int height) :
         _width(width), _height(height){

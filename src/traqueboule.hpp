@@ -1,4 +1,4 @@
-/** \file traqueboule.h
+/** \file traqueboule.hpp
  
  Utilitaires pour appliquer une traqueboule a une fenetre OpenGL.
  
@@ -10,9 +10,9 @@
 #endif
 #include <GL/glut.h>
 #include <math.h>
-#include "matrix.h"
+#include "matrix.hpp"
 #include "stdio.h"
-#include "Vec3D.h"
+#include "Vec3D.hpp"
 static const float speedfact = 0.2;
 
 /** votre fonction d'affichage */

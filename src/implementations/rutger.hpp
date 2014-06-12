@@ -1,6 +1,6 @@
 #ifndef RUTGER_H
 #define RUTGER_H
-#include "../Ray.h"
+#include "../Ray.hpp"
 
 Ray performRayTracingRutger(Ray ray);
 

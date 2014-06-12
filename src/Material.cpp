@@ -5,7 +5,7 @@
  *      Author: rick
  */
 
-#include "Material.h"
+#include "Material.hpp"
 
 Material::Material(){
     cleanup();

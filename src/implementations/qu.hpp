@@ -1,6 +1,6 @@
 #ifndef QU_H
 #define QU_H
-#include "../Ray.h"
+#include "../Ray.hpp"
 
 Ray performRayTracingQu(Ray ray);
 

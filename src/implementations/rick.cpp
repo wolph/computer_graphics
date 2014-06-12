@@ -1,4 +1,4 @@
-#include "rick.h"
+#include "rick.hpp"
 
 Ray performRayTracingRick(Ray ray){
     return ray;

@@ -5,7 +5,7 @@
  *      Author: rick
  */
 
-#include "Ray.h"
+#include "Ray.hpp"
 
 Ray::Ray(){
 }

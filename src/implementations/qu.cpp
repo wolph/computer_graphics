@@ -1,4 +1,4 @@
-#include "qu.h"
+#include "qu.hpp"
 
 Ray performRayTracingQu(Ray ray){
     return ray;

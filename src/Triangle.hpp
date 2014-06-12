@@ -1,5 +1,5 @@
 /*
- * Triangle.h
+ * Triangle.hpp
  *
  *  Created on: 12 Jun 2014
  *      Author: rick

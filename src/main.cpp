@@ -6,10 +6,10 @@
 #include <math.h>
 #include <assert.h>
 
-#include "RayTracer.h"
-#include "Mesh.h"
-#include "traqueboule.h"
-#include "Image.h"
+#include "RayTracer.hpp"
+#include "Mesh.hpp"
+#include "traqueboule.hpp"
+#include "Image.hpp"
 
 Vec3Df MyCameraPosition;
 

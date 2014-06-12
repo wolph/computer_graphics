@@ -5,9 +5,9 @@
 #include <windows.h>
 #endif
 
-#include "Material.h"
-#include "Triangle.h"
-#include "Vertex.h"
+#include "Material.hpp"
+#include "Triangle.hpp"
+#include "Vertex.hpp"
 #include <GL/glut.h>
 #include <map>
 #include <string.h>

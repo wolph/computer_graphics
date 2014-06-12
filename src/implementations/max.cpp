@@ -1,6 +1,6 @@
-#include "max.h"
-#include "../RayTracer.h"
-#include "../Mesh.h"
+#include "max.hpp"
+#include "../RayTracer.hpp"
+#include "../Mesh.hpp"
 
 Ray performRayTracingMax(Ray ray){
 	

@@ -1,6 +1,6 @@
 #ifndef EWOUD_H
 #define EWOUD_H
-#include "../Ray.h"
+#include "../Ray.hpp"
 
 Ray performRayTracingEwoud(Ray ray);
 

@@ -5,7 +5,7 @@
  *      Author: rick
  */
 
-#include "Triangle.h"
+#include "Triangle.hpp"
 
 Triangle::Triangle(){
     v[0] = v[1] = v[2] = 0;

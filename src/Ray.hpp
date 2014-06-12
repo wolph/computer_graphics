@@ -1,5 +1,5 @@
 /*
- * Ray.h
+ * Ray.hpp
  *
  *  Created on: 11 Jun 2014
  *      Author: rick
@@ -8,8 +8,8 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include "./Vec3D.h"
-#include "Mesh.h"
+#include "./Vec3D.hpp"
+#include "Mesh.hpp"
 
 class Ray{
 private:

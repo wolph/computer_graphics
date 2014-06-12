@@ -1,4 +1,4 @@
-#include "leon.h"
+#include "leon.hpp"
 
 Ray performRayTracingLeon(Ray ray){
     return ray;

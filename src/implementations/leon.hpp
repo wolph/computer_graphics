@@ -1,6 +1,6 @@
 #ifndef LEON_H
 #define LEON_H
-#include "../Ray.h"
+#include "../Ray.hpp"
 
 Ray performRayTracingLeon(Ray ray);
 

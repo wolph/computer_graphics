@@ -1,5 +1,5 @@
 /*
- * Material.h
+ * Material.hpp
  *
  *  Created on: 12 Jun 2014
  *      Author: rick
@@ -8,7 +8,7 @@
 #ifndef MATERIAL_H_
 #define MATERIAL_H_
 
-#include "Vec3D.h"
+#include "Vec3D.hpp"
 #include <string>
 
 using namespace std;

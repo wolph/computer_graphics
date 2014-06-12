@@ -7,7 +7,7 @@ OBJDIR = obj
 BINDIR = Debug
 
 SRCS := $(wildcard $(SRCDIR)/*.cpp $(SRCDIR)/implementations/*.cpp)
-INCL := $(wildcard $(SRCDIR)/*.h $(SRCDIR)/implementations/*.h)
+INCL := $(wildcard $(SRCDIR)/*.h $(SRCDIR)/implementations/*.hpp)
 OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 CC = g++

@@ -3,7 +3,7 @@
 #include <windows.h>
 #endif
 #include <GL/glut.h>
-#include "RayTracer.h"
+#include "RayTracer.hpp"
 
 //temporary variables
 Vec3Df testRayOrigin;

@@ -1,20 +1,20 @@
 #ifndef RAYTRACING_H
 #define RAYTRACING_H
 #include <vector>
-#include "Mesh.h"
-#include "Ray.h"
+#include "Mesh.hpp"
+#include "Ray.hpp"
 //Welcome to your assignment...
 //this is an important file, raytracing.cpp is what you need to fill out
 
-#include "implementations/arend.h"
-#include "implementations/ewoud.h"
-#include "implementations/leon.h"
-#include "implementations/max.h"
-#include "implementations/qu.h"
-#include "implementations/rick.h"
-#include "implementations/rutger.h"
-#include "implementations/vince.h"
-#include "implementations/ymte.h"
+#include "implementations/arend.hpp"
+#include "implementations/ewoud.hpp"
+#include "implementations/leon.hpp"
+#include "implementations/max.hpp"
+#include "implementations/qu.hpp"
+#include "implementations/rick.hpp"
+#include "implementations/rutger.hpp"
+#include "implementations/vince.hpp"
+#include "implementations/ymte.hpp"
 
 extern Mesh MyMesh; //Main mesh
 extern std::vector<Vec3Df> MyLightPositions;

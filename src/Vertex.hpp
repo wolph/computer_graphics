@@ -1,7 +1,7 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
-#include "Vec3D.h"
+#include "Vec3D.hpp"
 
 /************************************************************
  * Vertex of the mesh (containing normal n and vertetx v)

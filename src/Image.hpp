@@ -1,5 +1,5 @@
 /*
- * Image.h
+ * Image.hpp
  *
  *  Created on: 12 Jun 2014
  *      Author: rick
@@ -12,7 +12,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <vector>
-#include "Vec3D.h"
+#include "Vec3D.hpp"
 
 #define PIXEL_SIZE 3
 #define COLOR_DEPTH 8
