@@ -73,8 +73,8 @@ unsigned int type = MODEL;
 unsigned int WindowSize_X = 1000;  // largeur fenetre
 unsigned int WindowSize_Y = 1000;  // hauteur fenetre
 
-unsigned int RayTracingResolutionX = 800;  // largeur fenetre
-unsigned int RayTracingResolutionY = 800;  // largeur fenetre
+unsigned int RayTracingResolutionX = 400;  // largeur fenetre
+unsigned int RayTracingResolutionY = 400;  // largeur fenetre
 
 void dessinerRepere(float length){
     glDisable(GL_LIGHTING);
@@ -275,13 +275,13 @@ void keyboard(unsigned char key, int x, int y){
 
 #ifdef PNG
             bitmap_t result;
-            result.width = WindowSize_X;
-            result.height = WindowSize_Y;
+			result.width = RayTracingResolutionX;
+			result.height = RayTracingResolutionY;
             result.pixels = (pixel_t*)calloc(sizeof(pixel_t),
                     result.width * result.height);
 
 #else
-            Image result(WindowSize_X, WindowSize_Y);
+			Image result(RayTracingResolutionX, RayTracingResolutionY);
 #endif
             Vec3Df origin00, dest00;
             Vec3Df origin01, dest01;
@@ -290,16 +290,16 @@ void keyboard(unsigned char key, int x, int y){
             Vec3Df origin, dest;
 
             produceRay(0, 0, &origin00, &dest00);
-            produceRay(0, WindowSize_Y - 1, &origin01, &dest01);
-            produceRay(WindowSize_X - 1, 0, &origin10, &dest10);
-            produceRay(WindowSize_X - 1, WindowSize_Y - 1, &origin11, &dest11);
+            produceRay(0, RayTracingResolutionY - 1, &origin01, &dest01);
+			produceRay(RayTracingResolutionX - 1, 0, &origin10, &dest10);
+			produceRay(RayTracingResolutionX - 1, RayTracingResolutionY - 1, &origin11, &dest11);
 
-            for(unsigned int y = 0;y < WindowSize_Y;++y){
-                for(unsigned int x = 0;x < WindowSize_X;++x){
+			for (unsigned int y = 0; y < RayTracingResolutionY; ++y){
+				for (unsigned int x = 0; x < RayTracingResolutionX; ++x){
                     //svp, decidez vous memes quels parametres vous allez passer à la fonction
                     //e.g., maillage, triangles, sphères etc.
-                    float xscale = 1.0f - float(x) / (WindowSize_X - 1);
-                    float yscale = float(y) / (WindowSize_Y - 1);
+					float xscale = 1.0f - float(x) / (RayTracingResolutionX - 1);
+					float yscale = float(y) / (RayTracingResolutionY - 1);
 
                     origin = yscale
                             * (xscale * origin00 + (1 - xscale) * origin10)

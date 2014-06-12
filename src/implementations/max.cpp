@@ -15,7 +15,7 @@ Ray performRayTracingMax(Ray ray){
 		if (rayD < resColor)
 			resColor = rayD;
 	}
-	ray.setColor(Vec3Df(resColor-50, resColor, resColor-10));
+	ray.setColor(Vec3Df(resColor/10, resColor, resColor/100));
 	std::cout << resColor << std::endl;
 	return ray;
 }
