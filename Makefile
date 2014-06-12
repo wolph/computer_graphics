@@ -1,59 +1,42 @@
+TARGET = computer_graphics
+
+ROOTDIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))/
+SRCDIR = src
+OBJDIR = obj
+# Debug is the default for Eclipse
+BINDIR = Debug
+
+SRCS := $(wildcard $(SRCDIR)/*.cpp $(SRCDIR)/implementations/*.cpp)
+INCL := $(wildcard $(SRCDIR)/*.h $(SRCDIR)/implementations/*.h)
+OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
+
 CC = g++
-SRC = src/*.cpp src/implementations/*.cpp
-LIBS = -lGL -lGLU -lglut
-INCLUDE = -I.
+LINKER = g++ -o
+FLAGS = -O0 -g3 -Wall -pedantic
+CCFLAGS = $(FLAGS)
+LFLAGS = $(FLAGS)
+rm = rm -vf
 
-ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))/
-MESH_DIR = $(ROOT_DIR)mesh/
-OUT_DIR = $(ROOT_DIR)Debug/
-EXEC = $(OUT_DIR)computer_graphics
+include Makefile.OS_DETECT
 
-CCFLAGS = -O0 -g3 -Wall -pedantic
-
-ifndef BASEDIR
-	BASEDIR = ./
+ifdef PNG
+	LFLAGS += -lpng
+	CCFLAGS += -D PNG
 endif
 
-# Source: http://stackoverflow.com/questions/714100/os-detecting-makefile
-ifeq ($(OS),Windows_NT)
-    CCFLAGS += -D WIN32
-    ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
-        CCFLAGS += -D AMD64
-    endif
-    ifeq ($(PROCESSOR_ARCHITECTURE),x86)
-        CCFLAGS += -D IA32
-    endif
-else
-    UNAME_S := $(shell uname -s)
-    ifeq ($(UNAME_S),Linux)
-        CCFLAGS += -D LINUX 
-	CCFLAGS	+= -L /usr/lib/nvidia-319
-	CCFLAGS += -L /usr/lib/nvidia-331
-    endif
-    ifeq ($(UNAME_S),Darwin)
-        CCFLAGS += -D OSX -D PNG -D GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
-		LIBS = -framework OpenGL -framework GLUT -lpng
-    endif
-    UNAME_P := $(shell uname -p)
-    ifeq ($(UNAME_P),x86_64)
-        CCFLAGS += -D AMD64
-    endif
-    ifneq ($(filter %86,$(UNAME_P)),)
-        CCFLAGS += -D IA32
-    endif
-    ifneq ($(filter arm%,$(UNAME_P)),)
-        CCFLAGS += -D ARM
-    endif
-endif
+$(BINDIR)/$(TARGET): $(OBJS)
+	@echo "Linking "$<
+	$(LINKER) $@ $(LFLAGS) $(OBJS)
 
-all:
-	mkdir -p $(OUT_DIR)
-	$(CC) $(SRC) -o $(EXEC) $(CCFLAGS) $(LIBS) $(INCLUDE)
+$(OBJS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
+	@mkdir -p $(dir $@)
+	@echo "Compiling "$<
+	$(CC) $(CCFLAGS) -c $< -o $@
 
-run: all
-	cd $(ROOT_DIR) && $(EXEC)
-
+.PHONEY: clean
 clean:
-	cd $(BASEDIR) && \
-	rm -rf $(OUTDIR) *~
+	@$(rm) $(OBJS) $(BINDIR)/$(TARGET)
+
+run: $(BINDIR)/$(TARGET)
+	$(BINDIR)/$(TARGET)
 

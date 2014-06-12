@@ -25,3 +25,4 @@ raytracer
 frameworks
 *.dSYM
 *.xcodeproj
+result.*
