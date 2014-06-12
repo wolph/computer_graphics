@@ -9,65 +9,19 @@
 #include "RayTracer.h"
 #include "Mesh.h"
 #include "traqueboule.h"
-#include "RGBValue.h"
-
-#ifdef PNG
-#include "to_png.cpp"
-#endif
+#include "Image.h"
 
 Vec3Df MyCameraPosition;
 
 std::vector<Vec3Df> MyLightPositions;
 
-class Image{
-public:
-    Image(int width, int height) :
-            _width(width), _height(height){
-        _image.resize(3 * _width * _height);
-    }
-    void setPixel(int i, int j, const RGBValue & rgb){
-        _image[3 * (_width * j + i)] = rgb[0];
-        _image[3 * (_width * j + i) + 1] = rgb[1];
-        _image[3 * (_width * j + i) + 2] = rgb[2];
-
-    }
-    std::vector<float> _image;
-    int _width;
-    int _height;
-
-    bool writeImage(const char * filename);
-};
-
-bool Image::writeImage(const char * filename){
-    FILE* file;
-    file = fopen(filename, "wb");
-    if(!file){
-        printf("dump file problem... file\n");
-        return false;
-    }
-
-    fprintf(file, "P6\n%i %i\n255\n", _width, _height);
-
-    std::vector<unsigned char> imageC(_image.size());
-
-    for(unsigned int i = 0;i < _image.size();++i)
-        imageC[i] = (unsigned char)(_image[i] * 255.0f);
-
-    int t = fwrite(&(imageC[0]), _width * _height * 3, 1, file);
-    if(t != 1){
-        printf("Dump file problem... fwrite\n");
-        return false;
-    }
-
-    fclose(file);
-    return true;
-}
-
 Mesh MyMesh; //Main mesh
 
 // Utilisé pour essayer différents types de rendu
 // Utilisé via le paramètre "-t" en ligne de commande
-enum {TRIANGLE = 0, MODEL = 1};
+enum {
+    TRIANGLE = 0, MODEL = 1
+};
 unsigned int type = MODEL;
 
 unsigned int WindowSize_X = 1000;  // largeur fenetre
@@ -273,16 +227,7 @@ void keyboard(unsigned char key, int x, int y){
 
             cout << "Raytracing" << endl;
 
-#ifdef PNG
-            bitmap_t result;
-			result.width = RayTracingResolutionX;
-			result.height = RayTracingResolutionY;
-            result.pixels = (pixel_t*)calloc(sizeof(pixel_t),
-                    result.width * result.height);
-
-#else
-			Image result(RayTracingResolutionX, RayTracingResolutionY);
-#endif
+            Image result(RayTracingResolutionX, RayTracingResolutionY);
             Vec3Df origin00, dest00;
             Vec3Df origin01, dest01;
             Vec3Df origin10, dest10;
@@ -291,15 +236,17 @@ void keyboard(unsigned char key, int x, int y){
 
             produceRay(0, 0, &origin00, &dest00);
             produceRay(0, RayTracingResolutionY - 1, &origin01, &dest01);
-			produceRay(RayTracingResolutionX - 1, 0, &origin10, &dest10);
-			produceRay(RayTracingResolutionX - 1, RayTracingResolutionY - 1, &origin11, &dest11);
+            produceRay(RayTracingResolutionX - 1, 0, &origin10, &dest10);
+            produceRay(RayTracingResolutionX - 1, RayTracingResolutionY - 1,
+                    &origin11, &dest11);
 
-			for (unsigned int y = 0; y < RayTracingResolutionY; ++y){
-				for (unsigned int x = 0; x < RayTracingResolutionX; ++x){
+            for(unsigned int y = 0;y < RayTracingResolutionY;++y){
+                for(unsigned int x = 0;x < RayTracingResolutionX;++x){
                     //svp, decidez vous memes quels parametres vous allez passer à la fonction
                     //e.g., maillage, triangles, sphères etc.
-					float xscale = 1.0f - float(x) / (RayTracingResolutionX - 1);
-					float yscale = float(y) / (RayTracingResolutionY - 1);
+                    float xscale = 1.0f
+                            - float(x) / (RayTracingResolutionX - 1);
+                    float yscale = float(y) / (RayTracingResolutionY - 1);
 
                     origin = yscale
                             * (xscale * origin00 + (1 - xscale) * origin10)
@@ -311,18 +258,11 @@ void keyboard(unsigned char key, int x, int y){
                                     * (xscale * dest01 + (1 - xscale) * dest11);
 
                     Vec3Df rgb = performRayTracing(origin, dest);
-#ifdef PNG
-                    pixel_t *pixel = pixel_at(&result, x, y);
-                    pixel->red = floor(255. * rgb[0]);
-                    pixel->green = floor(255. * rgb[1]);
-                    pixel->blue = floor(255. * rgb[2]);
-#else
-                    result.setPixel(x, y, RGBValue(rgb[0], rgb[1], rgb[2]));
-#endif
+                    result.setPixel(x, y, rgb[0], rgb[1], rgb[2]);
                 }
             }
 #ifdef PNG
-            save_png_to_file(&result, "result.png");
+            result.writeImage("result.png");
 #else
             result.writeImage("result.ppm");
 #endif
