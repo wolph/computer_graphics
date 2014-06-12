@@ -22,8 +22,10 @@ Ray performRayTracingMax(Ray ray){
 bool intersect(Triangle t, Ray ray){
 	Vec3Df v0 = MyMesh.vertices[t.v[0]].p, v1 = MyMesh.vertices[t.v[1]].p, v2 = MyMesh.vertices[t.v[2]].p, rayOrig = ray.getOrig();
 	
-	Vec3Df triangleNormal = rayOrig.crossProduct(v1 - v0, v2 - v0);
+	Vec3Df v1mv0 = v1 - v0, triangleNormal = rayOrig.crossProduct(v1mv0, v2 - v0);
 	Vec3Df rayDir = Vec3Df(ray.getDest()[0] - rayOrig[0], ray.getDest()[1] - rayOrig[1], ray.getDest()[2] - rayOrig[2]);
+	if (raysTraced < 10)
+		std::cout << rayOrig << " " << ray.getDest() << " " << rayDir << std::endl;
 	float dotTrNRDir = rayOrig.dotProduct(triangleNormal, rayDir);
 	
 	if (dotTrNRDir == 0){
@@ -33,7 +35,7 @@ bool intersect(Triangle t, Ray ray){
 	float rayD = -(rayOrig.dotProduct(triangleNormal, rayOrig) + rayOrig.dotProduct(triangleNormal, v0)) / dotTrNRDir;
 	Vec3Df rayHit = rayOrig + rayD * rayDir;
 
-	if (rayOrig.dotProduct(triangleNormal, rayOrig.crossProduct(v1 - v0, rayHit - v0)) < 0)
+	if (rayOrig.dotProduct(triangleNormal, rayOrig.crossProduct(v1mv0, rayHit - v0)) < 0)
 		return false;
 	if (rayOrig.dotProduct(triangleNormal, rayOrig.crossProduct(v2 - v1, rayHit - v1)) < 0)
 		return false;
