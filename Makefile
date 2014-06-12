@@ -8,7 +8,7 @@ MESH_DIR = $(ROOT_DIR)mesh/
 OUT_DIR = $(ROOT_DIR)Debug/
 EXEC = $(OUT_DIR)computer_graphics
 
-CCFLAGS = -O0 -g3
+CCFLAGS = -O0 -g3 -Wall -pedantic
 
 ifndef BASEDIR
 	BASEDIR = ./
