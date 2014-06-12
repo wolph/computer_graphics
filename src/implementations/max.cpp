@@ -9,7 +9,7 @@ Ray performRayTracingMax(Ray ray){
 	float resColor = 1000.0f;
 	for (unsigned int i = 0; i < triangles.size(); i++){
 		Triangle curT = triangles[i];
-		Vec3Df triangleNormal = crossProduct(minus(vertices[curT.v[1]].p, vertices[curT.v[0]].p), minus(vertices[curT.v[2]].p, vertices[curT.v[0]].p));
+		Vec3Df triangleNormal = crossProduct(minus_(vertices[curT.v[1]].p, vertices[curT.v[0]].p), minus_(vertices[curT.v[2]].p, vertices[curT.v[0]].p));
 		float planeD = dotProduct(triangleNormal, vertices[curT.v[0]].p);
 		float rayD = -(dotProduct(triangleNormal, ray.getOrig()) + planeD ) / dotProduct(triangleNormal, ray.getDest());
 		if (rayD < resColor)
@@ -30,6 +30,6 @@ float dotProduct(Vec3Df in1, Vec3Df in2){
 	return (in1[0] * in2[0] + in1[1] * in2[1] + in1[2] * in2[2]);
 }
 
-inline Vec3Df minus(Vec3Df in1, Vec3Df in2){
+inline Vec3Df minus_(Vec3Df in1, Vec3Df in2){
 	return Vec3Df(in1[0] - in2[0], in1[1] - in2[1], in1[2] - in2[2]);
 }
