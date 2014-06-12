@@ -1,12 +1,17 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include "Vertex.h"
-#include "Triangle.h"
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 #include "Material.h"
-#include <vector>
+#include "Triangle.h"
+#include "Vertex.h"
+#include <GL/glut.h>
 #include <map>
-#include <string>
+#include <string.h>
+#include <vector>
 
 /************************************************************
  * Class de maillage basique

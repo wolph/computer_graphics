@@ -1,14 +1,4 @@
 #include "Mesh.h"
-#ifdef WIN32
-#include <windows.h>
-#endif
-#include <GL/glut.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-#include <stdlib.h>
-#include <iostream>
-#include <fstream>
 
 using namespace std;
 

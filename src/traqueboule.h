@@ -36,7 +36,6 @@ void tbInitTransform(){
 void tbVisuTransform(){
     glMultMatrixd(tb_matrix);
 }
-;
 
 /** Affiche l'aide */
 void tbHelp(){

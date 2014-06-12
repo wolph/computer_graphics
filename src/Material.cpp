@@ -117,32 +117,41 @@ void Material::set_name(const std::string & s){
 }
 
 const Vec3Df & Material::Kd(void) const{
+    //diffuse
     return Kd_;
-} //diffuse
+}
 const Vec3Df& Material::Ka(void) const{
+    //ambiant
     return Ka_;
-} //ambiant
+}
 const Vec3Df& Material::Ks(void) const{
+    //specular
     return Ks_;
-} //specular
+}
+
 const float Material::Ni(void) const{
     return Ni_;
 }
+
 const float Material::Ns(void) const{
+    //shininess
     return Ns_;
-} //shininess
+}
+
 const int Material::illum(void) const{
+    //illumination
     return illum_;
 }
 const float Material::Tr(void) const{
+    //transparency
     return Tr_;
-} //can be hijacked, e.g., for transparency
-const std::string & Material::textureName() //name of the texture image file
-const{
+}
+const std::string & Material::textureName() const{
+    //name of the texture image file
     return textureName_;
 }
 
-const std::string & Material::name() //name of the material
-const{
+const std::string & Material::name() const{
+    //name of the material
     return name_;
 }

@@ -9,6 +9,7 @@
 #include "RayTracer.h"
 #include "Mesh.h"
 #include "traqueboule.h"
+#include "RGBValue.h"
 
 #ifdef PNG
 #include "to_png.cpp"
@@ -17,41 +18,6 @@
 Vec3Df MyCameraPosition;
 
 std::vector<Vec3Df> MyLightPositions;
-
-//image class just dumped to hide...
-class RGBValue{
-public:
-    RGBValue(float rI = 0, float gI = 0, float bI = 0) :
-            r(rI), g(gI), b(bI){
-    }
-    ;
-
-    float operator[](int i) const{
-        switch(i){
-            case 0:
-                return r;
-            case 1:
-                return g;
-            case 2:
-                return b;
-            default:
-                return r;
-        }
-    }
-    float & operator[](int i){
-        switch(i){
-            case 0:
-                return r;
-            case 1:
-                return g;
-            case 2:
-                return b;
-            default:
-                return r;
-        }
-    }
-    float r, b, g;
-};
 
 class Image{
 public:
@@ -101,9 +67,7 @@ Mesh MyMesh; //Main mesh
 
 // Utilisé pour essayer différents types de rendu
 // Utilisé via le paramètre "-t" en ligne de commande
-enum {
-    TRIANGLE = 0, MODEL = 1,
-};
+enum {TRIANGLE = 0, MODEL = 1};
 unsigned int type = MODEL;
 
 unsigned int WindowSize_X = 1000;  // largeur fenetre
