@@ -35,17 +35,20 @@ LFLAGS += $(FLAGS)
 
 $(BINDIR)/$(TARGET): $(OBJS)
 	@echo "Linking "$<
+	@mkdir -p $(dir $@)
 	$(LINKER) $@ $(LFLAGS) $(OBJS)
 
 $(OBJS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
-	@mkdir -p $(dir $@)
 	@echo "Compiling "$<
+	@mkdir -p $(dir $@)
 	$(CC) $(CCFLAGS) -c $< -o $@
 
 .PHONEY: clean
 clean:
 	@$(rm) $(OBJS) $(BINDIR)/$(TARGET)
 
-run: $(BINDIR)/$(TARGET)
+all: $(BINDIR)/$(TARGET)
+
+run: all
 	$(BINDIR)/$(TARGET)
 
