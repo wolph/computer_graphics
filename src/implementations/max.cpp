@@ -1,6 +1,6 @@
 #include "max.h"
-#include "../raytracing.h"
-#include "../mesh.h"
+#include "../RayTracer.h"
+#include "../Mesh.h"
 
 Ray performRayTracingMax(Ray ray){
 	std::vector<Vertex> vertices = MyMesh.vertices;
