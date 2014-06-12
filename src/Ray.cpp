@@ -12,13 +12,15 @@ Ray::Ray(){
 
 Ray::Ray(const Vec3Df orig, const Vec3Df dest){
     this->orig = orig;
+	this->dir = dest - orig;
     this->dest = dest;
     this->color = Vec3Df(0, 1, 0);
 }
 
 Ray::Ray(Vec3Df color, const Vec3Df orig, const Vec3Df dest){
     this->color = color;
-    this->orig = orig;
+	this->orig = orig;
+	this->dir = dest - orig;
     this->dest = dest;
 }
 
@@ -39,6 +41,14 @@ const Vec3Df& Ray::getDest() const{
 
 void Ray::setDest(const Vec3Df& dest){
     this->dest = dest;
+}
+
+const Vec3Df& Ray::getDir() const{
+	return dir;
+}
+
+void Ray::setDir(const Vec3Df& dir){
+	this->dir = dir;
 }
 
 const Vec3Df& Ray::getOrig() const{
