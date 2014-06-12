@@ -135,13 +135,12 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
 
         // material file
         else if(strncmp(s, "mtllib ", 7) == 0){
-            char mtlfile[128];
             char *p0 = s + 6, *p1;
             while(isspace(*++p0))
                 ;
             p1 = p0;
             std::string t = p1;
-            int i;
+            unsigned int i;
             for(i = 0;i < t.length();++i){
                 if(t[i] < 32 || t[i] == 255){
                     break;
