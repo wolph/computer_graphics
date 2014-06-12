@@ -9,7 +9,7 @@ Ray performRayTracingMax(Ray ray){
 	//float resColor = 1000.0f;
 	bool hit = false;
 	for (unsigned int i = 0; i < triangles.size(); i++){
-		hit |= intersect(triangles[i], ray);
+		hit = hit || intersect(triangles[i], ray);
 	}
 	if (hit)
 		ray.setColor(Vec3Df(0, 1, 0));
@@ -27,13 +27,14 @@ float dotProduct(Vec3Df in1, Vec3Df in2){
 }
 
 bool intersect(Triangle t, Ray ray){
-	return true;
-	std::vector<Vertex> vertices = MyMesh.vertices;
-	Vec3Df v0 = vertices[t.v[1]].p, v1 = vertices[t.v[1]].p, v2 = vertices[t.v[2]].p;
+	Vec3Df v0 = MyMesh.vertices[t.v[1]].p, v1 = MyMesh.vertices[t.v[1]].p, v2 = MyMesh.vertices[t.v[2]].p;
+	
 	Vec3Df triangleNormal = crossProduct(v1 - v0, v2 - v0);
+	Vec3Df rayDir;
+	
 	if (dotProduct(triangleNormal, ray.getDest()) == 0)
 		return false;
-	float origD = dotProduct(triangleNormal, vertices[t.v[0]].p);
+	float origD = dotProduct(triangleNormal, v0);
 	float rayD = -(dotProduct(triangleNormal, ray.getOrig()) + origD) / dotProduct(triangleNormal, ray.getDest());
 	Vec3Df rayHit = ray.getOrig() + rayD * ray.getDest();
 
