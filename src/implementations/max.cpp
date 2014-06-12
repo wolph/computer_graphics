@@ -1,4 +1,3 @@
-
 #include "max.h"
 
 Ray performRayTracingMax(Ray ray){

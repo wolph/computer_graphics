@@ -3,7 +3,7 @@
 #include <windows.h>
 #endif
 #include <GL/glut.h>
-#include "raytracing.h"
+#include "RayTracer.h"
 
 //temporary variables
 Vec3Df testRayOrigin;
@@ -30,7 +30,6 @@ void init(){
     //here, we set it to the current location of the camera
     MyLightPositions.push_back(MyCameraPosition);
 }
-
 
 //return the color of your pixel.
 Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){

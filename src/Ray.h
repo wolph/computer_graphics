@@ -1,15 +1,15 @@
 /*
- * ray.h
+ * Ray.h
  *
  *  Created on: 11 Jun 2014
  *      Author: rick
  */
 
-#ifndef RAY_H_
-#define RAY_H_
+#ifndef RAY_H
+#define RAY_H
 
 #include "./Vec3D.h"
-#include "mesh.h"
+#include "Mesh.h"
 
 class Ray{
 private:
@@ -30,4 +30,4 @@ public:
     void setOrig(const Vec3Df& orig);
 };
 
-#endif /* RAY_H_ */
+#endif /* RAY_H */

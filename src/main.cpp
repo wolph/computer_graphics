@@ -6,8 +6,8 @@
 #include <math.h>
 #include <assert.h>
 
-#include "raytracing.h"
-#include "mesh.h"
+#include "RayTracer.h"
+#include "Mesh.h"
 #include "traqueboule.h"
 
 #ifdef PNG

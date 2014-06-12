@@ -1,4 +1,4 @@
-#include "mesh.h"
+#include "Mesh.h"
 #ifdef WIN32
 #include <windows.h>
 #endif
