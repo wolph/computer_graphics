@@ -2,10 +2,9 @@
 #define MAX_H
 #include "../Ray.hpp"
 
-Ray performRayTracingMax(Ray ray);
+unsigned int raysTraced;
 
-Vec3Df crossProduct(Vec3Df in1, Vec3Df in2);
-float dotProduct(Vec3Df in1, Vec3Df in2);
+Ray performRayTracingMax(Ray ray);
 bool intersect(Triangle t, Ray ray);
 
 #endif
