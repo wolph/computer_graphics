@@ -257,8 +257,7 @@ void keyboard(unsigned char key, int x, int y){
                             + (1 - yscale)
                                     * (xscale * dest01 + (1 - xscale) * dest11);
 
-                    Vec3Df rgb = performRayTracing(origin, dest);
-                    result.setPixel(x, y, rgb[0], rgb[1], rgb[2]);
+                    result.setPixel(x, y, performRayTracing(origin, dest));
                 }
             }
 #ifdef PNG

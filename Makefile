@@ -12,7 +12,7 @@ OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 CC = g++
 LINKER = g++ -o
-FLAGS = -O0 -g3 -Wall -pedantic
+FLAGS = -Wall -pedantic
 CCFLAGS = $(FLAGS)
 LFLAGS = $(FLAGS)
 rm = rm -vf
@@ -23,6 +23,15 @@ ifdef PNG
 	LFLAGS += -lpng
 	CCFLAGS += -D PNG
 endif
+
+ifdef PRODUCTION
+	FLAGS = -Os
+else
+	FLAGS = -O0 -g3
+endif
+
+CCFLAGS += $(FLAGS)
+LFLAGS += $(FLAGS)
 
 $(BINDIR)/$(TARGET): $(OBJS)
 	@echo "Linking "$<
