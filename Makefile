@@ -3,8 +3,11 @@ SRC = src/*.cpp src/implementations/*.cpp
 LIBS = -lGL -lGLU -lglut
 INCLUDE = -I.
 
-OUTDIR = Debug/
-EXEC = $(OUTDIR)computer_graphics
+ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))/
+MESH_DIR = $(ROOT_DIR)mesh/
+OUT_DIR = $(ROOT_DIR)Debug/
+EXEC = $(OUT_DIR)computer_graphics
+
 CCFLAGS = -O0 -g3
 
 ifndef BASEDIR
@@ -44,15 +47,13 @@ else
 endif
 
 all:
-	cd $(BASEDIR) && \
-	mkdir -p Debug && \
+	mkdir -p $(OUT_DIR)
 	$(CC) $(SRC) -o $(EXEC) $(CCFLAGS) $(LIBS) $(INCLUDE)
 
 run: all
-	cd $(BASEDIR) && \
-	./$(EXEC)
+	cd $(ROOT_DIR) && $(EXEC)
 
 clean:
 	cd $(BASEDIR) && \
-	rm -rf $(OUTDIR) $(EXEC) *~
+	rm -rf $(OUTDIR) *~
 
