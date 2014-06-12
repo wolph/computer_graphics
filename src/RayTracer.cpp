@@ -19,10 +19,10 @@ void init(){
     //hence, some models might not yet work well.
     //MyMesh.loadMesh("cube2.obj", true);
 
-    MyMesh.loadMesh("mesh/monkey.obj", true);
+   // MyMesh.loadMesh("mesh/monkey.obj", true);
 //    MyMesh.loadMesh("mesh/dodgeColorTest.obj", true);
 
-    //    MyMesh.loadMesh("cube.obj", true);
+       MyMesh.loadMesh("mesh/cube.obj", true);
     MyMesh.computeVertexNormals();
 
     //one first move: initialize the first light source
