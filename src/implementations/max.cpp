@@ -4,6 +4,7 @@
 #include "../Vec3D.hpp"
 
 unsigned int raysTraced = 0;
+bool debug = false;
 
 Ray performRayTracingMax(Ray ray){
 	raysTraced++;
@@ -40,7 +41,10 @@ bool intersect(Triangle t, Ray ray){
 		res[2] = 1;
 	if (rayOrig.dotProduct(triangleNormal, rayOrig.crossProduct(v0 - v2, rayHit - v2)) < 0)
 		res[3] = 1;
-	std::cout << res[0] << " " << res[1] << " " << res[2] << " " << res[3] << std::endl;
+	
+	if (debug)
+		std::cout << res[0] << " " << res[1] << " " << res[2] << " " << res[3] << std::endl;
+
 	if (res[0] + res[1] + res[2] + res[3] > 0)
 		return false;
 	return true;
