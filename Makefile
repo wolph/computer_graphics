@@ -10,12 +10,19 @@ SRCS := $(wildcard $(SRCDIR)/*.cpp $(SRCDIR)/implementations/*.cpp)
 INCL := $(wildcard $(SRCDIR)/*.h $(SRCDIR)/implementations/*.hpp)
 OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
-CC = g++
-LINKER = g++ -o
+CXX = g++
+LINKERXX = g++ -o
 FLAGS = -Wall -pedantic
 CCFLAGS = $(FLAGS)
 LFLAGS = $(FLAGS)
 rm = rm -vf
+
+NUMJOBS=${NUMJOBS:-" -j7 "}
+CCACHE_EXISTS := $(shell ccache -V)
+ifdef CCACHE_EXISTS
+    CXX := ccache $(CXX)
+    LINKERXX := ccache $(LINKERXX)
+endif
 
 include Makefile.OS_DETECT
 
@@ -25,7 +32,7 @@ ifdef PNG
 endif
 
 ifdef PRODUCTION
-	FLAGS = -Os
+	FLAGS = -O3
 else
 	FLAGS = -O0 -g3
 endif
@@ -36,12 +43,12 @@ LFLAGS += $(FLAGS)
 $(BINDIR)/$(TARGET): $(OBJS)
 	@echo "Linking "$<
 	@mkdir -p $(dir $@)
-	$(LINKER) $@ $(LFLAGS) $(OBJS)
+	$(LINKERXX) $@ $(LFLAGS) $(OBJS)
 
 $(OBJS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	@echo "Compiling "$<
 	@mkdir -p $(dir $@)
-	$(CC) $(CCFLAGS) -c $< -o $@
+	$(CXX) $(CCFLAGS) -c $< -o $@
 
 .PHONEY: clean
 clean:

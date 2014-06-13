@@ -20,6 +20,7 @@ else
         LFLAGS += -framework OpenGL -framework GLUT
         LFLAGS += -D GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
         PNG = true
+        PRODUCTION = true
     endif
     UNAME_P := $(shell uname -p)
     ifeq ($(UNAME_P),x86_64)

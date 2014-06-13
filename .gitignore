@@ -26,3 +26,4 @@ frameworks
 *.dSYM
 *.xcodeproj
 result.*
+/Profiling
