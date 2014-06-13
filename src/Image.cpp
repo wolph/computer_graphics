@@ -110,5 +110,6 @@ bool Image::writeImage(const char * filename){
 #endif
 
     fclose(file);
+    printf("Wrote raytrace output to %s\n", filename);
     return true;
 }
