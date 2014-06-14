@@ -23,7 +23,7 @@ Ray performRayTracingMax(Ray ray){
 bool intersect(Triangle t, Ray ray){
 	Vec3Df v0 = MyMesh.vertices[t.v[0]].p, v1 = MyMesh.vertices[t.v[1]].p, v2 = MyMesh.vertices[t.v[2]].p, rayOrig = ray.getOrig();
 	Vec3Df v1mv0 = v1 - v0, triangleNormal = rayOrig.crossProduct(v1mv0, v2 - v0);
-	Vec3Df rayDir = Vec3Df(ray.getDest()[0] - rayOrig[0], ray.getDest()[1] - rayOrig[1], ray.getDest()[2] - rayOrig[2]);
+	Vec3Df rayDir = ray.getDest() - rayOrig;
 	float dotTrNRDir = rayOrig.dotProduct(triangleNormal, rayDir);
 	
 	int res[4] = { 0, 0, 0, 0 };
