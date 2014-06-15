@@ -13,7 +13,8 @@
 #include "matrix.hpp"
 #include "stdio.h"
 #include "Vec3D.hpp"
-static const float speedfact = 0.2;
+
+static const float speedfact = 0.2f;
 
 /** votre fonction d'affichage */
 void display();

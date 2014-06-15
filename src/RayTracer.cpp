@@ -17,12 +17,22 @@ void init(){
     //Nonetheless, if they come from Blender, they should.
     //there is a difference between windows written objs and Linux written objs.
     //hence, some models might not yet work well.
-    //MyMesh.loadMesh("cube2.obj", true);
 
-   // MyMesh.loadMesh("mesh/monkey.obj", true);
-//    MyMesh.loadMesh("mesh/dodgeColorTest.obj", true);
+	cout << "Mesh file name: (0: cube, 1: monkey, 2: dodgeColorTest)" << endl <<
+		"You can omit the mesh/ path and the .obj extension." << endl;
+	string input;
+	cin >> input;
+	input = string("mesh/").append(input).append(".obj");
+	cout << input << endl;
+	if (input == "0")
+		MyMesh.loadMesh("mesh/cube.obj", true);
+	else if (input == "1")
+		MyMesh.loadMesh("mesh/monkey.obj", true);
+	else if (input == "2")
+		MyMesh.loadMesh("mesh/dodgeColorTest", true);
+	else
+		MyMesh.loadMesh(input.c_str(), true);
 
-       MyMesh.loadMesh("mesh/cube.obj", true);
     MyMesh.computeVertexNormals();
 
     //one first move: initialize the first light source
