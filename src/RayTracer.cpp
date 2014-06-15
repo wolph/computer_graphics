@@ -18,12 +18,13 @@ void init(){
     //there is a difference between windows written objs and Linux written objs.
     //hence, some models might not yet work well.
 
+	RayTracingResolutionX = 1000; // These resolutions should be the same as the window,
+	RayTracingResolutionY = 1000; // otherwise unexpected behaviour occurs.
+
 	cout << "Mesh file name: (0: cube, 1: monkey, 2: dodgeColorTest)" << endl <<
 		"You can omit the mesh/ path and the .obj extension." << endl;
 	string input;
 	cin >> input;
-	input = string("mesh/").append(input).append(".obj");
-	cout << input << endl;
 	if (input == "0")
 		MyMesh.loadMesh("mesh/cube.obj", true);
 	else if (input == "1")
@@ -31,7 +32,7 @@ void init(){
 	else if (input == "2")
 		MyMesh.loadMesh("mesh/dodgeColorTest", true);
 	else
-		MyMesh.loadMesh(input.c_str(), true);
+		MyMesh.loadMesh(string("mesh/").append(input).append(".obj").c_str(), true);
 
     MyMesh.computeVertexNormals();
 
