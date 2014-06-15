@@ -8,6 +8,7 @@
 #include "Material.hpp"
 #include "Triangle.hpp"
 #include "Vertex.hpp"
+#include <stdio.h>
 #include <GL/glut.h>
 #include <map>
 #include <string.h>
