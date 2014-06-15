@@ -5,20 +5,18 @@
 #include <cmath>
 
 unsigned int raysTraced = 0;
-bool debug = false;
+bool debug = true;
 
 Ray performRayTracingMax(Ray ray){
 	raysTraced++;
 	
 	std::vector<Triangle> triangles = MyMesh.triangles;
-	ray.setColor(Vec3Df(0, 0, 0));
 	float hit = 10e6f;
 	for (unsigned int i = 0; i < triangles.size(); i++){
 		hit = fmin(hit, intersect(triangles[i], ray));
 	}
-
-	if (hit < 10e6f)
-		ray.setColor(Vec3Df(hit/50, hit/50, hit/50));
+	hit = 1 / ((hit * 2) + 1); // Arithmetic function for getting a usable color.
+	ray.setColor(Vec3Df(hit, hit, hit));
 	return ray;
 }
 
@@ -54,6 +52,7 @@ float intersect(Triangle t, Ray ray){
 Vec3Df cross(Vec3Df in1, Vec3Df in2){
 	return in1.crossProduct(in1, in2);
 }
+
 float dot(Vec3Df in1, Vec3Df in2){
 	return in1.dotProduct(in1, in2);
 }
