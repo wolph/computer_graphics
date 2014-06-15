@@ -11,7 +11,7 @@ INCL := $(wildcard $(SRCDIR)/*.h $(SRCDIR)/implementations/*.hpp)
 OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 CXX = g++
-LINKERXX = g++ -o
+LINKERXX = g++
 FLAGS = -Wall -pedantic
 CCFLAGS = $(FLAGS)
 LFLAGS = $(FLAGS)
@@ -43,12 +43,12 @@ LFLAGS += $(FLAGS)
 $(BINDIR)/$(TARGET): $(OBJS)
 	@echo "Linking "$<
 	@mkdir -p $(dir $@)
-	$(LINKERXX) $@ $(LFLAGS) $(OBJS)
+	$(LINKERXX) $(OBJS) $(LFLAGS) -o $@ 
 
 $(OBJS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	@echo "Compiling "$<
 	@mkdir -p $(dir $@)
-	$(CXX) $(CCFLAGS) -c $< -o $@
+	$(CXX) -c $< -o $@ $(CCFLAGS)
 
 .PHONEY: clean
 clean:
