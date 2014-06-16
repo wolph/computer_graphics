@@ -11,6 +11,7 @@ class Mesh;
 #include "Material.hpp"
 #include "Triangle.hpp"
 #include "Vertex.hpp"
+#include "Texture.h"
 #include <stdio.h>
 #include <GL/glut.h>
 #include <map>
@@ -42,7 +43,7 @@ public:
     //in the current version, if you use textures, then you have to use texture coords everywhere...
     //I might send an update of the code to change this.
     //for convenience, Vec3Df is used, although only 2D tex coordinates are read corresponding to the x,y entry of Vec3Df.
-    std::vector<Vec3Df> texcoords;
+    std::vector<Texture> texcoords;
     //Triangles are the indices of the vertices involved in a triangle.
     //a triplet corresponds to one triangle.
     //A Triangle contains the indeces of the three vertices that are neighboring

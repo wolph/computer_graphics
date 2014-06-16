@@ -13,16 +13,17 @@ class Triangle;
 
 #include "Vec3D.hpp"
 #include "Vertex.hpp"
+#include "Texture.h"
 
 class Triangle{
 public:
     Vertex vertices[3];
-    unsigned int textures[3];
+    Texture textures[3];
     Vec3Df normal;
     Triangle();
     Triangle(const Triangle & triangle);
-    Triangle(Vertex v0, unsigned int t0, Vertex v1, unsigned int t1, Vertex v2,
-            unsigned int t2);
+    Triangle(const Vertex & v0, const Texture & t0, const Vertex & v1,
+            const Texture & t1, const Vertex & v2, const Texture & t2);
     virtual ~Triangle();
     Triangle & operator=(const Triangle & t2);
     void calculateNormal();

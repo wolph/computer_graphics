@@ -21,8 +21,8 @@ Triangle::Triangle(const Triangle & triangle){
     textures[2] = triangle.textures[2];
 }
 
-Triangle::Triangle(Vertex v0, unsigned int t0, Vertex v1, unsigned int t1,
-        Vertex v2, unsigned int t2){
+Triangle::Triangle(const Vertex & v0, const Texture & t0, const Vertex & v1,
+        const Texture & t1, const Vertex & v2, const Texture & t2){
     vertices[0] = v0;
     vertices[1] = v1;
     vertices[2] = v2;
