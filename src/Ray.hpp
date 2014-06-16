@@ -8,7 +8,7 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include "./Vec3D.hpp"
+#include "Vec3D.hpp"
 #include "Mesh.hpp"
 
 class Ray{

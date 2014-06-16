@@ -9,7 +9,7 @@ bool debug = true;
 
 Ray performRayTracingMax(Ray ray){
 	raysTraced++;
-	
+
 	std::vector<Triangle> triangles = MyMesh.triangles;
 	float hit = 10e6f;
 	for (unsigned int i = 0; i < triangles.size(); i++){
@@ -25,7 +25,7 @@ float intersect(Triangle t, Ray ray){
 		v1 = MyMesh.vertices[t.v[1]].p,    // less characters in the code and better readability.
 		v2 = MyMesh.vertices[t.v[2]].p,
 		rayOrig = ray.getOrig(),
-		
+
 		v1mv0 = v1 - v0, // Saved as variable for (minimal) performace improvement, result is used twice.
 		triangleNormal = cross(v1mv0, v2 - v0), // Normal of the triangle, and the plane the triangle lies on.
 		rayDir = normal(ray.getDest() - rayOrig); // The normalized direction of the ray.
