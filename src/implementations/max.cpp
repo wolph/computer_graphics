@@ -26,8 +26,7 @@ float intersect(Triangle t, Ray ray){
 		v2 = MyMesh.vertices[t.v[2]].p,
 		rayOrig = ray.getOrig(),
 
-		v1mv0 = v1 - v0, // Saved as variable for (minimal) performace improvement, result is used twice.
-		triangleNormal = cross(v1mv0, v2 - v0), // Normal of the triangle, and the plane the triangle lies on.
+		triangleNormal = cross(v1 - v0, v2 - v0), // Normal of the triangle, and the plane the triangle lies on.
 		rayDir = normal(ray.getDest() - rayOrig); // The normalized direction of the ray.
 	float angle = dot(triangleNormal, rayDir); // The cosine of the angle of the vectors (dotproduct of the vectors).
 
@@ -39,7 +38,7 @@ float intersect(Triangle t, Ray ray){
 
 	Vec3Df rayHit = rayOrig + rayD * rayDir; // The intersection point of the ray and the plane in which lies the triangle.
 
-	if (dot(triangleNormal, cross(v1mv0, rayHit - v0)) < 0)
+	if (dot(triangleNormal, cross(v1 - v0, rayHit - v0)) < 0)
 		return 10e6f;
 	if (dot(triangleNormal, cross(v2 - v1, rayHit - v1)) < 0)
 		return 10e6f;
