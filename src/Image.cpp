@@ -7,6 +7,23 @@
 
 #include "Image.hpp"
 
+// image format
+#define PNG 0
+#define BMP 1
+#define PPM 2
+const char* image_exts[] = { "png", "bmp", "ppm" };
+
+#define IMAGE_FORMAT BMP
+
+// convert value from little to big-endian
+inline unsigned int htonl(unsigned int n) {
+	return
+		(n & 0xFF000000 >> 24) |
+		(n & 0xFF0000 >> 8) |
+		(n & 0xFF00 << 8) |
+		(n & 0xFF << 24);
+}
+
 Image::Image(int width, int height) :
         _width(width), _height(height){
     _image.resize(3 * _width * _height);
@@ -27,7 +44,10 @@ void Image::setPixel(int i, int j, Vec3Df rgb){
     _image[3 * (_width * j + i) + 2] = rgb[2];
 }
 
-bool Image::writeImage(const char * filename){
+bool Image::writeImage(const char * filename2){
+	std::string str = std::string(filename2) + std::string(".") + std::string(image_exts[IMAGE_FORMAT]);
+	const char* filename = str.c_str();
+
     FILE* file;
     file = fopen(filename, "wb");
     if(!file){
@@ -35,7 +55,7 @@ bool Image::writeImage(const char * filename){
         return false;
     }
 
-#ifdef PNG
+#if IMAGE_FORMAT == PNG
     png_structp png_ptr = NULL;
     png_infop info_ptr = NULL;
     size_t x, y, z;
@@ -94,7 +114,52 @@ bool Image::writeImage(const char * filename){
     }
     png_free(png_ptr, row_pointers);
 
-#else
+#elif IMAGE_FORMAT == BMP
+
+	// bitmap header
+	char header[] = {
+		0x42, 0x4D, /* "BM" */
+		0x3E, 0xF6, 0x02, 0x00, /* filesize in bytes @ 2*/
+		0x00, 0x00, 0x00, 0x00,
+		0x36, 0x00, 0x00, 0x00,
+
+		0x28, 0x00, 0x00, 0x00,
+		0xFE, 0x00, 0x00, 0x00, /* width @ 18 */
+		0xFE, 0x00, 0x00, 0x00, /* height @ 22 */
+		0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0xF6, 0x02,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+	};
+
+	// allocate buffer for converted image
+	int len = _width * _height * 3;
+	char* buf = new char[len];
+
+	// get pointers to header
+	unsigned int* filesize = (unsigned int*)(header + 2);
+	unsigned int* w = (unsigned int*)(header + 18);
+	unsigned int* h = (unsigned int*)(header + 22);
+
+	// modify header
+	*filesize = htonl(sizeof(header) + len);
+	*w = htonl(_width);
+	*h = htonl(_height);
+
+	// fill buffer, convert from RGB to BGR
+	for (int i = 0; i < _image.size() / 3; i++) {
+		buf[i * 3 + 0] = (unsigned char)(_image[i * 3 + 2] * 255.0f);
+		buf[i * 3 + 1] = (unsigned char)(_image[i * 3 + 1] * 255.0f);
+		buf[i * 3 + 2] = (unsigned char)(_image[i * 3 + 0] * 255.0f);
+	}
+
+	// write to file
+	fwrite(header, 1, sizeof(header), file);
+	fwrite(buf, 1, len, file);
+
+	// deallocate buffer
+	delete[] buf;
+
+#elif IMAGE_FORMAT == PPM
     fprintf(file, "P6\n%i %i\n255\n", _width, _height);
 
     std::vector<unsigned char> imageC(_image.size());
@@ -107,6 +172,8 @@ bool Image::writeImage(const char * filename){
         printf("Dump file problem... fwrite\n");
         return false;
     }
+#else
+	printf("Invalid image format!\n");
 #endif
 
     fclose(file);
