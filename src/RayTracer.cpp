@@ -8,6 +8,7 @@
 //temporary variables
 Vec3Df testRayOrigin;
 Vec3Df testRayDestination;
+string input;
 
 //use this function for any preprocessing of the mesh.
 void init(int argc, char **argv){
@@ -21,7 +22,6 @@ void init(int argc, char **argv){
     RayTracingResolutionX = 1000; // These resolutions should be the same as the window,
     RayTracingResolutionY = 1000; // otherwise unexpected behaviour occurs.
 
-    string input;
     if(argc == 2){
         input = argv[1];
     }else{
@@ -31,15 +31,14 @@ void init(int argc, char **argv){
         cin >> input;
     }
 
-    if(input == "0")
-        MyMesh.loadMesh("mesh/cube.obj", true);
-    else if(input == "1")
-        MyMesh.loadMesh("mesh/monkey.obj", true);
-    else if(input == "2")
-        MyMesh.loadMesh("mesh/dodgeColorTest", true);
-    else
-        MyMesh.loadMesh(string("mesh/").append(input).append(".obj").c_str(),
-                true);
+	if (input == "0")
+		input = "cube";
+	else if (input == "1")
+	input = "monkey";
+	else if (input == "2")
+		input = "dodgeColorTest";
+	input = string("mesh/").append(input).append(".obj");
+    MyMesh.loadMesh(input.c_str(), true);
 
     MyMesh.computeVertexNormals();
 
@@ -52,15 +51,15 @@ void init(int argc, char **argv){
 //return the color of your pixel.
 Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     Ray ray = Ray(origin, dest);
-    ray = performRayTracingArend(ray);
-    ray = performRayTracingEwoud(ray);
-    ray = performRayTracingLeon(ray);
+    //ray = performRayTracingArend(ray);
+    //ray = performRayTracingEwoud(ray);
+    //ray = performRayTracingLeon(ray);
     ray = performRayTracingMax(ray);
-    ray = performRayTracingQu(ray);
-    ray = performRayTracingRick(ray);
-    ray = performRayTracingRutger(ray);
-    ray = performRayTracingVince(ray);
-    ray = performRayTracingYmte(ray);
+    //ray = performRayTracingQu(ray);
+    //ray = performRayTracingRick(ray);
+    //ray = performRayTracingRutger(ray);
+    //ray = performRayTracingVince(ray);
+    //ray = performRayTracingYmte(ray);
     return ray.getColor();
 }
 
