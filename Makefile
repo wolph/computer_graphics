@@ -59,3 +59,12 @@ all: $(BINDIR)/$(TARGET)
 run: all
 	$(BINDIR)/$(TARGET)
 
+cube: all
+	$(BINDIR)/$(TARGET) 0
+
+monkey: all
+	$(BINDIR)/$(TARGET) 1
+
+dodge: all
+	$(BINDIR)/$(TARGET) 2
+
