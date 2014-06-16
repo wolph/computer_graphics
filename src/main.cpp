@@ -210,6 +210,10 @@ void keyboard(unsigned char key, int x, int y){
             produceRay(RayTracingResolutionX - 1, RayTracingResolutionY - 1,
                     &origin11, &dest11);
 
+			// Perform timing
+			time_t start, end, ticks;
+			start = clock();
+
             for(unsigned int y = 0;y < RayTracingResolutionY;++y){
                 for(unsigned int x = 0;x < RayTracingResolutionX;++x){
                     //svp, decidez vous memes quels parametres vous allez passer à la fonction
@@ -231,11 +235,15 @@ void keyboard(unsigned char key, int x, int y){
                     result.setPixel(x, y, performRayTracing(origin, dest));
                 }
             }
-#ifdef PNG
-            result.writeImage("result.png");
-#else
-            result.writeImage("result.ppm");
-#endif
+
+			// calculate elapsed time
+			end = clock();
+			ticks = end - start;
+			int millis = ticks * 1000 / CLOCKS_PER_SEC;
+
+			printf("Rendering took %d ms\n", millis);
+
+            result.writeImage("result");
             break;
         }
         case 27:     // touche ESC

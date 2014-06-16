@@ -11,9 +11,10 @@
 #ifdef WIN32
 #include <windows.h>
 #endif
+#include <cstdlib>
+#include <cmath>
+#include <ctime>
 #include <GL/glut.h>
-#include <stdlib.h>
-#include <math.h>
 #include <assert.h>
 
 #include "Mesh.hpp"
