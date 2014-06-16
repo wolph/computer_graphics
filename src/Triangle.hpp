@@ -8,19 +8,24 @@
 #ifndef TRIANGLE_H
 #define TRIANGLE_H
 
+/* fixed recursive includes */
+class Triangle;
+
 #include "Vec3D.hpp"
+#include "Vertex.hpp"
 
 class Triangle{
 public:
-    unsigned int v[3];
-    unsigned int t[3];
-	Vec3Df normal;
+    Vertex vertices[3];
+    unsigned int textures[3];
+    Vec3Df normal;
     Triangle();
-    Triangle(const Triangle & t2);
-    Triangle(unsigned int v0, unsigned int t0, unsigned int v1, unsigned int t1,
-            unsigned int v2, unsigned int t2);
+    Triangle(const Triangle & triangle);
+    Triangle(Vertex v0, unsigned int t0, Vertex v1, unsigned int t1, Vertex v2,
+            unsigned int t2);
     virtual ~Triangle();
     Triangle & operator=(const Triangle & t2);
+    void calculateNormal();
 };
 
 #endif /* TRIANGLE_H */

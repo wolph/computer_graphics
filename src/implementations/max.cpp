@@ -21,9 +21,9 @@ Ray performRayTracingMax(Ray ray){
 }
 
 float intersect(Triangle t, Ray ray){
-	Vec3Df v0 = MyMesh.vertices[t.v[0]].p, // Variables saved as locals for less external function calls,
-		v1 = MyMesh.vertices[t.v[1]].p,    // less characters in the code and better readability.
-		v2 = MyMesh.vertices[t.v[2]].p,
+	Vec3Df v0 = t.vertices[0].p, // Variables saved as locals for less external function calls,
+		v1 = t.vertices[1].p,    // less characters in the code and better readability.
+		v2 = t.vertices[2].p,
 		rayOrig = ray.getOrig(),
 
 		v1mv0 = v1 - v0, // Saved as variable for (minimal) performace improvement, result is used twice.

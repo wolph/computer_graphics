@@ -14,14 +14,12 @@ void Mesh::computeVertexNormals(){
 
     //Sum up neighboring normals
     for(unsigned int i = 0;i < triangles.size();i++){
-        Vec3Df edge01 = vertices[triangles[i].v[1]].p
-                - vertices[triangles[i].v[0]].p;
-        Vec3Df edge02 = vertices[triangles[i].v[2]].p
-                - vertices[triangles[i].v[0]].p;
+        Vec3Df edge01 = triangles[i].vertices[1].p - triangles[i].vertices[0].p;
+        Vec3Df edge02 = triangles[i].vertices[2].p - triangles[i].vertices[0].p;
         Vec3Df n = Vec3Df::crossProduct(edge01, edge02);
         n.normalize();
         for(unsigned int j = 0;j < 3;j++)
-            vertices[triangles[i].v[j]].n += n;
+            triangles[i].vertices[j].n += n;
     }
 
     //Normalize
@@ -41,12 +39,12 @@ void Mesh::drawSmooth(){
 
         glColor3fv(col.pointer());
         for(int v = 0;v < 3;v++){
-            glNormal3f(vertices[triangles[i].v[v]].n[0],
-                    vertices[triangles[i].v[v]].n[1],
-                    vertices[triangles[i].v[v]].n[2]);
-            glVertex3f(vertices[triangles[i].v[v]].p[0],
-                    vertices[triangles[i].v[v]].p[1],
-                    vertices[triangles[i].v[v]].p[2]);
+            glNormal3f(triangles[i].vertices[v].n[0],
+                    triangles[i].vertices[v].n[1],
+                    triangles[i].vertices[v].n[2]);
+            glVertex3f(triangles[i].vertices[v].p[0],
+                    triangles[i].vertices[v].p[1],
+                    triangles[i].vertices[v].p[2]);
         }
 
     }
@@ -60,17 +58,15 @@ void Mesh::draw(){
         unsigned int triMat = triangleMaterials.at(i);
         Vec3Df col = this->materials.at(triMat).Kd();
         glColor3fv(col.pointer());
-        Vec3Df edge01 = vertices[triangles[i].v[1]].p
-                - vertices[triangles[i].v[0]].p;
-        Vec3Df edge02 = vertices[triangles[i].v[2]].p
-                - vertices[triangles[i].v[0]].p;
+        Vec3Df edge01 = triangles[i].vertices[1].p - triangles[i].vertices[0].p;
+        Vec3Df edge02 = triangles[i].vertices[2].p - triangles[i].vertices[0].p;
         Vec3Df n = Vec3Df::crossProduct(edge01, edge02);
         n.normalize();
         glNormal3f(n[0], n[1], n[2]);
         for(int v = 0;v < 3;v++){
-            glVertex3f(vertices[triangles[i].v[v]].p[0],
-                    vertices[triangles[i].v[v]].p[1],
-                    vertices[triangles[i].v[v]].p[2]);
+            glVertex3f(triangles[i].vertices[v].p[0],
+                    triangles[i].vertices[v].p[1],
+                    triangles[i].vertices[v].p[2]);
         }
 
     }
@@ -86,7 +82,8 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
     std::vector<int> texhandles;
 
     if(randomizeTriangulation)
-        srand(0);
+        /* Randomization should use an actual _RANDOM_ thing */
+        srand(time(NULL));
 
     materials.clear();
     Material defaultMat;
@@ -113,7 +110,6 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
 
     std::vector<Vec3Df> normals;
     std::string matname;
-
     std::string path_;
     std::string temp(realFilename);
     int pos = temp.rfind("/");
@@ -280,15 +276,16 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
                     const int m = (materialIndex.find(matname))->second;
 
                     triangles.push_back(
-                            Triangle(vhandles[v0], texhandles[t0], vhandles[v1],
-                                    texhandles[t1], vhandles[v2],
-                                    texhandles[t2]));
+                            Triangle(vertices[vhandles[v0]], texhandles[t0],
+                                    vertices[vhandles[v1]], texhandles[t1],
+                                    vertices[vhandles[v2]], texhandles[t2]));
                     triangleMaterials.push_back(m);
                 }
             }else if(vhandles.size() == 3){
                 triangles.push_back(
-                        Triangle(vhandles[0], texhandles[0], vhandles[1],
-                                texhandles[1], vhandles[2], texhandles[2]));
+                        Triangle(vertices[vhandles[0]], texhandles[0],
+                                vertices[vhandles[1]], texhandles[1],
+                                vertices[vhandles[2]], texhandles[2]));
                 triangleMaterials.push_back(
                         (materialIndex.find(matname))->second);
             }else{
@@ -298,6 +295,7 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
         }
         memset(&s, 0, LINE_LEN);
     }
+
     fclose(in);
     return true;
 }
