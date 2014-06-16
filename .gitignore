@@ -15,15 +15,20 @@
 *.lib
 
 # Executables
+bin/
 *.exe
 *.out
 *.app
+
+# Project Files
+*.xcodeproj
+*.vcxproj
+
 raytracer
 .*
 /Default
 /Debug
 frameworks
 *.dSYM
-*.xcodeproj
 result.*
 /Profiling
