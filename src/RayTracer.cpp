@@ -10,7 +10,7 @@ Vec3Df testRayOrigin;
 Vec3Df testRayDestination;
 
 //use this function for any preprocessing of the mesh.
-void init(){
+void init(int argc, char **argv){
     //load the mesh file
     //feel free to replace cube by a path to another model
     //please realize that not all OBJ files will successfully load.
