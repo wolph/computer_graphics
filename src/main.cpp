@@ -1,34 +1,4 @@
-#ifdef WIN32
-#include <windows.h>
-#endif
-#include <GL/glut.h>
-#include <stdlib.h>
-#include <math.h>
-#include <assert.h>
-
-#include "RayTracer.hpp"
-#include "Mesh.hpp"
-#include "traqueboule.hpp"
-#include "Image.hpp"
-
-Vec3Df MyCameraPosition;
-
-std::vector<Vec3Df> MyLightPositions;
-
-Mesh MyMesh; //Main mesh
-
-// Utilisé pour essayer différents types de rendu
-// Utilisé via le paramètre "-t" en ligne de commande
-enum {
-    TRIANGLE = 0, MODEL = 1
-};
-unsigned int type = MODEL;
-
-unsigned int WindowSize_X = 1000;  // largeur fenetre
-unsigned int WindowSize_Y = 1000;  // hauteur fenetre
-
-unsigned int RayTracingResolutionX = 400;  // largeur fenetre
-unsigned int RayTracingResolutionY = 400;  // largeur fenetre
+#include "main.hpp"
 
 void dessinerRepere(float length){
     glDisable(GL_LIGHTING);
@@ -246,7 +216,8 @@ void keyboard(unsigned char key, int x, int y){
                     //e.g., maillage, triangles, sphères etc.
                     float xscale = 1.0f
                             - float(x) / (RayTracingResolutionX - 1);
-                    float yscale = 1.0f - float(y) / (RayTracingResolutionY - 1);
+                    float yscale = 1.0f
+                            - float(y) / (RayTracingResolutionY - 1);
 
                     origin = yscale
                             * (xscale * origin00 + (1 - xscale) * origin10)
