@@ -41,4 +41,14 @@ unsigned int WindowSize_Y = 1000;  // hauteur fenetre
 unsigned int RayTracingResolutionX = 400;  // largeur fenetre
 unsigned int RayTracingResolutionY = 400;  // largeur fenetre
 
+void dessinerRepere(float length);
+void dessiner();
+void animate();
+int main(int argc, char** argv);
+void display(void);
+void reshape(int w, int h);
+void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest);
+void produceRay(int x_I, int y_I, Vec3Df & origin, Vec3Df & dest);
+void keyboard(unsigned char key, int x, int y);
+
 #endif /* MAIN_HPP_ */
