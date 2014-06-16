@@ -8,6 +8,9 @@
 #ifndef MATERIAL_H_
 #define MATERIAL_H_
 
+/* fixed recursive includes */
+class Material;
+
 #include "Vec3D.hpp"
 #include <string>
 

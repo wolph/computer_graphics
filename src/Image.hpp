@@ -8,6 +8,9 @@
 #ifndef IMAGE_H_
 #define IMAGE_H_
 
+/* fixed recursive includes */
+class Image;
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>

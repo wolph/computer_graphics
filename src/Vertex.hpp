@@ -1,6 +1,9 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
+/* fixed recursive includes */
+class Vertex;
+
 #include "Vec3D.hpp"
 
 /************************************************************

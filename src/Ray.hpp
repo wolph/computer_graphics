@@ -8,6 +8,9 @@
 #ifndef RAY_H
 #define RAY_H
 
+/* fixed recursive includes */
+class Ray;
+
 #include "Vec3D.hpp"
 #include "Mesh.hpp"
 
