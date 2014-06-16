@@ -7,22 +7,18 @@
 
 #include "Image.hpp"
 
-// image format
-#define PNG 0
-#define BMP 1
-#define PPM 2
-const char* image_exts[] = { "png", "bmp", "ppm" };
+const char* image_exts[] = {"png", "bmp", "ppm"};
 
-#define IMAGE_FORMAT BMP
-
+#if IMAGE_FORMAT == BMP
 // convert value from little to big-endian
-inline unsigned int htonl(unsigned int n) {
+inline unsigned int htonl(unsigned int n){
 	return
 		(n & 0xFF000000 >> 24) |
 		(n & 0xFF0000 >> 8) |
 		(n & 0xFF00 << 8) |
 		(n & 0xFF << 24);
 }
+#endif
 
 Image::Image(int width, int height) :
         _width(width), _height(height){

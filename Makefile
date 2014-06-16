@@ -28,7 +28,7 @@ include Makefile.OS_DETECT
 
 ifdef PNG
 	LFLAGS += -lpng
-	CCFLAGS += -D PNG
+	CCFLAGS += -D IMAGE_FORMAT=0
 endif
 
 ifdef PRODUCTION
