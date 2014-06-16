@@ -26,23 +26,22 @@ float intersect(Triangle t, Ray ray){
 		v2 = t.vertices[2].p,
 		rayOrig = ray.getOrig(),
 
-		triangleNormal = cross(v1 - v0, v2 - v0), // Normal of the triangle, and the plane the triangle lies on.
 		rayDir = normal(ray.getDest() - rayOrig); // The normalized direction of the ray.
-	float angle = dot(triangleNormal, rayDir); // The cosine of the angle of the vectors (dotproduct of the vectors).
+	float angle = dot(t.normal, rayDir); // The cosine of the angle of the vectors (dotproduct of the vectors).
 
 	if (angle == 0) // If the ray and the plane are parallel (so their angle is 0), they won't intersect.
 		return 10e6f;
 
-	float rayD = -(dot(triangleNormal, rayOrig) + dot(triangleNormal, v0)) / angle; // The distance of the ray's origin
+	float rayD = -(dot(t.normal, rayOrig) + dot(t.normal, v0)) / angle; // The distance of the ray's origin
 		// to the plane in which lies the triangle.
 
 	Vec3Df rayHit = rayOrig + rayD * rayDir; // The intersection point of the ray and the plane in which lies the triangle.
 
-	if (dot(triangleNormal, cross(v1 - v0, rayHit - v0)) < 0)
+	if (dot(t.normal, cross(v1 - v0, rayHit - v0)) < 0)
 		return 10e6f;
-	if (dot(triangleNormal, cross(v2 - v1, rayHit - v1)) < 0)
+	if (dot(t.normal, cross(v2 - v1, rayHit - v1)) < 0)
 		return 10e6f;
-	if (dot(triangleNormal, cross(v0 - v2, rayHit - v2)) < 0)
+	if (dot(t.normal, cross(v0 - v2, rayHit - v2)) < 0)
 		return 10e6f;
 
 	return rayD;
