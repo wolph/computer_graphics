@@ -3,6 +3,13 @@
 #include <vector>
 #include "Mesh.hpp"
 #include "Ray.hpp"
+#include <stdio.h>
+#ifdef WIN32
+#include <windows.h>
+#endif
+
+#include <GL/glut.h>
+
 //Welcome to your assignment...
 //this is an important file, raytracing.cpp is what you need to fill out
 
