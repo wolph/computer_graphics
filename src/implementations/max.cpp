@@ -4,12 +4,7 @@
 #include "../Vec3D.hpp"
 #include <cmath>
 
-unsigned int raysTraced = 0;
-// bool debug = true;
-
 void performRayTracingMax(Ray& ray){
-	raysTraced++;
-
 	float hit = 10e6f;
 	unsigned int amountOfTriangles = MyMesh.triangles.size();
 	for (unsigned int i = 0; i < amountOfTriangles; i++){
@@ -20,6 +15,9 @@ void performRayTracingMax(Ray& ray){
 	//hit = 1 / ((hit * 2) + 1); // Arithmetic function for getting a usable color.
 	ray.setColor(Vec3Df(hit, hit/5, hit*5));
 }
+
+#define dot Vec3Df::dotProduct
+#define cross Vec3Df::crossProduct
 
 float intersect(const Triangle& t, const Ray& ray){
 	const Vec3Df& v0 = t.vertices[0].p, // Variables saved as locals for less external function calls,
@@ -34,7 +32,7 @@ float intersect(const Triangle& t, const Ray& ray){
 	if (angle == 0) // If the ray and the plane are parallel (so their angle is 0), they won't intersect.
 		return 10e6f;
 
-	float rayD = -(dot(t.normal, rayOrig) + dot(t.normal, v0)) / angle; // The distance of the ray's origin
+	float rayD = -(dot2(t.normal, rayOrig) + dot2(t.normal, v0)) / angle; // The distance of the ray's origin
 		// to the plane in which lies the triangle.
 
 	Vec3Df rayHit = rayOrig + rayD * rayDir; // The intersection point of the ray and the plane in which lies the triangle.
@@ -48,12 +46,3 @@ float intersect(const Triangle& t, const Ray& ray){
 
 	return rayD;
 }
-
-inline Vec3Df cross(const Vec3Df& in1, const Vec3Df& in2){
-	return in1.crossProduct(in1, in2);
-}
-
-inline float dot(const Vec3Df& in1, const Vec3Df& in2){
-	return in1.dotProduct(in1, in2);
-}
-
