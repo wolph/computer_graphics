@@ -26,22 +26,23 @@ void init(int argc, char **argv){
     if(argc == 2){
         input = argv[1];
     }else{
-        cout << "Mesh file name: (0: monkey, 1: cube, 2: dodgeColorTest, 3: simple_monkey)"
+        cout
+                << "Mesh file name: (0: monkey, 1: cube, 2: dodgeColorTest, 3: simple_monkey)"
                 << endl << "You can omit the mesh/ path and the .obj extension."
                 << endl;
         cin >> input;
     }
 
-	if (input == "0")
-		input = "monkey";
-	else if (input == "1")
-	    input = "cube";
-	else if (input == "2")
-		input = "dodgeColorTest";
-	else if (input == "3")
-	    input = "simple_monkey";
+    if(input == "0")
+        input = "cube";
+    else if(input == "1")
+        input = "simple_monkey";
+    else if(input == "2")
+        input = "monkey";
+    else if(input == "3")
+        input = "dodgeColorTest";
 
-	input = string("mesh/").append(input).append(".obj");
+    input = string("mesh/").append(input).append(".obj");
     MyMesh.loadMesh(input.c_str(), true);
 
     MyMesh.computeVertexNormals();
@@ -51,7 +52,6 @@ void init(int argc, char **argv){
     //here, we set it to the current location of the camera
     MyLightPositions.push_back(MyCameraPosition);
 }
-
 
 #define dot Vec3Df::dotProduct
 #define cross Vec3Df::crossProduct
@@ -67,25 +67,25 @@ void init(int argc, char **argv){
 /** Calculate intersection between triangle and ray */
 float intersect(const Triangle& t, const Ray& ray){
 
-	float angle = dot(t.normal, rayDir); // The cosine of the angle of the vectors (dotproduct of the vectors).
+    float angle = dot(t.normal, rayDir); // The cosine of the angle of the vectors (dotproduct of the vectors).
 
-	/* Floats are only rarely exactly 0, are you sure this is correct? */
-	if (angle == 0) // If the ray and the plane are parallel (so their angle is 0), they won't intersect.
-		return VEWY_HIGH;
+    /* Floats are only rarely exactly 0, are you sure this is correct? */
+    if (angle == 0) // If the ray and the plane are parallel (so their angle is 0), they won't intersect.
+    return VEWY_HIGH;
 
-	float rayD = -(dot(t.normal, rayOrig) + dot(t.normal, v0)) / angle; // The distance of the ray's origin
-	// to the plane in which lies the triangle.
+    float rayD = -(dot(t.normal, rayOrig) + dot(t.normal, v0)) / angle;// The distance of the ray's origin
+    // to the plane in which lies the triangle.
 
-	Vec3Df rayHit = rayOrig + rayD * rayDir; // The intersection point of the ray and the plane in which lies the triangle.
+    Vec3Df rayHit = rayOrig + rayD * rayDir;// The intersection point of the ray and the plane in which lies the triangle.
 
-	if (dot(t.normal, cross(v1 - v0, rayHit - v0)) < 0)
-		return VEWY_HIGH;
-	if (dot(t.normal, cross(v2 - v1, rayHit - v1)) < 0)
-		return VEWY_HIGH;
-	if (dot(t.normal, cross(v0 - v2, rayHit - v2)) < 0)
-		return VEWY_HIGH;
+    if (dot(t.normal, cross(v1 - v0, rayHit - v0)) < 0)
+    return VEWY_HIGH;
+    if (dot(t.normal, cross(v2 - v1, rayHit - v1)) < 0)
+    return VEWY_HIGH;
+    if (dot(t.normal, cross(v0 - v2, rayHit - v2)) < 0)
+    return VEWY_HIGH;
 
-	return rayD;
+    return rayD;
 }
 
 //return the color of your pixel.
@@ -93,18 +93,18 @@ const Vec3Df& performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     Vec3Df color = Vec3Df(1, 1, 1);
     Ray ray = Ray(color, origin, dest);
 
-	/* Actual ray tracing code */
-	float hit = VEWY_HIGH;
-	unsigned int amountOfTriangles = MyMesh.triangles.size();
-	for (unsigned int i = 0; i < amountOfTriangles; i++){
-		float ins = intersect(MyMesh.triangles[i], ray);
-		if (ins < hit && ins > 0)
-			hit = ins;
-	}
-	//hit = 1 / ((hit * 2) + 1); // Arithmetic function for getting a usable color.
-	ray.setColor(Vec3Df(hit, hit / 5, hit * 5));
+    /* Actual ray tracing code */
+    float hit = VEWY_HIGH;
+    unsigned int amountOfTriangles = MyMesh.triangles.size();
+    for(unsigned int i = 0;i < amountOfTriangles;i++){
+        float ins = intersect(MyMesh.triangles[i], ray);
+        if(ins < hit && ins > 0)
+            hit = ins;
+    }
+    //hit = 1 / ((hit * 2) + 1); // Arithmetic function for getting a usable color.
+    ray.setColor(Vec3Df(hit, hit / 5, hit * 5));
 
-	return ray.getColor();
+    return ray.getColor();
 }
 
 void yourDebugDraw(){

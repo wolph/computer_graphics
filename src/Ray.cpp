@@ -24,15 +24,15 @@ void Ray::setColor(const float red, const float green, const float blue){
     this->color[2] = blue;
 }
 
-const Vec3Df& Ray::getDest() const{
+inline const Vec3Df Ray::getDest() const{
     return dest;
 }
 
-const Vec3Df& Ray::getDir() const{
+inline const Vec3Df Ray::getDir() const{
     return dir;
 }
 
-const Vec3Df& Ray::getOrig() const{
+inline const Vec3Df Ray::getOrig() const{
     return orig;
 }
 

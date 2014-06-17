@@ -61,12 +61,12 @@ run: all
 cube: all
 	$(BINDIR)/$(TARGET) 0
 
-monkey: all
+simple_monkey: all
 	$(BINDIR)/$(TARGET) 1
 
-dodge: all
+monkey: all
 	$(BINDIR)/$(TARGET) 2
 
-simple_monkey: all
+dodge: all
 	$(BINDIR)/$(TARGET) 3
 

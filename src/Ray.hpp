@@ -38,9 +38,9 @@ public:
     const Vec3Df& getColor() const;
     void setColor(const Vec3Df& color = Vec3Df(1, 1, 1));
     void setColor(const float red, const float green, const float blue);
-    const Vec3Df& getDest() const;
-    const Vec3Df& getDir() const;
-    const Vec3Df& getOrig() const;
+    inline const Vec3Df getDest() const;
+    inline const Vec3Df getDir() const;
+    inline const Vec3Df getOrig() const;
 };
 
 #endif /* RAY_H */
