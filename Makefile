@@ -60,14 +60,26 @@ run: all
 	$(BINDIR)/$(TARGET)
 
 cube: all
-	$(BINDIR)/$(TARGET) 0
+	$(BINDIR)/$(TARGET) -m0
 
 simple_monkey: all
-	$(BINDIR)/$(TARGET) 1
+	$(BINDIR)/$(TARGET) -m1
 
 monkey: all
-	$(BINDIR)/$(TARGET) 2
+	$(BINDIR)/$(TARGET) -m2
 
 dodge: all
-	$(BINDIR)/$(TARGET) 3
+	$(BINDIR)/$(TARGET) -m3
+
+trace_cube: all
+	$(BINDIR)/$(TARGET) -m0 -r
+
+trace_simple_monkey: all
+	$(BINDIR)/$(TARGET) -m1 -r
+
+trace_monkey: all
+	$(BINDIR)/$(TARGET) -m2 -r
+
+trace_dodge: all
+	$(BINDIR)/$(TARGET) -m3 -r
 
