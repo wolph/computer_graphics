@@ -40,7 +40,7 @@ extern Mesh MyMesh; //Main mesh
 enum {
     TRIANGLE = 0, MODEL = 1
 };
-extern unsigned int type = MODEL;
+unsigned int type = MODEL;
 
 extern unsigned int WindowSize_X;  // largeur fenetre
 extern unsigned int WindowSize_Y;  // hauteur fenetre
