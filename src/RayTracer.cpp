@@ -97,7 +97,7 @@ const Vec3Df& performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
 	//hit = 1 / ((hit * 2) + 1); // Arithmetic function for getting a usable color.
 	ray.setColor(Vec3Df(hit, hit / 5, hit * 5));
 
-    return ray.getColor();
+	return Vec3Df(hit, hit / 5, hit * 5);
 }
 
 void yourDebugDraw(){
