@@ -23,8 +23,8 @@ bool needRebuild = false; // if the raytrace needs to be built
 unsigned int previewResX = PREVIEW_RES;
 unsigned int previewResY = PREVIEW_RES;
 #else
-unsigned int previewResX = 256;
-unsigned int previewResY = 256;
+unsigned int previewResX = 512;
+unsigned int previewResY = 512;
 #endif
 
 #ifdef THREADS
@@ -32,7 +32,7 @@ unsigned int numThreads = THREADS;
 #else
 unsigned int numThreads = 4;
 #endif
-unsigned int msaa = 2;
+unsigned int msaa = 1;
 
 void drawAxes(float length){
     glDisable(GL_LIGHTING);
