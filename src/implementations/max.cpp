@@ -4,22 +4,22 @@
 #include "../Vec3D.hpp"
 #include <cmath>
 
-unsigned int raysTraced = 0;
-// bool debug = true;
-
 void performRayTracingMax(Ray& ray){
-	raysTraced++;
-
 	float hit = 10e6f;
 	unsigned int amountOfTriangles = MyMesh.triangles.size();
 	for (unsigned int i = 0; i < amountOfTriangles; i++){
-		hit = fmin(hit, intersect(MyMesh.triangles[i], ray));
+		float ins = intersect2(MyMesh.triangles[i], ray);
+		if (ins < hit)
+			hit = ins;
 	}
 	//hit = 1 / ((hit * 2) + 1); // Arithmetic function for getting a usable color.
 	ray.setColor(Vec3Df(hit, hit/5, hit*5));
 }
 
-float intersect(const Triangle& t, const Ray& ray){
+#define dot Vec3Df::dotProduct
+#define cross Vec3Df::crossProduct
+
+float intersect2(const Triangle& t, const Ray& ray){
 	const Vec3Df& v0 = t.vertices[0].p, // Variables saved as locals for less external function calls,
 		v1 = t.vertices[1].p,    // less characters in the code and better readability.
 		v2 = t.vertices[2].p,
@@ -46,12 +46,3 @@ float intersect(const Triangle& t, const Ray& ray){
 
 	return rayD;
 }
-
-inline Vec3Df cross(const Vec3Df& in1, const Vec3Df& in2){
-	return in1.crossProduct(in1, in2);
-}
-
-inline float dot(const Vec3Df& in1, const Vec3Df& in2){
-	return in1.dotProduct(in1, in2);
-}
-
