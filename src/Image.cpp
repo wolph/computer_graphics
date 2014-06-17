@@ -113,7 +113,7 @@ bool Image::writeImage(const char * filename2){
 #elif IMAGE_FORMAT == BMP
 
 	// bitmap header
-	char header[] = {
+	unsigned char header[] = {
 		0x42, 0x4D, /* "BM" */
 		0x3E, 0xF6, 0x02, 0x00, /* filesize in bytes @ 2*/
 		0x00, 0x00, 0x00, 0x00,
@@ -142,7 +142,7 @@ bool Image::writeImage(const char * filename2){
 	*h = htonl(_height);
 
 	// fill buffer, convert from RGB to BGR
-	for (int i = 0; i < _image.size() / 3; i++) {
+	for (unsigned int i = 0; i < _image.size() / 3; i++) {
 		buf[i * 3 + 0] = (unsigned char)(_image[i * 3 + 2] * 255.0f);
 		buf[i * 3 + 1] = (unsigned char)(_image[i * 3 + 1] * 255.0f);
 		buf[i * 3 + 2] = (unsigned char)(_image[i * 3 + 0] * 255.0f);
