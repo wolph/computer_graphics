@@ -6,6 +6,8 @@ Vec3Df testRayOrigin;
 Vec3Df testRayDestination;
 string input;
 extern unsigned int textures[2];
+clock_t lastFrameTime;
+float fps;
 
 //use this function for any preprocessing of the mesh.
 void init(int argc, char **argv){
@@ -15,6 +17,8 @@ void init(int argc, char **argv){
     //Nonetheless, if they come from Blender, they should.
     //there is a difference between windows written objs and Linux written objs.
     //hence, some models might not yet work well.
+
+	lastFrameTime = clock();
 
     RayTracingResolutionX = 1000; // These resolutions should be the same as the window,
     RayTracingResolutionY = 1000; // otherwise unexpected behaviour occurs.
@@ -189,6 +193,11 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
 void yourDebugDraw(){
     //draw open gl debug stuff
     //this function is called every frame
+
+	clock_t diff = clock() - lastFrameTime;
+	lastFrameTime = clock();
+	fps = 1 / ((float)diff / (float)CLOCKS_PER_SEC);
+	cout << fps << endl;
 
     //as an example:
     glPushAttrib(GL_ALL_ATTRIB_BITS);
