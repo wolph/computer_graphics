@@ -1,5 +1,5 @@
 /*
- * Texture.h
+ * Texture.hpp
  *
  *  Created on: 16 Jun 2014
  *      Author: rick
