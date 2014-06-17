@@ -58,9 +58,8 @@ float intersect(const Triangle& t, const Ray& ray){
 		v1 = t.vertices[1].p,    // less characters in the code and better readability.
 		v2 = t.vertices[2].p,
 		rayOrig = ray.getOrig(),
-		rayDir = ray.getDir();
 
-		//rayDir = ray.getDir(); // The normalized direction of the ray.
+		rayDir = ray.getDir(); // The normalized direction of the ray.
 	float angle = dot(t.normal, rayDir); // The cosine of the angle of the vectors (dotproduct of the vectors).
 
 	/* Floats are only rarely exactly 0, are you sure this is correct? */
@@ -82,32 +81,21 @@ float intersect(const Triangle& t, const Ray& ray){
 	return rayD;
 }
 
-Vec3Df dir;
-bool initd = false;
-
 //return the color of your pixel.
 const Vec3Df& performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
-    Vec3Df color(0, 1, 0);
+    Vec3Df color = Vec3Df(0, 1, 0);
+    Ray ray = Ray(color, origin, dest);
 
-	// precalculate the direction
-	if (!initd) {
-		dir = (origin - dest);
-		dir.normalize();
-		initd = true;
-	}
-
-	Ray ray = Ray(color, origin, dest, dir);
-
-	// actual ray trace
+	/* Actual ray tracing code */
 	float hit = 10e6f;
 	unsigned int amountOfTriangles = MyMesh.triangles.size();
-
 	for (unsigned int i = 0; i < amountOfTriangles; i++){
 		float ins = intersect(MyMesh.triangles[i], ray);
 		if (ins < hit)
 			hit = ins;
 	}
 	//hit = 1 / ((hit * 2) + 1); // Arithmetic function for getting a usable color.
+	ray.setColor(Vec3Df(hit, hit / 5, hit * 5));
 
 	return Vec3Df(hit, hit / 5, hit * 5);
 }
