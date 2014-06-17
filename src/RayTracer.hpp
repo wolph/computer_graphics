@@ -34,7 +34,7 @@ void init(int argc, char ** argv);
 void produceRay(int x_I, int y_I, Vec3Df & origin, Vec3Df & dest);
 void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest);
 
-void startRayTracing();
+void startRayTracing(int texIndex, bool verbose);
 
 //your main function to rewrite
 Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest);

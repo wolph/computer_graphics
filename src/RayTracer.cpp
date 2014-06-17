@@ -5,6 +5,7 @@
 Vec3Df testRayOrigin;
 Vec3Df testRayDestination;
 string input;
+extern unsigned int textures[2];
 
 //use this function for any preprocessing of the mesh.
 void init(int argc, char **argv){
@@ -79,13 +80,14 @@ void produceRay(int x_I, int y_I, Vec3Df & origin, Vec3Df & dest){
     produceRay(x_I, y_I, &origin, &dest);
 }
 
-void startRayTracing(){
+
+void startRayTracing(int texIndex, bool verbose){
     //C'est nouveau!!!
     //commencez ici et lancez vos propres fonctions par rayon.
 
-    cout << "Raytracing" << endl;
+	if (verbose) cout << "Raytracing" << endl;
+	Image result(RayTracingResolutionX, RayTracingResolutionY);
 
-    Image result(RayTracingResolutionX, RayTracingResolutionY);
     Vec3Df origin00, dest00;
     Vec3Df origin01, dest01;
     Vec3Df origin10, dest10;
@@ -102,8 +104,11 @@ void startRayTracing(){
     time_t start, end, ticks;
     start = clock();
 
-    for(float y = 0;y < RayTracingResolutionY;++y){
-        for(float x = 0;x < RayTracingResolutionX;++x){
+	int stepsize = 8;
+	if (verbose) stepsize = 1;
+
+    for(float y = 0;y < RayTracingResolutionY; y += stepsize){
+        for(float x = 0;x < RayTracingResolutionX; x += stepsize){
             //svp, decidez vous memes quels parametres vous allez passer à la fonction
             //e.g., maillage, triangles, sphères etc.
             const float xscale = 1.0f - x / (RayTracingResolutionX - 1);
@@ -118,22 +123,34 @@ void startRayTracing(){
             dest = yscale * (xscale * dest00 + (1 - xscale) * dest10)
                     + (1 - yscale) * (xscale * dest01 + (1 - xscale) * dest11);
 
-            result.setPixel(x, y, performRayTracing(origin, dest));
+			Vec3Df color = performRayTracing(origin, dest);
+			for (int xx = 0; xx < stepsize; xx++)
+			for (int yy = 0; yy < stepsize; yy++)
+				result.setPixel(x+xx, y+yy, color);
         }
     }
 
     // calculate elapsed time
     end = clock();
     ticks = end - start;
+	start = end;
     int millis = ticks * 1000 / CLOCKS_PER_SEC;
 
-    printf("Rendering took %d ms\n", millis);
+    if (verbose) printf("Rendering took %d ms\n", millis);
 
     // write to texture
+	glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, RayTracingResolutionX,
-            RayTracingResolutionY, 0, GL_RGB, GL_FLOAT, &result._image[0]);
+		RayTracingResolutionY, 0, GL_RGB, GL_FLOAT, &result._image[0]);
 
-    result.writeImage("result");
+	// calculate elapsed time
+	end = clock();
+	ticks = end - start;
+	millis = ticks * 1000 / CLOCKS_PER_SEC;
+
+	if (verbose) printf("Uploading to GPU took %d ms\n", millis);
+
+    if (verbose) result.writeImage("result");
 }
 
 #define rayOrig ray.orig
@@ -159,10 +176,9 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
 	}
 
 
-	// using random background
+	// using black
 	if (idx == -1)
-		return Vec3Df((rand() % 255) / 255.0f, (rand() % 255) / 255.0f, (rand() % 255) / 255.0f);
-		// return black;
+		return black;
 
 	Vec3Df& normal = MyMesh.triangles[idx].normal;
 	float angle = -dot(normal, origin) * 0.5;

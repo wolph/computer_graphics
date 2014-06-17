@@ -27,8 +27,11 @@ Vec3Df MyCameraPosition;
 
 std::vector<Vec3Df> MyLightPositions;
 
-unsigned int texture;
+// double buffered
+unsigned int textures[2];
+unsigned int activeTexIndex = 0;
 unsigned int isDrawingTexture = 0;
+unsigned int isRealtimeRaytracing = 0;
 Mesh MyMesh; //Main mesh
 
 // Utilisé pour essayer différents types de rendu

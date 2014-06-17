@@ -23,9 +23,9 @@ void drawAxes(float length){
 /**
  * draw a full-screen texture
  */
-void drawTexture(){
+void drawTexture(int texIndex){
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
     glBegin(GL_QUADS);
     glTexCoord2f(0, 0);
     glVertex3f(0, 0, 0);
@@ -125,19 +125,28 @@ int main(int argc, char** argv){
     glPolygonMode(GL_BACK, GL_LINE);
     glShadeModel(GL_SMOOTH);
 
-    // init texture
+    // init textures
     char* buf = new char[1024 * 1024 * 3];
-    for(int i = 0;i < 1024 * 1024 * 3;i++)
-        buf[i] = rand() % 255;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glGenTextures(2, textures);
+
+	// texture 1
+    glBindTexture(GL_TEXTURE_2D, textures[0]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB,
-    GL_UNSIGNED_BYTE, buf);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
+
+	// texture 2
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
+
     delete[] buf;
 
     // cablage des callback
@@ -162,17 +171,30 @@ int main(int argc, char** argv){
 // Actions d'affichage
 // Ne pas changer
 void display(void){
+
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     // Effacer tout
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // la couleur et le z
 
     glLoadIdentity();  // repere camera
 
-    if(isDrawingTexture){
+
+    if(isDrawingTexture || isRealtimeRaytracing){
         GLdouble tb_matrix2[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -2, -2, -4,
                 1};
+
         glMultMatrixd(tb_matrix2);
-        drawTexture();
+		drawTexture(activeTexIndex);
+
+		// reset view
+		glLoadIdentity();
+		tbVisuTransform();
+
+		// swap buffers; draw on back buffer
+		if (isRealtimeRaytracing) {
+			startRayTracing(!activeTexIndex, false);
+			activeTexIndex = !activeTexIndex;
+		}
     }else{
         tbVisuTransform(); // origine et orientation de la scene
         draw();
@@ -198,6 +220,7 @@ void keyboard(unsigned char key, int x, int y){
     switch(key){
         case 't':
             isDrawingTexture = !isDrawingTexture;
+			isRealtimeRaytracing = 0;
             break;
         case 'L':
             MyLightPositions.push_back(getCameraPosition());
@@ -205,11 +228,15 @@ void keyboard(unsigned char key, int x, int y){
         case 'l':
             MyLightPositions[MyLightPositions.size() - 1] = getCameraPosition();
             break;
-        case 'r': {
-            startRayTracing();
+        case 'r':
+            startRayTracing(activeTexIndex, true);
             isDrawingTexture = 1;
-            break;
-        }
+			isRealtimeRaytracing = 0;
+			break;
+		case 'b':
+			isRealtimeRaytracing = !isRealtimeRaytracing;
+			isDrawingTexture = 0;
+			break;
         case 27:     // touche ESC
             exit(0);
     }
