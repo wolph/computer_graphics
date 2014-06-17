@@ -9,6 +9,7 @@
 *.dll
 
 # Compiled Static libraries
+lib/
 *.lai
 *.la
 *.a
@@ -32,3 +33,12 @@ frameworks
 *.dSYM
 result.*
 /Profiling
+
+# Microsoft Spam
+*.vcxproj.user
+*.opensdf
+*.pdb
+*.sdf
+*.vcsproj.user
+*.suo
+Thumbs.db
