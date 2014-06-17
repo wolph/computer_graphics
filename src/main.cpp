@@ -78,6 +78,7 @@ int main(int argc, char** argv){
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(0, 0, -4);
+    glRotatef(30, -1, 1, 1);
     tbInitTransform();     // initialisation du point de vue
     tbHelp();                      // affiche l'aide sur la traqueboule
     MyCameraPosition = getCameraPosition();
