@@ -195,6 +195,7 @@ void display(void){
 			startRayTracing(!activeTexIndex, false);
 			activeTexIndex = !activeTexIndex;
 		}
+		yourDebugDraw();
     }else{
         tbVisuTransform(); // origine et orientation de la scene
         draw();
