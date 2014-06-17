@@ -19,11 +19,11 @@ unsigned int RayTracingResolutionX = 1024;  // largeur fenetre
 unsigned int RayTracingResolutionY = 1024;  // largeur fenetre
 bool needRebuild = false; // if the raytrace needs to be built
 
-unsigned int previewResX = 256;
-unsigned int previewResY = 256;
+unsigned int previewResX = 512;
+unsigned int previewResY = 512;
 
 unsigned int numThreads = 4;
-unsigned int msaa = 2;
+unsigned int msaa = 1;
 
 void drawAxes(float length){
     glDisable(GL_LIGHTING);
