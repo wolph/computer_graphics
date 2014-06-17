@@ -1,9 +1,17 @@
 #include "RayTracer.hpp"
+#include <ctime>
 
 //temporary variables
 Vec3Df testRayOrigin;
 Vec3Df testRayDestination;
 string mesh;
+extern unsigned int textures[2];
+clock_t lastFrameTime;
+float fps;
+unsigned int framesSinceLastDraw = 30;
+string screenFPS;
+extern unsigned int previewResX;
+extern unsigned int previewResY;
 
 //use this function for any preprocessing of the mesh.
 int init(int argc, char **argv){
@@ -28,8 +36,7 @@ int init(int argc, char **argv){
         return 2;
     }
 
-    RayTracingResolutionX = 1000; // These resolutions should be the same as the window,
-    RayTracingResolutionY = 1000; // otherwise unexpected behaviour occurs.
+	lastFrameTime = clock();
 
     if(options[MESH]){
         const char* arg = options[MESH].last()->arg;
@@ -61,7 +68,7 @@ int init(int argc, char **argv){
     MyLightPositions.push_back(MyCameraPosition);
 
     if(options[RAYTRACE]){
-        startRayTracing();
+        startRayTracing(activeTexIndex, true);
         return 255;
     }
 
@@ -98,13 +105,18 @@ void produceRay(int x_I, int y_I, Vec3Df & origin, Vec3Df & dest){
     produceRay(x_I, y_I, &origin, &dest);
 }
 
-void startRayTracing(){
+
+void startRayTracing(int texIndex, bool verbose){
     //C'est nouveau!!!
     //commencez ici et lancez vos propres fonctions par rayon.
 
-    cout << "Raytracing" << endl;
+	if (verbose) cout << "Raytracing" << endl;
+	int w = RayTracingResolutionX;
+	int h = RayTracingResolutionY;
+	if (!verbose) w = previewResX;
+	if (!verbose) h = previewResY;
+	Image result(w, h);
 
-    Image result(RayTracingResolutionX, RayTracingResolutionY);
     Vec3Df origin00, dest00;
     Vec3Df origin01, dest01;
     Vec3Df origin10, dest10;
@@ -112,75 +124,109 @@ void startRayTracing(){
     Vec3Df origin, dest;
 
     produceRay(0, 0, &origin00, &dest00);
-    produceRay(0, RayTracingResolutionY - 1, &origin01, &dest01);
-    produceRay(RayTracingResolutionX - 1, 0, &origin10, &dest10);
-    produceRay(RayTracingResolutionX - 1, RayTracingResolutionY - 1, &origin11,
+    produceRay(0, WindowSizeX - 1, &origin01, &dest01);
+    produceRay(WindowSizeX - 1, 0, &origin10, &dest10);
+    produceRay(WindowSizeX - 1, WindowSizeY - 1, &origin11,
             &dest11);
 
     // Perform timing
     time_t start, end, ticks;
     start = clock();
 
-    for(float y = 0;y < RayTracingResolutionY;++y){
-        for(float x = 0;x < RayTracingResolutionX;++x){
-            //svp, decidez vous memes quels parametres vous allez passer à la fonction
-            //e.g., maillage, triangles, sphères etc.
-            const float xscale = 1.0f - x / (RayTracingResolutionX - 1);
-#ifdef WIN32
-            const float yscale = float(y) / (RayTracingResolutionY - 1);
-#else
-            const float yscale = 1.0f - y / (RayTracingResolutionY - 1);
-#endif
-            origin = yscale * (xscale * origin00 + (1 - xscale) * origin10)
-                    + (1 - yscale)
-                            * (xscale * origin01 + (1 - xscale) * origin11);
-            dest = yscale * (xscale * dest00 + (1 - xscale) * dest10)
-                    + (1 - yscale) * (xscale * dest01 + (1 - xscale) * dest11);
+	int msaa = 2; // multi-sampling anti-aliasing
 
-            result.setPixel(x, y, performRayTracing(origin, dest));
+    for(float y = 0; y < h; y++){
+        for(float x = 0; x < w; x++){
+            //svp, decidez vous memes quels parametres vous allez passer à la fonction
+			//c'est le stront a la plafond, c'est drôle
+            //e.g., maillage, triangles, sphères etc.
+			Vec3Df total(0, 0, 0);
+			for (int xs = 0; xs < msaa; xs++) {
+				for (int ys = 0; ys < msaa; ys++) {
+
+					float xscale = 1.0f - (x + float(xs) / msaa) / (w - 1);
+#ifdef WIN32
+					float yscale = float(y + float(ys) / msaa) / (h - 1);
+#else
+					float yscale = 1.0f - (y + float(ys) / msaa) / (h - 1);
+#endif
+					origin = yscale * (xscale * origin00 + (1 - xscale) * origin10)
+						+ (1 - yscale)
+						* (xscale * origin01 + (1 - xscale) * origin11);
+					dest = yscale * (xscale * dest00 + (1 - xscale) * dest10)
+						+ (1 - yscale) * (xscale * dest01 + (1 - xscale) * dest11);
+
+					total += performRayTracing(origin, dest);
+				}
+			}
+
+			// calculate average color
+			total /= msaa * msaa;
+				result.setPixel(x, y, total);
         }
     }
 
     // calculate elapsed time
     end = clock();
     ticks = end - start;
+	start = end;
     int millis = ticks * 1000 / CLOCKS_PER_SEC;
 
-    printf("Rendering took %d ms\n", millis);
+    if (verbose) printf("Rendering took %d ms\n", millis);
 
     // write to texture
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, RayTracingResolutionX,
-            RayTracingResolutionY, 0, GL_RGB, GL_FLOAT, &result._image[0]);
+	glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w,
+		h, 0, GL_RGB, GL_FLOAT, &result._image[0]);
 
-    result.writeImage("result");
+	// calculate elapsed time
+	end = clock();
+	ticks = end - start;
+	millis = ticks * 1000 / CLOCKS_PER_SEC;
+
+	if (verbose) printf("Uploading to GPU took %d ms\n", millis);
+
+    if (verbose) result.writeImage("result");
 }
 
 #define rayOrig ray.orig
 #define rayDir ray.dir
 #define VEWY_HIGH 10e6f
 
+Vec3Df black(0, 0, 0);
+
 //return the color of your pixel.
-const Vec3Df& performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
-    Vec3Df color = Vec3Df(1, 1, 1);
-    Ray ray = Ray(color, origin, dest);
+Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
+	Ray ray = Ray(black, origin, dest);
 
-    /* Actual ray tracing code */
-    float hit = VEWY_HIGH;
-    unsigned int amountOfTriangles = MyMesh.triangles.size();
-    for(unsigned int i = 0;i < amountOfTriangles;i++){
-        float ins = ray.intersect(MyMesh.triangles[i]);
-        if(ins < hit && ins > 0)
-            hit = ins;
-    }
-    //hit = 1 / ((hit * 2) + 1); // Arithmetic function for getting a usable color.
-    ray.setColor(Vec3Df(hit, hit / 5, hit * 5));
+	// calculate nearest triangle
+	int idx = -1; /* the triangle that was hit */
+	float hit = VEWY_HIGH; /* distance to hit triangle */
+	unsigned int numTriangles = MyMesh.triangles.size();
+	for (unsigned int i = 0; i < numTriangles; i++){
+		float ins = ray.intersect(MyMesh.triangles[i]);
+		if (ins < VEWY_HIGH && ins < hit && ins > 0) {
+			hit = ins;
+			idx = i;
+		}
+	}
 
-    return ray.getColor();
+
+	// using black
+	if (idx == -1)
+		return black;
+
+	Vec3Df& normal = MyMesh.triangles[idx].normal;
+	float angle = -dot(normal, origin) * 0.33333;
+
+	return (normal + Vec3Df(angle, angle, angle)) / 2;
 }
 
 void yourDebugDraw(){
     //draw open gl debug stuff
     //this function is called every frame
+
+	drawFPS();
 
     //as an example:
     glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -208,4 +254,21 @@ void yourKeyboardFunc(char t, int x, int y){
 
     std::cout << t << " pressed! The mouse was in location " << x << "," << y
             << "!" << std::endl;
+}
+
+void drawFPS(){
+	clock_t diff = clock() - lastFrameTime;
+	lastFrameTime = clock();
+	fps = 1 / ((float)diff / (float)CLOCKS_PER_SEC);
+
+	if (framesSinceLastDraw++ > 29){
+		framesSinceLastDraw = 0;
+		screenFPS = to_string((int)fps);
+	}
+
+	glLoadIdentity();
+	//glRasterPos2f(1.0f, 1.0f); // FPS draws on the lefthand bottom side of the screen now, if anyone knows how to get it to the lefthand top of the screen please fix it ;)
+	for (unsigned int i = 0; i < screenFPS.length(); i++){
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, screenFPS[i]);
+	}
 }

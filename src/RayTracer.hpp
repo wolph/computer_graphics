@@ -18,8 +18,9 @@ extern unsigned int texture;
 extern Mesh MyMesh; //Main mesh;
 extern std::vector<Vec3Df> MyLightPositions;
 extern Vec3Df MyCameraPosition; //currCamera
-extern unsigned int WindowSize_X; //window resolution width
-extern unsigned int WindowSize_Y; //window resolution height
+extern unsigned int activeTexIndex;
+extern unsigned int WindowSizeX; //window resolution width
+extern unsigned int WindowSizeY; //window resolution height
 extern unsigned int RayTracingResolutionX;  // largeur fenetre
 extern unsigned int RayTracingResolutionY;  // largeur fenetre
 
@@ -67,15 +68,17 @@ int init(int argc, char ** argv);
 void produceRay(int x_I, int y_I, Vec3Df & origin, Vec3Df & dest);
 void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest);
 
-void startRayTracing();
+void startRayTracing(int texIndex, bool verbose);
 
 //your main function to rewrite
-const Vec3Df& performRayTracing(const Vec3Df & origin, const Vec3Df & dest);
+Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest);
 
 //a function to debug --- you can draw in OpenGL here
 void yourDebugDraw();
 
 //want keyboard interaction? Here it is...
 void yourKeyboardFunc(char t, int x, int y);
+
+void drawFPS();
 
 #endif
