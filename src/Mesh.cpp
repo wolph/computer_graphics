@@ -296,11 +296,19 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
         memset(&s, 0, LINE_LEN);
     }
 
-    for(auto & triangle : tempTriangles){
-        triangles.push_back(
-                Triangle(vertices[triangle[0]], vertices[triangle[1]],
-                        vertices[triangle[2]], texcoords[triangle[3]],
-                        texcoords[triangle[4]], texcoords[triangle[5]]));
+    if(texcoords.size()){
+        for(auto & triangle : tempTriangles){
+            triangles.push_back(
+                    Triangle(vertices[triangle[0]], vertices[triangle[1]],
+                            vertices[triangle[2]], texcoords[triangle[3]],
+                            texcoords[triangle[4]], texcoords[triangle[5]]));
+        }
+    }else{
+        for(auto & triangle : tempTriangles){
+            triangles.push_back(
+                    Triangle(vertices[triangle[0]], vertices[triangle[1]],
+                            vertices[triangle[2]]));
+        }
     }
 
     fclose(in);

@@ -23,8 +23,9 @@ public:
     Triangle();
     Triangle(const Triangle & triangle);
     Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2,
-            const Texture & t0, const Texture & t1, const Texture & t2);
-    virtual ~Triangle();
+                const Texture & t0, const Texture & t1, const Texture & t2);
+    Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2);
+        virtual ~Triangle();
     Triangle & operator=(const Triangle & t2);
     void calculateNormal();
 };

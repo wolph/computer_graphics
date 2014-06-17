@@ -47,6 +47,18 @@ Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2,
 
 }
 
+Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2){
+    if(&v0 != 0)
+        vertices[0] = v0;
+    if(&v1 != 0)
+        vertices[1] = v1;
+    if(&v2 != 0)
+        vertices[2] = v2;
+    normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p,
+            vertices[2].p - vertices[0].p);
+    normal.normalize();
+}
+
 Triangle::~Triangle(){
 }
 
