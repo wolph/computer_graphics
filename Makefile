@@ -12,9 +12,8 @@ OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 CXX = g++
 LINKERXX = g++
-FLAGS = -Wall -pedantic
-CCFLAGS = $(FLAGS)
-LFLAGS = $(FLAGS)
+CCFLAGS = -Wall -pedantic -std=c++0x
+LFLAGS = -Wall -pedantic -std=c++0x
 rm = rm -vf
 
 NUMJOBS=${NUMJOBS:-" -j7 "}

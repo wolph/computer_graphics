@@ -20,11 +20,12 @@ Triangle::Triangle(const Triangle & triangle){
     textures[1] = triangle.textures[1];
     textures[2] = triangle.textures[2];
 
-	normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p, vertices[2].p - vertices[0].p);
+    normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p,
+            vertices[2].p - vertices[0].p);
 }
 
-Triangle::Triangle(const Vertex & v0, const Texture & t0, const Vertex & v1,
-        const Texture & t1, const Vertex & v2, const Texture & t2){
+Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2,
+        const Texture & t0, const Texture & t1, const Texture & t2){
     vertices[0] = v0;
     vertices[1] = v1;
     vertices[2] = v2;
@@ -33,7 +34,8 @@ Triangle::Triangle(const Vertex & v0, const Texture & t0, const Vertex & v1,
     textures[1] = t1;
     textures[2] = t2;
 
-	normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p, vertices[2].p - vertices[0].p);
+    normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p,
+            vertices[2].p - vertices[0].p);
 }
 
 Triangle::~Triangle(){
@@ -48,7 +50,8 @@ Triangle & Triangle::operator=(const Triangle & triangle){
     textures[1] = triangle.textures[1];
     textures[2] = triangle.textures[2];
 
-	normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p, vertices[2].p - vertices[0].p);
+    normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p,
+            vertices[2].p - vertices[0].p);
 
     return (*this);
 }

@@ -81,6 +81,7 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
 
     std::vector<int> vhandles;
     std::vector<int> texhandles;
+    std::vector<std::vector<int>> tempTriangles;
 
     if(randomizeTriangulation)
         /* Randomization should use an actual _RANDOM_ thing */
@@ -274,19 +275,16 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
                     const int t1 = (k + i + 1) % vhandles.size();
                     const int t2 = (k + i + 2) % vhandles.size();
 
-                    const int m = (materialIndex.find(matname))->second;
-
-                    triangles.push_back(
-                            Triangle(vertices[vhandles[v0]], texcoords[texhandles[t0]],
-                                    vertices[vhandles[v1]], texcoords[texhandles[t1]],
-                                    vertices[vhandles[v2]], texcoords[texhandles[t2]]));
-                    triangleMaterials.push_back(m);
+                    tempTriangles.push_back(std::vector<int> {vhandles[v0],
+                            vhandles[v1], vhandles[v2], texhandles[t0],
+                            texhandles[t1], texhandles[t2]});
+                    triangleMaterials.push_back(
+                            (materialIndex.find(matname))->second);
                 }
             }else if(vhandles.size() == 3){
-                triangles.push_back(
-                        Triangle(vertices[vhandles[0]], texcoords[texhandles[0]],
-                                vertices[vhandles[1]], texcoords[texhandles[1]],
-                                vertices[vhandles[2]], texcoords[texhandles[2]]));
+                tempTriangles.push_back(std::vector<int> {vhandles[0],
+                        vhandles[1], vhandles[2], texhandles[0], texhandles[1],
+                        texhandles[2]});
                 triangleMaterials.push_back(
                         (materialIndex.find(matname))->second);
             }else{
@@ -295,6 +293,13 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
             }
         }
         memset(&s, 0, LINE_LEN);
+    }
+
+    for(auto & triangle : tempTriangles){
+        triangles.push_back(
+                Triangle(vertices[triangle[0]], vertices[triangle[1]],
+                        vertices[triangle[2]], texcoords[triangle[3]],
+                        texcoords[triangle[4]], texcoords[triangle[5]]));
     }
 
     fclose(in);

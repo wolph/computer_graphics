@@ -2,6 +2,6 @@
 #define YMTE_H
 #include "../Ray.hpp"
 
-Ray performRayTracingYmte(Ray& ray);
+void performRayTracingYmte(Ray& ray);
 
 #endif
