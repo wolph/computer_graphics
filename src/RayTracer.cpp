@@ -140,24 +140,33 @@ void startRayTracing(){
 #define rayDir ray.dir
 #define VEWY_HIGH 10e6f
 
+Vec3Df black(0, 0, 0);
 
 //return the color of your pixel.
-const Vec3Df& performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
-    Vec3Df color = Vec3Df(1, 1, 1);
-    Ray ray = Ray(color, origin, dest);
+Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
+	Ray ray = Ray(black, origin, dest);
 
-    /* Actual ray tracing code */
-    float hit = VEWY_HIGH;
-    unsigned int amountOfTriangles = MyMesh.triangles.size();
-    for(unsigned int i = 0;i < amountOfTriangles;i++){
-        float ins = ray.intersect(MyMesh.triangles[i]);
-        if(ins < hit && ins > 0)
-            hit = ins;
-    }
-    //hit = 1 / ((hit * 2) + 1); // Arithmetic function for getting a usable color.
-    ray.setColor(Vec3Df(hit, hit / 5, hit * 5));
+	// calculate nearest triangle
+	int idx = -1; /* the triangle that was hit */
+	float hit = VEWY_HIGH; /* distance to hit triangle */
+	unsigned int numTriangles = MyMesh.triangles.size();
+	for (unsigned int i = 0; i < numTriangles; i++){
+		float ins = ray.intersect(MyMesh.triangles[i]);
+		if (ins < VEWY_HIGH && ins < hit && ins > 0) {
+			hit = ins;
+			idx = i;
+		}
+	}
 
-    return ray.getColor();
+
+	// using black background
+	if (idx == -1)
+		return Vec3Df((rand() % 255) /255.0f, (rand() % 255) / 255.0f, (rand() % 255) / 255.0f);
+
+	Vec3Df& normal = MyMesh.triangles[idx].normal;
+	float angle = -dot(normal, origin) * 0.5;
+
+	return Vec3Df(angle, angle, angle);
 }
 
 void yourDebugDraw(){

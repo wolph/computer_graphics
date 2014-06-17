@@ -173,7 +173,7 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
         // vertex
         else if(strncmp(s, "v ", 2) == 0){
             sscanf(s, "v %f %f %f", &x, &y, &z);
-            vertices.push_back(Vec3Df(x, y, z));
+            vertices.push_back(Vec3Df(x - 0.5f, y - 0.5f, z - 0.5f));
         }
 
         // texture coord
