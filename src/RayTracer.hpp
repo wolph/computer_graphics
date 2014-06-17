@@ -1,29 +1,23 @@
 #ifndef RAYTRACING_H
 #define RAYTRACING_H
 #include <vector>
-#include "Mesh.hpp"
-#include "Ray.hpp"
+#include <GL/glut.h>
 #include <stdio.h>
 #ifdef WIN32
 #include <windows.h>
 #endif
+#include <cstdlib>
 
-#include <GL/glut.h>
+#include "Mesh.hpp"
+#include "Ray.hpp"
+#include "Image.hpp"
 
 //Welcome to your assignment...
 //this is an important file, raytracing.cpp is what you need to fill out
 
-#include "implementations/arend.hpp"
-#include "implementations/ewoud.hpp"
-#include "implementations/leon.hpp"
-#include "implementations/max.hpp"
-#include "implementations/qu.hpp"
-#include "implementations/rick.hpp"
-#include "implementations/rutger.hpp"
-#include "implementations/vince.hpp"
-#include "implementations/ymte.hpp"
+extern unsigned int texture;
 
-extern Mesh MyMesh; //Main mesh
+extern Mesh MyMesh; //Main mesh;
 extern std::vector<Vec3Df> MyLightPositions;
 extern Vec3Df MyCameraPosition; //currCamera
 extern unsigned int WindowSize_X; //window resolution width
@@ -38,6 +32,9 @@ void init(int argc, char ** argv);
 //the last two values will be changed. There is no need to define this function.
 //it is defined elsewhere
 void produceRay(int x_I, int y_I, Vec3Df & origin, Vec3Df & dest);
+void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest);
+
+void startRayTracing();
 
 //your main function to rewrite
 const Vec3Df& performRayTracing(const Vec3Df & origin, const Vec3Df & dest);

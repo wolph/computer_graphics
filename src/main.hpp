@@ -27,6 +27,8 @@ Vec3Df MyCameraPosition;
 
 std::vector<Vec3Df> MyLightPositions;
 
+unsigned int texture;
+unsigned int isDrawingTexture = 0;
 Mesh MyMesh; //Main mesh
 
 // Utilisé pour essayer différents types de rendu
@@ -42,14 +44,12 @@ unsigned int WindowSize_Y = 1000;  // hauteur fenetre
 unsigned int RayTracingResolutionX = 512;  // largeur fenetre
 unsigned int RayTracingResolutionY = 512;  // largeur fenetre
 
-void dessinerRepere(float length);
-void dessiner();
+void drawAxes(float length);
+void draw();
 void animate();
 int main(int argc, char** argv);
 void display(void);
 void reshape(int w, int h);
-void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest);
-void produceRay(int x_I, int y_I, Vec3Df & origin, Vec3Df & dest);
 void keyboard(unsigned char key, int x, int y);
 
 #endif /* MAIN_HPP_ */

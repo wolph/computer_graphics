@@ -7,8 +7,8 @@ OBJDIR = obj
 # overwriting stuff
 BINDIR = bin/
 
-SRCS := $(wildcard $(SRCDIR)/*.cpp $(SRCDIR)/implementations/*.cpp)
-INCL := $(wildcard $(SRCDIR)/*.h $(SRCDIR)/implementations/*.hpp)
+SRCS := $(wildcard $(SRCDIR)/*.cpp)
+INCL := $(wildcard $(SRCDIR)/*.hpp)
 OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 CXX = g++
