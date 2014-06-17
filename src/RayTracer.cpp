@@ -34,9 +34,12 @@ void init(int argc, char **argv){
 	if (input == "0")
 		input = "cube";
 	else if (input == "1")
-	input = "monkey";
+	    input = "monkey";
 	else if (input == "2")
 		input = "dodgeColorTest";
+	else if (input == "3")
+	    input = "simple_monkey";
+
 	input = string("mesh/").append(input).append(".obj");
     MyMesh.loadMesh(input.c_str(), true);
 
