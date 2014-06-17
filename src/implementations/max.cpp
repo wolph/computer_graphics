@@ -13,7 +13,9 @@ void performRayTracingMax(Ray& ray){
 	float hit = 10e6f;
 	unsigned int amountOfTriangles = MyMesh.triangles.size();
 	for (unsigned int i = 0; i < amountOfTriangles; i++){
-		hit = fmin(hit, intersect(MyMesh.triangles[i], ray));
+		float ins = intersect(MyMesh.triangles[i], ray);
+		if (ins < hit)
+			hit = ins;
 	}
 	//hit = 1 / ((hit * 2) + 1); // Arithmetic function for getting a usable color.
 	ray.setColor(Vec3Df(hit, hit/5, hit*5));
