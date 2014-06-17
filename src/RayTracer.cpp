@@ -159,9 +159,10 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
 	}
 
 
-	// using black background
+	// using random background
 	if (idx == -1)
-		return Vec3Df((rand() % 255) /255.0f, (rand() % 255) / 255.0f, (rand() % 255) / 255.0f);
+		return Vec3Df((rand() % 255) / 255.0f, (rand() % 255) / 255.0f, (rand() % 255) / 255.0f);
+		// return black;
 
 	Vec3Df& normal = MyMesh.triangles[idx].normal;
 	float angle = -dot(normal, origin) * 0.5;
