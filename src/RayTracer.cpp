@@ -111,9 +111,9 @@ Vec3Df origin00, dest00;
 Vec3Df origin01, dest01;
 Vec3Df origin10, dest10;
 Vec3Df origin11, dest11;
-Vec3Df origin, dest;
 
 void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh) {
+	Vec3Df origin, dest;
 	for (float y = yy; y < hh; y++){
 		for (float x = xx; x < ww; x++){
 			//svp, decidez vous memes quels parametres vous allez passer à la fonction
@@ -171,8 +171,6 @@ void startRayTracing(int texIndex, bool verbose){
     start = clock();
 
     // multithread
-	int old = numThreads;
-	if (verbose) numThreads = 1;
 	std::thread** th = (std::thread**) alloca(numThreads * sizeof(std::thread*));
 	int subw = w / numThreads;
 
@@ -186,8 +184,6 @@ void startRayTracing(int texIndex, bool verbose){
 	// kill them all
 	for (unsigned int i = 0; i < numThreads; i++)
 		delete th[i];
-
-	if (verbose) numThreads = old;
 
     // calculate elapsed time
     end = clock();
