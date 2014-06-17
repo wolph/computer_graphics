@@ -32,7 +32,7 @@ else
     ifneq ($(filter arm%,$(UNAME_P)),)
         CCFLAGS += -D ARM
     endif
-    ifeq (HOST=$(shell hostname), Infinity)
+    ifeq ($(shell hostname),Infinity)
         PNG = true
         PRODUCTION = true
     endif
