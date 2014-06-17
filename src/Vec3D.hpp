@@ -208,6 +208,7 @@ public:
         result[2] = a[0] * b[1] - a[1] * b[0];
         return (result);
     }
+
     static inline T dotProduct(const Vec3D & a, const Vec3D & b){
         return (a[0] * b[0] + a[1] * b[1] + a[2] * b[2]);
     }
@@ -302,3 +303,6 @@ template<class T> std::istream & operator>>(std::istream & input, Vec3D<T> & v){
 typedef Vec3D<float> Vec3Df;
 typedef Vec3D<double> Vec3Dd;
 typedef Vec3D<int> Vec3Di;
+
+#define dot Vec3Df::dotProduct
+#define cross Vec3Df::crossProduct
