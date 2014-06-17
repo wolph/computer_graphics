@@ -14,6 +14,8 @@ else
         LFLAGS += -lGL -lGLU -lglut
         LFLAGS += -L /usr/lib/nvidia-319
         LFLAGS += -L /usr/lib/nvidia-331
+        PNG = true
+        PRODUCTION = true
     endif
     ifeq ($(UNAME_S),Darwin)
         CCFLAGS += -D OSX -D GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
@@ -32,7 +34,7 @@ else
     ifneq ($(filter arm%,$(UNAME_P)),)
         CCFLAGS += -D ARM
     endif
-    ifeq (HOST=$(shell hostname), Infinity)
+    ifeq ($(shell hostname),Infinity)
         PNG = true
         PRODUCTION = true
     endif
