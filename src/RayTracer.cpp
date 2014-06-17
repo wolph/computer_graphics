@@ -6,15 +6,10 @@ Vec3Df testRayOrigin;
 Vec3Df testRayDestination;
 string input;
 extern unsigned int textures[2];
-
-// fps
 clock_t lastFrameTime;
-float fps = 60.0f;
-float sfps = 60.0f; // smooth fps
+float fps;
+unsigned int framesSinceLastDraw = 30;
 string screenFPS;
-
-// draw settings
-int stepsize = 64; // block size in realtime raytrace
 
 //use this function for any preprocessing of the mesh.
 void init(int argc, char **argv){
@@ -116,18 +111,13 @@ void startRayTracing(int texIndex, bool verbose){
     start = clock();
 
 	int msaa = 1; // multi-sampling anti-aliasing
+	int stepsize = 8; // block size in realtime raytrace
 
 	if (verbose) stepsize = 1;
 	if (verbose) msaa = 4;
 
-	// change stepsize according to fps
-	if (fps < 10 && stepsize < 64)
-		stepsize++;
-	if (fps > 15 && stepsize > 1)
-		stepsize--;
-
-    for(float y = 0; y < RayTracingResolutionY-stepsize; y += stepsize){
-        for(float x = 0; x < RayTracingResolutionX-stepsize; x += stepsize){
+    for(float y = 0; y < RayTracingResolutionY; y += stepsize){
+        for(float x = 0; x < RayTracingResolutionX; x += stepsize){
             //svp, decidez vous memes quels parametres vous allez passer à la fonction
 			//c'est le stront a la plafond, c'est drôle
             //e.g., maillage, triangles, sphères etc.
@@ -251,19 +241,14 @@ void yourKeyboardFunc(char t, int x, int y){
 }
 
 void drawFPS(){
-	// update diff
-	clock_t diff = clock() - lastFrameTime; // clocks
+	clock_t diff = clock() - lastFrameTime;
 	lastFrameTime = clock();
+	fps = 1 / ((float)diff / (float)CLOCKS_PER_SEC);
 
-	// calc fps
-	if (diff < 2)
-		fps = 9999;
-	else
-		fps = CLOCKS_PER_SEC / (float) diff;
-
-	sfps = sfps * 0.7f + fps * 0.3f;
-
-	screenFPS = to_string((int) sfps);
+	if (framesSinceLastDraw++ > 29){
+		framesSinceLastDraw = 0;
+		screenFPS = to_string((int)fps);
+	}
 
 	glLoadIdentity();
 	//glRasterPos2f(1.0f, 1.0f); // FPS draws on the lefthand bottom side of the screen now, if anyone knows how to get it to the lefthand top of the screen please fix it ;)
