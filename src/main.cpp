@@ -17,6 +17,7 @@ unsigned int WindowSizeY = 1024;  // hauteur fenetre
 
 unsigned int RayTracingResolutionX = 1024;  // largeur fenetre
 unsigned int RayTracingResolutionY = 1024;  // largeur fenetre
+bool needRebuild = false; // if the raytrace needs to be built
 
 unsigned int previewResX = 64;
 unsigned int previewResY = 64;
@@ -216,6 +217,13 @@ void display(void){
 			startRayTracing(!activeTexIndex, false);
 			activeTexIndex = !activeTexIndex;
 		}
+		else {
+			if (needRebuild == true) {
+				startRayTracing(activeTexIndex, true);
+				needRebuild = false;
+			}
+		}
+		yourDebugDraw();
     }else{
         tbVisuTransform(); // origine et orientation de la scene
         draw();
@@ -250,7 +258,7 @@ void keyboard(unsigned char key, int x, int y){
             MyLightPositions[MyLightPositions.size() - 1] = getCameraPosition();
             break;
         case 'r':
-            startRayTracing(activeTexIndex, true);
+			needRebuild = true;
             isDrawingTexture = 1;
 			isRealtimeRaytracing = 0;
 			break;
