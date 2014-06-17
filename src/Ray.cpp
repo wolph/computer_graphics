@@ -7,14 +7,6 @@
 
 #include "Ray.hpp"
 
-//Ray::Ray(Vec3Df& color, const Vec3Df& orig, const Vec3Df& dest){
-//    this->color = color;
-//	this->orig = orig;
-//	this->dir = dest - orig;
-//	this->dir.normalize();
-//    this->dest = dest;
-//}
-
 Ray::~Ray(){
 }
 

@@ -67,3 +67,6 @@ monkey: all
 dodge: all
 	$(BINDIR)/$(TARGET) 2
 
+simple_monkey: all
+	$(BINDIR)/$(TARGET) 3
+

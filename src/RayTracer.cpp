@@ -89,7 +89,7 @@ float intersect(const Triangle& t, const Ray& ray){
 
 //return the color of your pixel.
 const Vec3Df& performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
-    Vec3Df color = Vec3Df(0, 1, 0);
+    Vec3Df color = Vec3Df(1, 1, 1);
     Ray ray = Ray(color, origin, dest);
 
 	/* Actual ray tracing code */

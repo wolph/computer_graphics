@@ -30,7 +30,7 @@ public:
 
 //public:
     //Ray(Vec3Df& color, const Vec3Df& orig, const Vec3Df& dest);
-    Ray(Vec3Df& color_, const Vec3Df& orig_, const Vec3Df& dest_):
+    inline Ray(Vec3Df& color_, const Vec3Df& orig_, const Vec3Df& dest_):
         color(color_), orig(orig_), dest(dest_), dir(normal(dest_ - orig)){
     }
     virtual ~Ray();
