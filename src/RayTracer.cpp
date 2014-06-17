@@ -90,7 +90,7 @@ const Vec3Df& performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     Ray ray = Ray(color, origin, dest);
 
 	/* Actual ray tracing code */
-	float hit = 10e6f;
+	float hit = VEWY_HIGH;
 	unsigned int amountOfTriangles = MyMesh.triangles.size();
 	for (unsigned int i = 0; i < amountOfTriangles; i++){
 		float ins = intersect(MyMesh.triangles[i], ray);
