@@ -8,6 +8,8 @@ string input;
 extern unsigned int textures[2];
 clock_t lastFrameTime;
 float fps;
+unsigned int framesSinceLastDraw = 30;
+string screenFPS;
 
 //use this function for any preprocessing of the mesh.
 void init(int argc, char **argv){
@@ -208,10 +210,7 @@ void yourDebugDraw(){
     //draw open gl debug stuff
     //this function is called every frame
 
-	clock_t diff = clock() - lastFrameTime;
-	lastFrameTime = clock();
-	fps = 1 / ((float)diff / (float)CLOCKS_PER_SEC);
-	cout << fps << endl;
+	drawFPS();
 
     //as an example:
     glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -239,4 +238,21 @@ void yourKeyboardFunc(char t, int x, int y){
 
     std::cout << t << " pressed! The mouse was in location " << x << "," << y
             << "!" << std::endl;
+}
+
+void drawFPS(){
+	clock_t diff = clock() - lastFrameTime;
+	lastFrameTime = clock();
+	fps = 1 / ((float)diff / (float)CLOCKS_PER_SEC);
+
+	if (framesSinceLastDraw++ > 29){
+		framesSinceLastDraw = 0;
+		screenFPS = to_string((int)fps);
+	}
+
+	glLoadIdentity();
+	//glRasterPos2f(1.0f, 1.0f); // FPS draws on the lefthand bottom side of the screen now, if anyone knows how to get it to the lefthand top of the screen please fix it ;)
+	for (unsigned int i = 0; i < screenFPS.length(); i++){
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, screenFPS[i]);
+	}
 }
