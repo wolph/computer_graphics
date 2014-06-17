@@ -11,7 +11,7 @@ class Mesh;
 #include "Material.hpp"
 #include "Triangle.hpp"
 #include "Vertex.hpp"
-#include "Texture.h"
+#include "Texture.hpp"
 #include <stdio.h>
 #include <GL/glut.h>
 #include <map>

@@ -13,7 +13,7 @@ class Triangle;
 
 #include "Vec3D.hpp"
 #include "Vertex.hpp"
-#include "Texture.h"
+#include "Texture.hpp"
 
 class Triangle{
 public:

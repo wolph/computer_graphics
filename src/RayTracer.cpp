@@ -1,4 +1,5 @@
 #include "RayTracer.hpp"
+#include <ctime>
 
 //temporary variables
 Vec3Df testRayOrigin;
