@@ -20,10 +20,32 @@ void dessinerRepere(float length){
 
 }
 
+unsigned int tex;
+bool isdrawingtex = false;
+
+/**
+* draw a full-screen texture
+*/
+void drawtex() {
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glBegin(GL_QUADS);
+		glTexCoord2f(0, 0);
+		glVertex3f(0, 0, 0);
+		glTexCoord2f(1, 0);
+		glVertex3f(4, 0, 0);
+		glTexCoord2f(1, 1);
+		glVertex3f(4, 4, 0);
+		glTexCoord2f(0, 1);
+		glVertex3f(0, 4, 0);
+	glEnd();
+}
+
 /**
  * Appel des différentes fonctions de dessin
  */
 void dessiner(){
+
     switch(type){
         case TRIANGLE:
             glutSolidSphere(1, 10, 10);
@@ -105,6 +127,20 @@ int main(int argc, char** argv){
     glPolygonMode(GL_BACK, GL_LINE);
     glShadeModel(GL_SMOOTH);
 
+	// init texture
+	char* buf = new char[1024 * 1024 * 3];
+	for (int i = 0; i < 1024 * 1024 * 3; i++)
+		buf[i] = rand() % 255;
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
+	delete[] buf;
+
     // cablage des callback
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
@@ -133,9 +169,14 @@ void display(void){
 
     glLoadIdentity();  // repere camera
 
-    tbVisuTransform(); // origine et orientation de la scene
-
-    dessiner();
+	if (isdrawingtex) {
+		GLdouble tb_matrix2[] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -2, -2, -4, 1 };
+		glMultMatrixd(tb_matrix2);
+		drawtex();
+	} else {
+		tbVisuTransform(); // origine et orientation de la scene
+		dessiner();
+	}
 
     glutSwapBuffers();
     glPopAttrib();
@@ -185,6 +226,8 @@ void keyboard(unsigned char key, int x, int y){
     printf("key %d pressed at %d,%d\n", key, x, y);
     fflush(stdout);
     switch(key){
+		case 't':
+			isdrawingtex = !isdrawingtex;
         case 'L':
             MyLightPositions.push_back(getCameraPosition());
             break;
@@ -245,6 +288,8 @@ void keyboard(unsigned char key, int x, int y){
 
 			printf("Rendering took %d ms\n", millis);
 
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, RayTracingResolutionX, RayTracingResolutionY, 0, GL_RGB, GL_FLOAT, &result._image[0]);
+			isdrawingtex = true;
             result.writeImage("result");
             break;
         }

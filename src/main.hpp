@@ -39,8 +39,8 @@ unsigned int type = MODEL;
 unsigned int WindowSize_X = 1000;  // largeur fenetre
 unsigned int WindowSize_Y = 1000;  // hauteur fenetre
 
-unsigned int RayTracingResolutionX = 400;  // largeur fenetre
-unsigned int RayTracingResolutionY = 400;  // largeur fenetre
+unsigned int RayTracingResolutionX = 512;  // largeur fenetre
+unsigned int RayTracingResolutionY = 512;  // largeur fenetre
 
 void dessinerRepere(float length);
 void dessiner();
