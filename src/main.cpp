@@ -180,6 +180,59 @@ void produceRay(int x_I, int y_I, Vec3Df & origin, Vec3Df & dest){
     produceRay(x_I, y_I, &origin, &dest);
 }
 
+void startRayTracing(){
+    //C'est nouveau!!!
+    //commencez ici et lancez vos propres fonctions par rayon.
+
+    cout << "Raytracing" << endl;
+
+    Image result(RayTracingResolutionX, RayTracingResolutionY);
+    Vec3Df origin00, dest00;
+    Vec3Df origin01, dest01;
+    Vec3Df origin10, dest10;
+    Vec3Df origin11, dest11;
+    Vec3Df origin, dest;
+
+    produceRay(0, 0, &origin00, &dest00);
+    produceRay(0, RayTracingResolutionY - 1, &origin01, &dest01);
+    produceRay(RayTracingResolutionX - 1, 0, &origin10, &dest10);
+    produceRay(RayTracingResolutionX - 1, RayTracingResolutionY - 1, &origin11,
+            &dest11);
+
+    // Perform timing
+    time_t start, end, ticks;
+    start = clock();
+
+    for(float y = 0;y < RayTracingResolutionY;++y){
+        for(float x = 0;x < RayTracingResolutionX;++x){
+            //svp, decidez vous memes quels parametres vous allez passer à la fonction
+            //e.g., maillage, triangles, sphères etc.
+            const float xscale = 1.0f - x / (RayTracingResolutionX - 1);
+#ifdef WIN32
+            const float yscale = float(y) / (RayTracingResolutionY - 1);
+#else
+            const float yscale = 1.0f - y / (RayTracingResolutionY - 1);
+#endif
+            origin = yscale * (xscale * origin00 + (1 - xscale) * origin10)
+                    + (1 - yscale)
+                            * (xscale * origin01 + (1 - xscale) * origin11);
+            dest = yscale * (xscale * dest00 + (1 - xscale) * dest10)
+                    + (1 - yscale) * (xscale * dest01 + (1 - xscale) * dest11);
+
+            result.setPixel(x, y, performRayTracing(origin, dest));
+        }
+    }
+
+    // calculate elapsed time
+    end = clock();
+    ticks = end - start;
+    int millis = ticks * 1000 / CLOCKS_PER_SEC;
+
+    printf("Rendering took %d ms\n", millis);
+
+    result.writeImage("result");
+}
+
 // prise en compte du clavier
 void keyboard(unsigned char key, int x, int y){
     printf("key %d pressed at %d,%d\n", key, x, y);
@@ -192,60 +245,7 @@ void keyboard(unsigned char key, int x, int y){
             MyLightPositions[MyLightPositions.size() - 1] = getCameraPosition();
             break;
         case 'r': {
-            //C'est nouveau!!!
-            //commencez ici et lancez vos propres fonctions par rayon.
-
-            cout << "Raytracing" << endl;
-
-            Image result(RayTracingResolutionX, RayTracingResolutionY);
-            Vec3Df origin00, dest00;
-            Vec3Df origin01, dest01;
-            Vec3Df origin10, dest10;
-            Vec3Df origin11, dest11;
-            Vec3Df origin, dest;
-
-            produceRay(0, 0, &origin00, &dest00);
-            produceRay(0, RayTracingResolutionY - 1, &origin01, &dest01);
-            produceRay(RayTracingResolutionX - 1, 0, &origin10, &dest10);
-            produceRay(RayTracingResolutionX - 1, RayTracingResolutionY - 1,
-                    &origin11, &dest11);
-
-			// Perform timing
-			time_t start, end, ticks;
-			start = clock();
-
-            for(unsigned int y = 0;y < RayTracingResolutionY;++y){
-                for(unsigned int x = 0;x < RayTracingResolutionX;++x){
-                    //svp, decidez vous memes quels parametres vous allez passer à la fonction
-                    //e.g., maillage, triangles, sphères etc.
-                    float xscale = 1.0f
-                            - float(x) / (RayTracingResolutionX - 1);
-					#ifdef WIN32
-					float yscale = float(y) / (RayTracingResolutionY - 1);
-					#else
-					float yscale = 1.0f - float(y) / (RayTracingResolutionY - 1);
-					#endif
-                    origin = yscale
-                            * (xscale * origin00 + (1 - xscale) * origin10)
-                            + (1 - yscale)
-                                    * (xscale * origin01
-                                            + (1 - xscale) * origin11);
-                    dest = yscale * (xscale * dest00 + (1 - xscale) * dest10)
-                            + (1 - yscale)
-                                    * (xscale * dest01 + (1 - xscale) * dest11);
-
-                    result.setPixel(x, y, performRayTracing(origin, dest));
-                }
-            }
-
-			// calculate elapsed time
-			end = clock();
-			ticks = end - start;
-			int millis = ticks * 1000 / CLOCKS_PER_SEC;
-
-			printf("Rendering took %d ms\n", millis);
-
-            result.writeImage("result");
+            startRayTracing();
             break;
         }
         case 27:     // touche ESC
