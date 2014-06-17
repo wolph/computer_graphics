@@ -7,6 +7,7 @@
 #include <windows.h>
 #endif
 #include <cstdlib>
+#include <thread>
 
 #include "Mesh.hpp"
 #include "Ray.hpp"

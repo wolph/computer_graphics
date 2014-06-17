@@ -12,6 +12,8 @@ unsigned int framesSinceLastDraw = 30;
 string screenFPS;
 extern unsigned int previewResX;
 extern unsigned int previewResY;
+extern unsigned int msaa;
+extern unsigned int numThreads;
 
 //use this function for any preprocessing of the mesh.
 int init(int argc, char **argv){
@@ -105,41 +107,18 @@ void produceRay(int x_I, int y_I, Vec3Df & origin, Vec3Df & dest){
     produceRay(x_I, y_I, &origin, &dest);
 }
 
+Vec3Df origin00, dest00;
+Vec3Df origin01, dest01;
+Vec3Df origin10, dest10;
+Vec3Df origin11, dest11;
+Vec3Df origin, dest;
 
-void startRayTracing(int texIndex, bool verbose){
-    //C'est nouveau!!!
-    //commencez ici et lancez vos propres fonctions par rayon.
-
-	if (verbose) cout << "Raytracing" << endl;
-	int w = RayTracingResolutionX;
-	int h = RayTracingResolutionY;
-	if (!verbose) w = previewResX;
-	if (!verbose) h = previewResY;
-	Image result(w, h);
-
-    Vec3Df origin00, dest00;
-    Vec3Df origin01, dest01;
-    Vec3Df origin10, dest10;
-    Vec3Df origin11, dest11;
-    Vec3Df origin, dest;
-
-    produceRay(0, 0, &origin00, &dest00);
-    produceRay(0, WindowSizeX - 1, &origin01, &dest01);
-    produceRay(WindowSizeX - 1, 0, &origin10, &dest10);
-    produceRay(WindowSizeX - 1, WindowSizeY - 1, &origin11,
-            &dest11);
-
-    // Perform timing
-    time_t start, end, ticks;
-    start = clock();
-
-	int msaa = 2; // multi-sampling anti-aliasing
-
-    for(float y = 0; y < h; y++){
-        for(float x = 0; x < w; x++){
-            //svp, decidez vous memes quels parametres vous allez passer à la fonction
+void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh) {
+	for (float y = yy; y < hh; y++){
+		for (float x = xx; x < ww; x++){
+			//svp, decidez vous memes quels parametres vous allez passer à la fonction
 			//c'est le stront a la plafond, c'est drôle
-            //e.g., maillage, triangles, sphères etc.
+			//e.g., maillage, triangles, sphères etc.
 			Vec3Df total(0, 0, 0);
 			for (int xs = 0; xs < msaa; xs++) {
 				for (int ys = 0; ys < msaa; ys++) {
@@ -162,9 +141,53 @@ void startRayTracing(int texIndex, bool verbose){
 
 			// calculate average color
 			total /= msaa * msaa;
-				result.setPixel(x, y, total);
-        }
-    }
+			// result->_image
+			result->_image[(y * result->_width + x) * 3 + 0] = total[0];
+			result->_image[(y * result->_width + x) * 3 + 1] = total[1];
+			result->_image[(y * result->_width + x) * 3 + 2] = total[2];
+		}
+	}
+}
+
+void startRayTracing(int texIndex, bool verbose){
+    //C'est nouveau!!!
+    //commencez ici et lancez vos propres fonctions par rayon.
+
+	if (verbose) cout << "Raytracing" << endl;
+	int w = RayTracingResolutionX;
+	int h = RayTracingResolutionY;
+	if (!verbose) w = previewResX;
+	if (!verbose) h = previewResY;
+	Image result(w, h);
+
+    produceRay(0, 0, &origin00, &dest00);
+    produceRay(0, WindowSizeX - 1, &origin01, &dest01);
+    produceRay(WindowSizeX - 1, 0, &origin10, &dest10);
+    produceRay(WindowSizeX - 1, WindowSizeY - 1, &origin11,
+            &dest11);
+
+    // Perform timing
+    time_t start, end, ticks;
+    start = clock();
+
+    // multithread
+	int old = numThreads;
+	if (verbose) numThreads = 1;
+	std::thread** th = (std::thread**) alloca(numThreads * sizeof(std::thread*));
+	int subw = w / numThreads;
+
+	for (int i = 0; i < numThreads; i++)
+		th[i] = new std::thread(raytracePart, &result, w, h, i*subw, 0, (i+1)*subw, h);// i * subw, 0, subw, h);
+
+	// wait for them to finish
+	for (int i = 0; i < numThreads; i++)
+		th[i]->join();
+
+	// kill them all
+	for (int i = 0; i < numThreads; i++)
+		delete th[i];
+
+	if (verbose) numThreads = old;
 
     // calculate elapsed time
     end = clock();

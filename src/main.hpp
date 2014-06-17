@@ -16,6 +16,7 @@
 #include <ctime>
 #include <GL/glut.h>
 #include <assert.h>
+#include <thread>
 
 #include "Mesh.hpp"
 #include "Ray.hpp"
@@ -49,6 +50,9 @@ extern unsigned int RayTracingResolutionY;  // largeur fenetre
 
 extern unsigned int previewResX;
 extern unsigned int previewResY;
+
+extern unsigned int numThreads;
+extern unsigned int msaa;
 
 void drawAxes(float length);
 void draw();
