@@ -13,16 +13,6 @@
 //Welcome to your assignment...
 //this is an important file, raytracing.cpp is what you need to fill out
 
-#include "implementations/arend.hpp"
-#include "implementations/ewoud.hpp"
-#include "implementations/leon.hpp"
-#include "implementations/max.hpp"
-#include "implementations/qu.hpp"
-#include "implementations/rick.hpp"
-#include "implementations/rutger.hpp"
-#include "implementations/vince.hpp"
-#include "implementations/ymte.hpp"
-
 extern Mesh MyMesh; //Main mesh
 extern std::vector<Vec3Df> MyLightPositions;
 extern Vec3Df MyCameraPosition; //currCamera
