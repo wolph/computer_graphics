@@ -179,7 +179,9 @@ int main(int argc, char** argv){
     glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
     glutIdleFunc(animate);
 
-    init(argc, argv);
+    int ret = init(argc, argv);
+    if(ret == 255)return 0;
+    if(ret > 0)return ret;
 
     // lancement de la boucle principale
     glutMainLoop();

@@ -4,7 +4,7 @@
 //temporary variables
 Vec3Df testRayOrigin;
 Vec3Df testRayDestination;
-string input;
+string mesh;
 extern unsigned int textures[2];
 clock_t lastFrameTime;
 float fps;
@@ -14,46 +14,66 @@ extern unsigned int previewResX;
 extern unsigned int previewResY;
 
 //use this function for any preprocessing of the mesh.
-void init(int argc, char **argv){
-    //load the mesh file
-    //feel free to replace cube by a path to another model
-    //please realize that not all OBJ files will successfully load.
-    //Nonetheless, if they come from Blender, they should.
-    //there is a difference between windows written objs and Linux written objs.
-    //hence, some models might not yet work well.
+int init(int argc, char **argv){
+    // skip program name argv[0] if present
+    argc -= (argc > 0);
+    argv += (argc > 0);
+
+    option::Stats stats(usage, argc, argv);
+    option::Option* options = (option::Option*)calloc(stats.options_max,
+            sizeof(option::Option));
+    option::Option* buffer = (option::Option*)calloc(stats.buffer_max,
+            sizeof(option::Option));
+
+    option::Parser parse(usage, argc, argv, options, buffer);
+
+    if(parse.error())
+        return 1;
+
+    if(options[HELP] || argc == 0){
+        int columns = getenv("COLUMNS") ? atoi(getenv("COLUMNS")) : 80;
+        option::printUsage(fwrite, stdout, usage, columns);
+        return 2;
+    }
 
 	lastFrameTime = clock();
 
-    if(argc == 2){
-        input = argv[1];
+    if(options[MESH]){
+        const char* arg = options[MESH].last()->arg;
+        if(arg == 0){
+            mesh = "0";
+        }else{
+            mesh = arg;
+        }
     }else{
-        cout
-                << "Mesh file name: (0: monkey, 1: cube, 2: dodgeColorTest, 3: simple_monkey)"
-                << endl << "You can omit the mesh/ path and the .obj extension."
-                << endl;
-        cin >> input;
+        mesh = "0";
     }
 
-    if(input == "0")
-        input = "cube";
-    else if(input == "1")
-        input = "simple_monkey";
-    else if(input == "2")
-        input = "monkey";
-    else if(input == "3")
-        input = "dodgeColorTest";
+    if(mesh == "0")
+        mesh = "cube";
+    else if(mesh == "1")
+        mesh = "simple_monkey";
+    else if(mesh == "2")
+        mesh = "monkey";
+    else if(mesh == "3")
+        mesh = "dodgeColorTest";
 
-    input = string("mesh/").append(input).append(".obj");
-    MyMesh.loadMesh(input.c_str(), true);
-
+    mesh = string("mesh/").append(mesh).append(".obj");
+    MyMesh.loadMesh(mesh.c_str(), true);
     MyMesh.computeVertexNormals();
 
     //one first move: initialize the first light source
     //at least ONE light source has to be in the scene!!!
     //here, we set it to the current location of the camera
     MyLightPositions.push_back(MyCameraPosition);
-}
 
+    if(options[RAYTRACE]){
+        startRayTracing(activeTexIndex, true);
+        return 255;
+    }
+
+    return 0;
+}
 
 //transformer le x, y en position 3D
 void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest){
