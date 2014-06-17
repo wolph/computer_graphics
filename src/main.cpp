@@ -220,8 +220,11 @@ void keyboard(unsigned char key, int x, int y){
                     //e.g., maillage, triangles, sphères etc.
                     float xscale = 1.0f
                             - float(x) / (RayTracingResolutionX - 1);
-                    float yscale = float(y) / (RayTracingResolutionY - 1);
-
+					#ifdef WIN32
+					float yscale = float(y) / (RayTracingResolutionY - 1);
+					#else
+					float yscale = 1.0f - float(y) / (RayTracingResolutionY - 1);
+					#endif
                     origin = yscale
                             * (xscale * origin00 + (1 - xscale) * origin10)
                             + (1 - yscale)

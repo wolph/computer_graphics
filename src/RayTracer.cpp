@@ -2,6 +2,7 @@
 #ifdef WIN32
 #include <windows.h>
 #endif
+
 #include <GL/glut.h>
 #include "RayTracer.hpp"
 
@@ -25,16 +26,16 @@ void init(int argc, char **argv){
     if(argc == 2){
         input = argv[1];
     }else{
-        cout << "Mesh file name: (0: cube, 1: monkey, 2: dodgeColorTest)"
+        cout << "Mesh file name: (0: monkey, 1: cube, 2: dodgeColorTest, 3: simple_monkey)"
                 << endl << "You can omit the mesh/ path and the .obj extension."
                 << endl;
         cin >> input;
     }
 
 	if (input == "0")
-		input = "cube";
+		input = "monkey";
 	else if (input == "1")
-	    input = "monkey";
+	    input = "cube";
 	else if (input == "2")
 		input = "dodgeColorTest";
 	else if (input == "3")
