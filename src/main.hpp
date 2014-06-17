@@ -23,29 +23,32 @@
 #include "traqueboule.hpp"
 #include "RayTracer.hpp"
 
-Vec3Df MyCameraPosition;
+extern Vec3Df MyCameraPosition;
 
-std::vector<Vec3Df> MyLightPositions;
+extern std::vector<Vec3Df> MyLightPositions;
 
 // double buffered
-unsigned int textures[2];
-unsigned int activeTexIndex = 0;
-unsigned int isDrawingTexture = 0;
-unsigned int isRealtimeRaytracing = 0;
-Mesh MyMesh; //Main mesh
+extern unsigned int textures[2];
+extern unsigned int activeTexIndex;
+extern unsigned int isDrawingTexture;
+extern unsigned int isRealtimeRaytracing;
+extern Mesh MyMesh; //Main mesh
 
 // Utilisé pour essayer différents types de rendu
 // Utilisé via le paramètre "-t" en ligne de commande
 enum {
     TRIANGLE = 0, MODEL = 1
 };
-unsigned int type = MODEL;
+extern unsigned int type = MODEL;
 
-unsigned int WindowSize_X = 1000;  // largeur fenetre
-unsigned int WindowSize_Y = 1000;  // hauteur fenetre
+extern unsigned int WindowSize_X;  // largeur fenetre
+extern unsigned int WindowSize_Y;  // hauteur fenetre
 
-unsigned int RayTracingResolutionX = 512;  // largeur fenetre
-unsigned int RayTracingResolutionY = 512;  // largeur fenetre
+extern unsigned int RayTracingResolutionX;  // largeur fenetre
+extern unsigned int RayTracingResolutionY;  // largeur fenetre
+
+extern unsigned int previewResX;
+extern unsigned int previewResY;
 
 void drawAxes(float length);
 void draw();

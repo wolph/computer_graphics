@@ -10,6 +10,8 @@ clock_t lastFrameTime;
 float fps;
 unsigned int framesSinceLastDraw = 30;
 string screenFPS;
+extern unsigned int previewResX;
+extern unsigned int previewResY;
 
 //use this function for any preprocessing of the mesh.
 void init(int argc, char **argv){
@@ -21,9 +23,6 @@ void init(int argc, char **argv){
     //hence, some models might not yet work well.
 
 	lastFrameTime = clock();
-
-    RayTracingResolutionX = 1000; // These resolutions should be the same as the window,
-    RayTracingResolutionY = 1000; // otherwise unexpected behaviour occurs.
 
     if(argc == 2){
         input = argv[1];
@@ -92,7 +91,11 @@ void startRayTracing(int texIndex, bool verbose){
     //commencez ici et lancez vos propres fonctions par rayon.
 
 	if (verbose) cout << "Raytracing" << endl;
-	Image result(RayTracingResolutionX, RayTracingResolutionY);
+	int w = RayTracingResolutionX;
+	int h = RayTracingResolutionY;
+	if (!verbose) w = previewResX;
+	if (!verbose) h = previewResY;
+	Image result(w, h);
 
     Vec3Df origin00, dest00;
     Vec3Df origin01, dest01;
@@ -101,23 +104,19 @@ void startRayTracing(int texIndex, bool verbose){
     Vec3Df origin, dest;
 
     produceRay(0, 0, &origin00, &dest00);
-    produceRay(0, RayTracingResolutionY - 1, &origin01, &dest01);
-    produceRay(RayTracingResolutionX - 1, 0, &origin10, &dest10);
-    produceRay(RayTracingResolutionX - 1, RayTracingResolutionY - 1, &origin11,
+    produceRay(0, WindowSizeX - 1, &origin01, &dest01);
+    produceRay(WindowSizeX - 1, 0, &origin10, &dest10);
+    produceRay(WindowSizeX - 1, WindowSizeY - 1, &origin11,
             &dest11);
 
     // Perform timing
     time_t start, end, ticks;
     start = clock();
 
-	int msaa = 1; // multi-sampling anti-aliasing
-	int stepsize = 8; // block size in realtime raytrace
+	int msaa = 2; // multi-sampling anti-aliasing
 
-	if (verbose) stepsize = 1;
-	if (verbose) msaa = 4;
-
-    for(float y = 0; y < RayTracingResolutionY; y += stepsize){
-        for(float x = 0; x < RayTracingResolutionX; x += stepsize){
+    for(float y = 0; y < h; y++){
+        for(float x = 0; x < w; x++){
             //svp, decidez vous memes quels parametres vous allez passer à la fonction
 			//c'est le stront a la plafond, c'est drôle
             //e.g., maillage, triangles, sphères etc.
@@ -125,11 +124,11 @@ void startRayTracing(int texIndex, bool verbose){
 			for (int xs = 0; xs < msaa; xs++) {
 				for (int ys = 0; ys < msaa; ys++) {
 
-					float xscale = 1.0f - (x + float(xs) / msaa) / (RayTracingResolutionX - 1);
+					float xscale = 1.0f - (x + float(xs) / msaa) / (w - 1);
 #ifdef WIN32
-					float yscale = float(y + float(ys) / msaa) / (RayTracingResolutionY - 1);
+					float yscale = float(y + float(ys) / msaa) / (h - 1);
 #else
-					float yscale = 1.0f - (y + float(ys) / msaa) / (RayTracingResolutionY - 1);
+					float yscale = 1.0f - (y + float(ys) / msaa) / (h - 1);
 #endif
 					origin = yscale * (xscale * origin00 + (1 - xscale) * origin10)
 						+ (1 - yscale)
@@ -143,10 +142,7 @@ void startRayTracing(int texIndex, bool verbose){
 
 			// calculate average color
 			total /= msaa * msaa;
-
-			for (int xx = 0; xx < stepsize; xx++)
-			for (int yy = 0; yy < stepsize; yy++)
-				result.setPixel(x+xx, y+yy, total);
+				result.setPixel(x, y, total);
         }
     }
 
@@ -160,8 +156,8 @@ void startRayTracing(int texIndex, bool verbose){
 
     // write to texture
 	glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, RayTracingResolutionX,
-		RayTracingResolutionY, 0, GL_RGB, GL_FLOAT, &result._image[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w,
+		h, 0, GL_RGB, GL_FLOAT, &result._image[0]);
 
 	// calculate elapsed time
 	end = clock();
@@ -203,7 +199,7 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
 	Vec3Df& normal = MyMesh.triangles[idx].normal;
 	float angle = -dot(normal, origin) * 0.33333;
 
-	return Vec3Df(angle, angle, angle);
+	return (normal + Vec3Df(angle, angle, angle)) / 2;
 }
 
 void yourDebugDraw(){

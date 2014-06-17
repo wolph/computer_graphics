@@ -1,5 +1,26 @@
 #include "main.hpp"
 
+// don't define anything in headers! only declare it!!!1!one!
+Vec3Df MyCameraPosition;
+
+std::vector<Vec3Df> MyLightPositions;
+
+// double buffered
+unsigned int textures[2];
+unsigned int activeTexIndex = 0;
+unsigned int isDrawingTexture = 0;
+unsigned int isRealtimeRaytracing = 0;
+Mesh MyMesh; //Main mesh
+
+unsigned int WindowSizeX = 1024;  // largeur fenetre
+unsigned int WindowSizeY = 1024;  // hauteur fenetre
+
+unsigned int RayTracingResolutionX = 1024;  // largeur fenetre
+unsigned int RayTracingResolutionY = 1024;  // largeur fenetre
+
+unsigned int previewResX = 64;
+unsigned int previewResY = 64;
+
 void drawAxes(float length){
     glDisable(GL_LIGHTING);
 
@@ -90,7 +111,7 @@ int main(int argc, char** argv){
 
     // position et taille de la fenetre
     glutInitWindowPosition(200, 100);
-    glutInitWindowSize(WindowSize_X, WindowSize_Y);
+    glutInitWindowSize(WindowSizeX, WindowSizeY);
     glutCreateWindow(argv[0]);
 
     // Initialisation du point de vue
@@ -219,7 +240,7 @@ void keyboard(unsigned char key, int x, int y){
     fflush(stdout);
     switch(key){
         case 't':
-            isDrawingTexture = !isDrawingTexture;
+			isDrawingTexture = 0;
 			isRealtimeRaytracing = 0;
             break;
         case 'L':
@@ -234,7 +255,7 @@ void keyboard(unsigned char key, int x, int y){
 			isRealtimeRaytracing = 0;
 			break;
 		case 'b':
-			isRealtimeRaytracing = !isRealtimeRaytracing;
+			isRealtimeRaytracing = 1;
 			isDrawingTexture = 0;
 			break;
         case 27:     // touche ESC
