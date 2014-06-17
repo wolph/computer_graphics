@@ -219,7 +219,7 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
 	Vec3Df& normal = MyMesh.triangles[idx].normal;
 	float angle = -dot(normal, origin) * 0.33333;
 
-	return (normal + Vec3Df(angle, angle, angle)) / 2;
+	return (normal * 0.2f + Vec3Df(angle, angle, angle)) / 2;
 }
 
 void yourDebugDraw(){
