@@ -104,29 +104,43 @@ void startRayTracing(int texIndex, bool verbose){
     time_t start, end, ticks;
     start = clock();
 
-	int stepsize = 8;
+	int msaa = 1; // multi-sampling anti-aliasing
+	int stepsize = 8; // block size in realtime raytrace
+
 	if (verbose) stepsize = 1;
+	if (verbose) msaa = 4;
 
-    for(float y = 0;y < RayTracingResolutionY; y += stepsize){
-        for(float x = 0;x < RayTracingResolutionX; x += stepsize){
+    for(float y = 0; y < RayTracingResolutionY; y += stepsize){
+        for(float x = 0; x < RayTracingResolutionX; x += stepsize){
             //svp, decidez vous memes quels parametres vous allez passer à la fonction
+			//c'est le stront a la plafond, c'est drôle
             //e.g., maillage, triangles, sphères etc.
-            const float xscale = 1.0f - x / (RayTracingResolutionX - 1);
-#ifdef WIN32
-            const float yscale = float(y) / (RayTracingResolutionY - 1);
-#else
-            const float yscale = 1.0f - y / (RayTracingResolutionY - 1);
-#endif
-            origin = yscale * (xscale * origin00 + (1 - xscale) * origin10)
-                    + (1 - yscale)
-                            * (xscale * origin01 + (1 - xscale) * origin11);
-            dest = yscale * (xscale * dest00 + (1 - xscale) * dest10)
-                    + (1 - yscale) * (xscale * dest01 + (1 - xscale) * dest11);
+			Vec3Df total(0, 0, 0);
+			for (int xs = 0; xs < msaa; xs++) {
+				for (int ys = 0; ys < msaa; ys++) {
 
-			Vec3Df color = performRayTracing(origin, dest);
+					float xscale = 1.0f - (x + float(xs) / msaa) / (RayTracingResolutionX - 1);
+#ifdef WIN32
+					float yscale = float(y + float(ys) / msaa) / (RayTracingResolutionY - 1);
+#else
+					float yscale = 1.0f - (y + float(ys) / msaa) / (RayTracingResolutionY - 1);
+#endif
+					origin = yscale * (xscale * origin00 + (1 - xscale) * origin10)
+						+ (1 - yscale)
+						* (xscale * origin01 + (1 - xscale) * origin11);
+					dest = yscale * (xscale * dest00 + (1 - xscale) * dest10)
+						+ (1 - yscale) * (xscale * dest01 + (1 - xscale) * dest11);
+
+					total += performRayTracing(origin, dest);
+				}
+			}
+
+			// calculate average color
+			total /= msaa * msaa;
+
 			for (int xx = 0; xx < stepsize; xx++)
 			for (int yy = 0; yy < stepsize; yy++)
-				result.setPixel(x+xx, y+yy, color);
+				result.setPixel(x+xx, y+yy, total);
         }
     }
 
@@ -181,7 +195,7 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
 		return black;
 
 	Vec3Df& normal = MyMesh.triangles[idx].normal;
-	float angle = -dot(normal, origin) * 0.5;
+	float angle = -dot(normal, origin) * 0.33333;
 
 	return Vec3Df(angle, angle, angle);
 }
