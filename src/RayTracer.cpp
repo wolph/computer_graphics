@@ -1,9 +1,3 @@
-#include <stdio.h>
-#ifdef WIN32
-#include <windows.h>
-#endif
-
-#include <GL/glut.h>
 #include "RayTracer.hpp"
 
 //temporary variables
@@ -53,40 +47,10 @@ void init(int argc, char **argv){
     MyLightPositions.push_back(MyCameraPosition);
 }
 
-#define dot Vec3Df::dotProduct
-#define cross Vec3Df::crossProduct
-
-#define v0 t.vertices[0].p
-#define v1 t.vertices[1].p
-#define v2 t.vertices[2].p
-
 #define rayOrig ray.orig
 #define rayDir ray.dir
 #define VEWY_HIGH 10e6f
 
-/** Calculate intersection between triangle and ray */
-float intersect(const Triangle& t, const Ray& ray){
-
-    float angle = dot(t.normal, rayDir); // The cosine of the angle of the vectors (dotproduct of the vectors).
-
-    /* Floats are only rarely exactly 0, are you sure this is correct? */
-    if (angle == 0) // If the ray and the plane are parallel (so their angle is 0), they won't intersect.
-    return VEWY_HIGH;
-
-    float rayD = -(dot(t.normal, rayOrig) + dot(t.normal, v0)) / angle;// The distance of the ray's origin
-    // to the plane in which lies the triangle.
-
-    Vec3Df rayHit = rayOrig + rayD * rayDir;// The intersection point of the ray and the plane in which lies the triangle.
-
-    if (dot(t.normal, cross(v1 - v0, rayHit - v0)) < 0)
-    return VEWY_HIGH;
-    if (dot(t.normal, cross(v2 - v1, rayHit - v1)) < 0)
-    return VEWY_HIGH;
-    if (dot(t.normal, cross(v0 - v2, rayHit - v2)) < 0)
-    return VEWY_HIGH;
-
-    return rayD;
-}
 
 //return the color of your pixel.
 const Vec3Df& performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
@@ -97,7 +61,7 @@ const Vec3Df& performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     float hit = VEWY_HIGH;
     unsigned int amountOfTriangles = MyMesh.triangles.size();
     for(unsigned int i = 0;i < amountOfTriangles;i++){
-        float ins = intersect(MyMesh.triangles[i], ray);
+        float ins = ray.intersect(MyMesh.triangles[i]);
         if(ins < hit && ins > 0)
             hit = ins;
     }

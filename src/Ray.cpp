@@ -24,31 +24,33 @@ void Ray::setColor(const float red, const float green, const float blue){
     this->color[2] = blue;
 }
 
-bool Ray::intersect(Vec3Df& triangle){
-//     T tmin = (min.x - r.orig.x) / r.dir.x;
-//     T tmax = (max.x - r.orig.x) / r.dir.x;
-//     if (tmin > tmax) swap(tmin, tmax);
-//     T tymin = (min.y - r.orig.y) / r.dir.y;
-//     T tymax = (max.y - r.orig.y) / r.dir.y;
-//     if (tymin > tymax) swap(tymin, tymax);
-//     if ((tmin > tymax) || (tymin > tmax))
-//         return false;
-//     if (tymin > tmin)
-//         tmin = tymin;
-//     if (tymax < tmax)
-//         tmax = tymax;
-//     T tzmin = (min.z - r.orig.z) / r.dir.z;
-//     T tzmax = (max.z - r.orig.z) / r.dir.z;
-//     if (tzmin > tzmax) swap(tzmin, tzmax);
-//     if ((tmin > tzmax) || (tzmin > tmax))
-//         return false;
-//     if (tzmin > tmin)
-//         tmin = tzmin;
-//     if (tzmax < tmax)
-//         tmax = tzmax;
-//     if ((tmin > r.tmax) || (tmax < r.tmin)) return false;
-//     if (r.tmin < tmin) r.tmin = tmin;
-//     if (r.tmax > tmax) r.tmax = tmax;
-    return true;
-}
+float Ray::intersect(Triangle& triangle){
+    // The cosine of the angle of the vectors (dotproduct of the vectors).
+    const float angle = dot(triangle.normal, dir);
 
+    /* Floats are only rarely exactly 0, are you sure this is correct? */
+    if(angle == 0){
+        // If the ray and the plane are parallel (so their angle is 0), they won't intersect.
+        return VEWY_HIGH;
+    }
+    Vec3Df& v0 = triangle.vertices[0].p;
+    Vec3Df& v1 = triangle.vertices[1].p;
+    Vec3Df& v2 = triangle.vertices[2].p;
+    Vec3Df& normal = triangle.normal;
+
+    // The distance of the ray's origin
+    const float rayD = -(dot(triangle.normal, orig) + dot(triangle.normal, v0))
+    / angle;
+    // to the plane in which lies the triangle.
+
+    const Vec3Df rayHit = orig + rayD * dir;// The intersection point of the ray and the plane in which lies the triangle.
+
+    if(dot(normal, cross(v1 - v0, rayHit - v0)) < 0)
+    return VEWY_HIGH;
+    if(dot(normal, cross(v2 - v1, rayHit - v1)) < 0)
+    return VEWY_HIGH;
+    if(dot(normal, cross(v0 - v2, rayHit - v2)) < 0)
+    return VEWY_HIGH;
+
+    return rayD;
+}
