@@ -30,7 +30,7 @@ int init(int argc, char **argv){
     if(parse.error())
         return 1;
 
-    if(options[HELP] || argc == 0){
+    if(options[HELP]){
         int columns = getenv("COLUMNS") ? atoi(getenv("COLUMNS")) : 80;
         option::printUsage(fwrite, stdout, usage, columns);
         return 2;
