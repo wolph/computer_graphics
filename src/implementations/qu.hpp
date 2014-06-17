@@ -2,6 +2,6 @@
 #define QU_H
 #include "../Ray.hpp"
 
-Ray performRayTracingQu(Ray ray);
+void performRayTracingQu(Ray& ray);
 
 #endif

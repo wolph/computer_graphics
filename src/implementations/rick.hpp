@@ -2,6 +2,6 @@
 #define RICK_H
 #include "../Ray.hpp"
 
-Ray performRayTracingRick(Ray ray);
+void performRayTracingRick(Ray& ray);
 
 #endif

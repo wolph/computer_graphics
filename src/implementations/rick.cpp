@@ -1,6 +1,6 @@
 #include "rick.hpp"
 
-Ray performRayTracingRick(Ray ray){
-    return ray;
+void performRayTracingRick(Ray& ray){
+
 }
 

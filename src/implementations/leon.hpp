@@ -2,6 +2,6 @@
 #define LEON_H
 #include "../Ray.hpp"
 
-Ray performRayTracingLeon(Ray ray);
+void performRayTracingLeon(Ray& ray);
 
 #endif

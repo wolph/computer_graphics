@@ -2,6 +2,6 @@
 #define EWOUD_H
 #include "../Ray.hpp"
 
-Ray performRayTracingEwoud(Ray ray);
+void performRayTracingEwoud(Ray& ray);
 
 #endif

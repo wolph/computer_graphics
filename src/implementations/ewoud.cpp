@@ -1,6 +1,6 @@
 #include "ewoud.hpp"
 
-Ray performRayTracingEwoud(Ray ray){
-    return ray;
+void performRayTracingEwoud(Ray& ray){
+
 }
 

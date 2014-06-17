@@ -2,6 +2,6 @@
 #define AREND_H
 #include "../Ray.hpp"
 
-Ray performRayTracingArend(Ray ray);
+void performRayTracingArend(Ray& ray);
 
 #endif

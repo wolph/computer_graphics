@@ -7,22 +7,13 @@
 
 #include "Ray.hpp"
 
-Ray::Ray(){
-}
-
-Ray::Ray(const Vec3Df orig, const Vec3Df dest){
-    this->orig = orig;
-	this->dir = dest - orig;
-    this->dest = dest;
-    this->color = Vec3Df(0, 1, 0);
-}
-
-Ray::Ray(Vec3Df color, const Vec3Df orig, const Vec3Df dest){
-    this->color = color;
-	this->orig = orig;
-	this->dir = dest - orig;
-    this->dest = dest;
-}
+//Ray::Ray(Vec3Df& color, const Vec3Df& orig, const Vec3Df& dest){
+//    this->color = color;
+//	this->orig = orig;
+//	this->dir = dest - orig;
+//	this->dir.normalize();
+//    this->dest = dest;
+//}
 
 Ray::~Ray(){
 }
@@ -39,27 +30,15 @@ const Vec3Df& Ray::getDest() const{
     return dest;
 }
 
-void Ray::setDest(const Vec3Df& dest){
-    this->dest = dest;
-}
-
 const Vec3Df& Ray::getDir() const{
 	return dir;
-}
-
-void Ray::setDir(const Vec3Df& dir){
-	this->dir = dir;
 }
 
 const Vec3Df& Ray::getOrig() const{
     return orig;
 }
 
-void Ray::setOrig(const Vec3Df& orig){
-    this->orig = orig;
-}
-
-bool Ray::intersect(Vec3Df triangle){
+bool Ray::intersect(Vec3Df& triangle){
 //     T tmin = (min.x - r.orig.x) / r.dir.x;
 //     T tmax = (max.x - r.orig.x) / r.dir.x;
 //     if (tmin > tmax) swap(tmin, tmax);

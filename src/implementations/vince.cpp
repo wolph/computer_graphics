@@ -1,6 +1,6 @@
 #include "vince.hpp"
 
-Ray performRayTracingVince(Ray ray){
-    return ray;
+void performRayTracingVince(Ray& ray){
+
 }
 

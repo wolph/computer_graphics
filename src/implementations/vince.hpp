@@ -2,6 +2,6 @@
 #define VINCE_H
 #include "../Ray.hpp"
 
-Ray performRayTracingVince(Ray ray);
+void performRayTracingVince(Ray& ray);
 
 #endif

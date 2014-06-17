@@ -15,7 +15,7 @@ Ray performRayTracingYmte(Ray& ray) {
 	}
 	//hit = 1 / ((hit * 2) + 1); // Arithmetic function for getting a usable color.
 	ray.setColor(Vec3Df(hit, hit / 5, hit * 5));
-	return ray;
+
 }
 
 inline float intersect2(Triangle& t, Ray& ray){

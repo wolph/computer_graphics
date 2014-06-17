@@ -1,6 +1,6 @@
 #include "leon.hpp"
 
-Ray performRayTracingLeon(Ray ray){
-    return ray;
+void performRayTracingLeon(Ray& ray){
+
 }
 

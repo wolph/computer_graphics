@@ -1,6 +1,6 @@
 #include "arend.hpp"
 
-Ray performRayTracingArend(Ray ray){
-    return ray;
+void performRayTracingArend(Ray& ray){
+
 }
 
