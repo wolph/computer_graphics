@@ -24,18 +24,6 @@ void Ray::setColor(const float red, const float green, const float blue){
     this->color[2] = blue;
 }
 
-inline const Vec3Df Ray::getDest() const{
-    return dest;
-}
-
-inline const Vec3Df Ray::getDir() const{
-    return dir;
-}
-
-inline const Vec3Df Ray::getOrig() const{
-    return orig;
-}
-
 bool Ray::intersect(Vec3Df& triangle){
 //     T tmin = (min.x - r.orig.x) / r.dir.x;
 //     T tmax = (max.x - r.orig.x) / r.dir.x;

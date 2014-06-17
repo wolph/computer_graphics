@@ -22,20 +22,16 @@ inline float intersect2(Triangle& t, Ray& ray){
 	v0 = t.vertices[0].p; // Variables saved as locals for less external function calls,
 	v1 = t.vertices[1].p;    // less characters in the code and better readability.
 	v2 = t.vertices[2].p;
-	Vec3Df rayOrig = ray.getOrig();
-	Vec3Df rayDir = (ray.getDest() - rayOrig); // The normalized direction of the ray.
 
-	rayDir.normalize();
-
-	float angle = Vec3Df::dotProduct(t.normal, rayDir); // The cosine of the angle of the vectors (dotproduct of the vectors).
+	float angle = Vec3Df::dotProduct(t.normal, ray.dir); // The cosine of the angle of the vectors (dotproduct of the vectors).
 
 	if (angle == 0) // If the ray and the plane are parallel (so their angle is 0), they won't intersect.
 		return 10e6f;
 
-	float rayD = -(Vec3Df::dotProduct(t.normal, rayOrig) + Vec3Df::dotProduct(t.normal, v0)) / angle; // The distance of the ray's origin
+	float rayD = -(Vec3Df::dotProduct(t.normal, ray.orig) + Vec3Df::dotProduct(t.normal, v0)) / angle; // The distance of the ray's origin
 	// to the plane in which lies the triangle.
 
-	Vec3Df rayHit = rayOrig + rayD * rayDir; // The intersection point of the ray and the plane in which lies the triangle.
+	Vec3Df rayHit = ray.orig + rayD * ray.dir; // The intersection point of the ray and the plane in which lies the triangle.
 
 	if (Vec3Df::dotProduct(t.normal, Vec3Df::crossProduct(v1 - v0, rayHit - v0)) < 0)
 		return 10e6f;
