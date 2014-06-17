@@ -61,6 +61,7 @@ void init(int argc, char **argv){
 
 #define rayOrig ray.orig
 #define rayDir ray.dir
+#define VEWY_HIGH 10e6f
 
 /** Calculate intersection between triangle and ray */
 float intersect(const Triangle& t, const Ray& ray){
@@ -69,7 +70,7 @@ float intersect(const Triangle& t, const Ray& ray){
 
 	/* Floats are only rarely exactly 0, are you sure this is correct? */
 	if (angle == 0) // If the ray and the plane are parallel (so their angle is 0), they won't intersect.
-		return 10e6f;
+		return VEWY_HIGH;
 
 	float rayD = -(dot(t.normal, rayOrig) + dot(t.normal, v0)) / angle; // The distance of the ray's origin
 	// to the plane in which lies the triangle.
@@ -77,11 +78,11 @@ float intersect(const Triangle& t, const Ray& ray){
 	Vec3Df rayHit = rayOrig + rayD * rayDir; // The intersection point of the ray and the plane in which lies the triangle.
 
 	if (dot(t.normal, cross(v1 - v0, rayHit - v0)) < 0)
-		return 10e6f;
+		return VEWY_HIGH;
 	if (dot(t.normal, cross(v2 - v1, rayHit - v1)) < 0)
-		return 10e6f;
+		return VEWY_HIGH;
 	if (dot(t.normal, cross(v0 - v2, rayHit - v2)) < 0)
-		return 10e6f;
+		return VEWY_HIGH;
 
 	return rayD;
 }
@@ -92,11 +93,11 @@ const Vec3Df& performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     Ray ray = Ray(color, origin, dest);
 
 	/* Actual ray tracing code */
-	float hit = 10e6f;
+	float hit = VEWY_HIGH;
 	unsigned int amountOfTriangles = MyMesh.triangles.size();
 	for (unsigned int i = 0; i < amountOfTriangles; i++){
 		float ins = intersect(MyMesh.triangles[i], ray);
-		if (ins < hit)
+		if (ins < hit && ins > 0)
 			hit = ins;
 	}
 	//hit = 1 / ((hit * 2) + 1); // Arithmetic function for getting a usable color.

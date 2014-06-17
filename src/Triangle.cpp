@@ -22,6 +22,7 @@ Triangle::Triangle(const Triangle & triangle){
 
     normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p,
             vertices[2].p - vertices[0].p);
+	normal.normalize();
 }
 
 Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2,
@@ -42,6 +43,8 @@ Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2,
 
     normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p,
             vertices[2].p - vertices[0].p);
+	normal.normalize();
+
 }
 
 Triangle::~Triangle(){
@@ -58,6 +61,7 @@ Triangle & Triangle::operator=(const Triangle & triangle){
 
     normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p,
             vertices[2].p - vertices[0].p);
+	normal.normalize();
 
     return (*this);
 }
