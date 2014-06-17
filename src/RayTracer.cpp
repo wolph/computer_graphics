@@ -120,8 +120,8 @@ void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh) {
 			//c'est le stront a la plafond, c'est drôle
 			//e.g., maillage, triangles, sphères etc.
 			Vec3Df total(0, 0, 0);
-			for (int xs = 0; xs < msaa; xs++) {
-				for (int ys = 0; ys < msaa; ys++) {
+			for (unsigned int xs = 0; xs < msaa; xs++) {
+				for (unsigned int ys = 0; ys < msaa; ys++) {
 
 					float xscale = 1.0f - (x + float(xs) / msaa) / (w - 1);
 #ifdef WIN32
@@ -174,15 +174,15 @@ void startRayTracing(int texIndex, bool verbose){
 	std::thread** th = (std::thread**) alloca(numThreads * sizeof(std::thread*));
 	int subw = w / numThreads;
 
-	for (int i = 0; i < numThreads; i++)
+	for (unsigned int i = 0; i < numThreads; i++)
 		th[i] = new std::thread(raytracePart, &result, w, h, i*subw, 0, (i+1)*subw, h);// i * subw, 0, subw, h);
 
 	// wait for them to finish
-	for (int i = 0; i < numThreads; i++)
+	for (unsigned int i = 0; i < numThreads; i++)
 		th[i]->join();
 
 	// kill them all
-	for (int i = 0; i < numThreads; i++)
+	for (unsigned int i = 0; i < numThreads; i++)
 		delete th[i];
 
     // calculate elapsed time

@@ -18,7 +18,10 @@ else
         PRODUCTION = true
     endif
     ifeq ($(UNAME_S),Darwin)
-        CCFLAGS += -D OSX -D GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
+        CCFLAGS += -D OSX
+        CCFLAGS += -D GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
+        CCFLAGS += -D PREVIEW_RES=256
+        CCFLAGS += -D THREADS=8
         LFLAGS += -framework OpenGL -framework GLUT
         LFLAGS += -D GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
         PNG = true

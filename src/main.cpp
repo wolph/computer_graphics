@@ -19,10 +19,19 @@ unsigned int RayTracingResolutionX = 1024;  // largeur fenetre
 unsigned int RayTracingResolutionY = 1024;  // largeur fenetre
 bool needRebuild = false; // if the raytrace needs to be built
 
-unsigned int previewResX = 256;
-unsigned int previewResY = 256;
+#ifdef PREVIEW_RES
+unsigned int previewResX = PREVIEW_RES;
+unsigned int previewResY = PREVIEW_RES;
+#else
+unsigned int previewResX = 512;
+unsigned int previewResY = 512;
+#endif
 
+#ifdef THREADS
+unsigned int numThreads = THREADS;
+#else
 unsigned int numThreads = 4;
+#endif
 unsigned int msaa = 1;
 
 void drawAxes(float length){
@@ -268,6 +277,8 @@ void keyboard(unsigned char key, int x, int y){
 			isRealtimeRaytracing = 0;
 			break;
 		case 'b':
+		    cout << "Using " << numThreads << " threads and resolution of "
+		        << previewResX << "x" << previewResY << endl;
 			isRealtimeRaytracing = 1;
 			isDrawingTexture = 0;
 			break;
