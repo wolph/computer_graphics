@@ -52,14 +52,16 @@ void init(int argc, char **argv){
 #define dot Vec3Df::dotProduct
 #define cross Vec3Df::crossProduct
 
+#define v0 t.vertices[0].p
+#define v1 t.vertices[1].p
+#define v2 t.vertices[2].p
+
+#define rayOrig ray.orig
+#define rayDir ray.dir
+
 /** Calculate intersection between triangle and ray */
 float intersect(const Triangle& t, const Ray& ray){
-	const Vec3Df& v0 = t.vertices[0].p, // Variables saved as locals for less external function calls,
-		v1 = t.vertices[1].p,    // less characters in the code and better readability.
-		v2 = t.vertices[2].p,
-		rayOrig = ray.getOrig(),
 
-		rayDir = ray.getDir(); // The normalized direction of the ray.
 	float angle = dot(t.normal, rayDir); // The cosine of the angle of the vectors (dotproduct of the vectors).
 
 	/* Floats are only rarely exactly 0, are you sure this is correct? */

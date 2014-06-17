@@ -22,13 +22,13 @@ inline const Vec3Df normal(const Vec3Df& in){
 }
 
 class Ray{
-private:
+public:
     Vec3Df color;
     const Vec3Df orig;
     const Vec3Df dest;
 	const Vec3Df dir;
 
-public:
+//public:
     //Ray(Vec3Df& color, const Vec3Df& orig, const Vec3Df& dest);
     Ray(Vec3Df& color_, const Vec3Df& orig_, const Vec3Df& dest_):
         color(color_), orig(orig_), dest(dest_), dir(normal(dest_ - orig)){

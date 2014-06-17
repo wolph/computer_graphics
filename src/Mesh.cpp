@@ -282,11 +282,12 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
                             (materialIndex.find(matname))->second);
                 }
             }else if(vhandles.size() == 3){
+                triangleMaterials.push_back(
+                        (materialIndex.find(matname))->second);
                 tempTriangles.push_back(std::vector<int> {vhandles[0],
                         vhandles[1], vhandles[2], texhandles[0], texhandles[1],
                         texhandles[2]});
-                triangleMaterials.push_back(
-                        (materialIndex.find(matname))->second);
+
             }else{
                 printf(
                         "TriMesh::LOAD: Unexpected number of face vertices (<3). Ignoring face");

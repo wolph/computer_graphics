@@ -27,13 +27,19 @@ Triangle::Triangle(const Triangle & triangle){
 
 Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2,
         const Texture & t0, const Texture & t1, const Texture & t2){
-    vertices[0] = v0;
-    vertices[1] = v1;
-    vertices[2] = v2;
+    if(&v0 != 0)
+        vertices[0] = v0;
+    if(&v1 != 0)
+        vertices[1] = v1;
+    if(&v2 != 0)
+        vertices[2] = v2;
 
-    textures[0] = t0;
-    textures[1] = t1;
-    textures[2] = t2;
+    if(&t0 != 0)
+        textures[0] = t0;
+    if(&t1 != 0)
+        textures[1] = t1;
+    if(&t2 != 0)
+        textures[2] = t2;
 
     normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p,
             vertices[2].p - vertices[0].p);
@@ -58,21 +64,4 @@ Triangle & Triangle::operator=(const Triangle & triangle){
 	normal.normalize();
 
     return (*this);
-}
-
-void calculateNormal(){
-//    Triangle triangle, Vertex n;
-    /* triangle is the input triangle, n is the normal that will be filled as the output */
-//    Vertex a, b;
-//    a[X] = triangle[B][X] - triangle[A][X];
-//    a[Y] = triangle[B][Y] - triangle[A][Y];
-//    a[Z] = triangle[B][Z] - triangle[A][Z];
-//
-//    b[X] = triangle[C][X] - triangle[B][X];
-//    b[Y] = triangle[C][Y] - triangle[B][Y];
-//    b[Z] = triangle[C][Z] - triangle[B][Z];
-//
-//    n[X] = a[Y] * b[Z] - a[Z] * b[Y];
-//    n[Y] = a[Z] * b[X] - a[X] * b[Z];
-//    n[Z] = a[X] * b[Y] - a[Y] * b[X];
 }
