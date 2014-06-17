@@ -91,7 +91,7 @@ const Vec3Df& performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
 	unsigned int amountOfTriangles = MyMesh.triangles.size();
 	for (unsigned int i = 0; i < amountOfTriangles; i++){
 		float ins = intersect(MyMesh.triangles[i], ray);
-		if (ins < hit)
+		if (ins < hit && ins > 0)
 			hit = ins;
 	}
 	//hit = 1 / ((hit * 2) + 1); // Arithmetic function for getting a usable color.
