@@ -3,7 +3,7 @@
 
 AABB::AABB() : sub(0), radius(-1) { }
 
-AABB::AABB(Vec3Df& pos, float radius) : pos(pos), radius(radius), sub(0) {
+AABB::AABB(Vec3Df& pos, float radius) : sub(0), pos(pos), radius(radius) {
 }
 
 AABB::~AABB() {
@@ -38,19 +38,73 @@ void AABB::split() {
 	}
 }
 
-Triangle* AABB::collide(Ray& ray) {
-	// check x plane
-	float x = pos.p[0];
-	float a = (x - ray.orig.p[0]) / ray.dir.p[0];
+bool AABB::collidePlane(int axis, Ray& ray) {
+	// check axis plane
+	float v1 = pos.p[axis];
+	if (ray.dir.p[axis] > 0)
+		v1 += 2 * radius;
 
-	float y = a * ray.dir.p[1] + ray.orig.p[1];
-	float z = a * ray.dir.p[2] + ray.orig.p[2];
+	// factor
+	float a = (v1 - ray.orig.p[axis]) / ray.dir.p[axis];
 
-	if (pos.p[1] < y && y < pos.p[1] + 2 * radius)
-		if (pos.p[2] < z && y < pos.p[2] + 2 * radius)
-			printf("erin\n");
+	// other axis
+	int axis2 = (axis + 1) % 3;
+	int axis3 = (axis + 2) % 3;
 
-	printf("(%f, %f)\n", y, z);
+	// other axis values
+	float v2 = a * ray.dir.p[axis2] + ray.orig.p[axis2];
+	float v3 = a * ray.dir.p[axis3] + ray.orig.p[axis3];
+
+	// check 2D aabb
+	if (pos.p[axis2] < v2 && v2 < pos.p[axis2] + 2 * radius)
+		if (pos.p[axis3] < v3 && v3 < pos.p[axis3] + 2 * radius)
+			return true;
+	return false;
+}
+
+float AABB::collide(Ray& ray, Triangle** out) {
+	// check hit with this cube
+	bool hit = false;
+	for (int i = 0; i < 3; i++) {
+		if (collidePlane(i, ray)) {
+			hit = true;
+			break;
+		}
+	}
+
+	// return when no hit
+	if (!hit)
+		return 0;
+
+	// current closest triangle
+	float shortest = 1e10f;
+	Triangle* res = 0;
+
+	// check with leaves
+	for (int i = 0; i < leaves.size(); i++) {
+		float dist = ray.intersect(leaves[i]);
+		if (dist < shortest) {
+			shortest = dist;
+			res = leaves[i];
+		}
+	}
+
+	// check with subnodes
+	// TODO: skip irrelevant subnodes
+	for (int i = 0; i < 8; i++) {
+		Triangle* res2;
+		float dist = sub[i]->collide(ray, &res2);
+		if (dist < shortest) {
+			res = res2;
+			shortest = dist;
+		}
+	}
+
+	// hit
+	*out = res;
+	return shortest;
+
+	//printf("(%f, %f)\n", y, z);
 
 	return 0;
 }
@@ -93,7 +147,6 @@ void Tree::build(Mesh& mesh) {
 }
 
 void Tree::add(Triangle& tr) {
-	bool same = true;
 	AABB* current = root;
 	int a0, a1, a2;
 
@@ -103,7 +156,7 @@ void Tree::add(Triangle& tr) {
 		a1 = current->follow(tr.vertices[1].p);
 		a2 = current->follow(tr.vertices[2].p);
 
-		printf("follow: %d, %d, %d\n", a0, a1, a2);
+		//printf("follow: %d, %d, %d\n", a0, a1, a2);
 
 		if (a0 != a1 || a1 != a2)
 			break;
@@ -113,7 +166,11 @@ void Tree::add(Triangle& tr) {
 		depth++;
 	}
 
-	printf("Depth: %d\n\n", depth);
+	//printf("Depth: %d\n\n", depth);
 
 	current->leaves.push_back(&tr);
+}
+
+float Tree::collide(Ray& ray, Triangle** out) {
+	return root->collide(ray, out);
 }

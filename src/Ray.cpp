@@ -24,7 +24,8 @@ void Ray::setColor(const float red, const float green, const float blue){
     this->color[2] = blue;
 }
 
-float Ray::intersect(Triangle& triangle){
+float Ray::intersect(Triangle* triangle2){
+	Triangle& triangle = *triangle2;
     
 	return alternateIntersect(triangle);
 
