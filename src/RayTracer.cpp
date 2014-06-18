@@ -1,4 +1,5 @@
 #include "RayTracer.hpp"
+#include "Tree.hpp"
 #include <ctime>
 
 //temporary variables
@@ -14,6 +15,7 @@ extern unsigned int previewResX;
 extern unsigned int previewResY;
 extern unsigned int msaa;
 extern unsigned int numThreads;
+extern Tree MyTree;
 
 //use this function for any preprocessing of the mesh.
 int init(int argc, char **argv){
@@ -63,6 +65,8 @@ int init(int argc, char **argv){
     mesh = string("mesh/").append(mesh).append(".obj");
     MyMesh.loadMesh(mesh.c_str(), true);
     MyMesh.computeVertexNormals();
+	MyTree.build(MyMesh);
+
 
     //one first move: initialize the first light source
     //at least ONE light source has to be in the scene!!!
