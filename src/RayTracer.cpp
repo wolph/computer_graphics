@@ -144,12 +144,9 @@ void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
 void startRayTracing(int texIndex, bool verbose){
     if(verbose)
         cout << "Raytracing" << endl;
-    int w = RAYTRACE_RES_X;
-    int h = RAYTRACE_RES_Y;
-    if(!verbose)
-        w = PREVIEW_RES_X;
-    if(!verbose)
-        h = PREVIEW_RES_Y;
+    const int w = verbose ? RAYTRACE_RES_X : PREVIEW_RES_X;
+    const int h = verbose ? RAYTRACE_RES_Y : PREVIEW_RES_Y;
+
     Image result(w, h);
 
     produceRay(0, 0, &origin00, &dest00);
@@ -185,11 +182,11 @@ void startRayTracing(int texIndex, bool verbose){
     end = clock();
     ticks = end - start;
     start = end;
-    int millis = ticks * 1000 / CLOCKS_PER_SEC;
+    float millis = ticks * 1000. / CLOCKS_PER_SEC;
 
     if(verbose)
-        printf("Rendering took %d ms cpu seconds and %d ms wall time\n", millis,
-    millis / fmax(THREADS, 1));
+        printf("Rendering took %.0f ms cpu seconds and %.0f ms wall time\n",
+                millis, millis / fmax(THREADS, 1));
 
     // write to texture
     glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
@@ -202,7 +199,7 @@ void startRayTracing(int texIndex, bool verbose){
     millis = ticks * 1000 / CLOCKS_PER_SEC;
 
     if(verbose)
-        printf("Uploading to GPU took %d ms\n", millis);
+        printf("Uploading to GPU took %.0f ms\n", millis);
 
     if(verbose)
         result.writeImage("result");
@@ -228,29 +225,30 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     Vec3Df tocam = origin - impact;
     tolight.normalize();
 
-	// background
-	if (!triangle) {
-		if (ray.dir.p[2] < 0) {
-			float height = origin.p[2];
-			float a = height / ray.dir.p[2];
-			float x = origin.p[0] + a * origin.p[0];
-			float y = origin.p[1] + a * origin.p[1];
+    // background
+    if(!triangle){
+        if(ray.dir.p[2] < 0){
+            float height = origin.p[2];
+            float a = height / ray.dir.p[2];
+            float x = origin.p[0] + a * origin.p[0];
+            float y = origin.p[1] + a * origin.p[1];
 
-			bool white = true;
-			if (fmodf(x, 1) > 0.5)
-				white = !white;
-			if (fmodf(y, 1) > 0.5)
-				white = !white;
+            bool white = true;
+            if(fmodf(x, 1) > 0.5)
+                white = !white;
+            if(fmodf(y, 1) > 0.5)
+                white = !white;
 
-			if (white) return Vec3Df(0.1, 0.1, 0.1);
-			else return Vec3Df(0.9, 0.9, 0.9);
-		}
-		else
-			return Vec3Df(0, 0, 1);
-	}
+            if(white)
+                return Vec3Df(0.1, 0.1, 0.1);
+            else
+                return Vec3Df(0.9, 0.9, 0.9);
+        }else
+            return Vec3Df(0, 0, 1);
+    }
 
     // ambient lighting
-	Vec3Df color;
+    Vec3Df color;
     color += Vec3Df(0.2, 0.2, 0.2);
 
     // diffuse
