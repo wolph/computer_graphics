@@ -236,7 +236,13 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
 	// calculate nearest triangle
 	Triangle* triangle;
 	float dist = MyTree.collide(ray, &triangle);
-	return Vec3Df(1.0f / dist, 1.0f / dist, 1.0f / dist);
+	Vec3Df light(1, 1, 1);
+	Vec3Df orig2 = origin + ray.dir * dist;
+	Vec3Df tolight = light - orig2;
+
+	float angle = dot(orig2, tolight) * 2;
+
+	return Vec3Df(angle, angle, angle * 0.5f);
 }
 
 void yourDebugDraw(){

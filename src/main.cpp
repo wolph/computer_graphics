@@ -33,7 +33,7 @@ unsigned int numThreads = THREADS;
 #else
 unsigned int numThreads = 4;
 #endif
-unsigned int msaa = 2;
+unsigned int msaa = 1;
 
 void drawAxes(float length){
     glDisable(GL_LIGHTING);
