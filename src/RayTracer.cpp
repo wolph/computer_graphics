@@ -231,26 +231,10 @@ Vec3Df black(0, 0, 0);
 Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     Ray ray = Ray(black, origin, dest);
 
-    // calculate nearest triangle
-    int idx = -1; /* the triangle that was hit */
-    float hit = VEWY_HIGH; /* distance to hit triangle */
-    unsigned int numTriangles = MyMesh.triangles.size();
-    for(unsigned int i = 0;i < numTriangles;i++){
-        float ins = ray.intersect(&MyMesh.triangles[i]);
-        if(ins < VEWY_HIGH && ins < hit && ins > 0){
-            hit = ins;
-            idx = i;
-        }
-    }
-
-    // using black
-    if(idx == -1)
-        return black;
-
-    Vec3Df& normal = MyMesh.triangles[idx].normal;
-    float angle = -dot(normal, origin) * 0.33333;
-
-    return (normal * 0.2f + Vec3Df(angle, angle, angle)) / 2;
+	// calculate nearest triangle
+	Triangle* triangle;
+	float dist = MyTree.collide(ray, &triangle);
+	return Vec3Df(1.0f / dist, 1.0f / dist, 1.0f / dist);
 }
 
 void yourDebugDraw(){

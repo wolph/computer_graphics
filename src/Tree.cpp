@@ -91,12 +91,14 @@ float AABB::collide(Ray& ray, Triangle** out) {
 
 	// check with subnodes
 	// TODO: skip irrelevant subnodes
-	for (int i = 0; i < 8; i++) {
-		Triangle* res2;
-		float dist = sub[i]->collide(ray, &res2);
-		if (dist < shortest) {
-			res = res2;
-			shortest = dist;
+	if (sub) {
+		for (int i = 0; i < 8; i++) {
+			Triangle* res2;
+			float dist = sub[i]->collide(ray, &res2);
+			if (dist < shortest) {
+				res = res2;
+				shortest = dist;
+			}
 		}
 	}
 
