@@ -152,7 +152,7 @@ int main(int argc, char** argv){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB,
-            GL_UNSIGNED_BYTE, buf);
+    GL_UNSIGNED_BYTE, buf);
 
     // texture 2
     glBindTexture(GL_TEXTURE_2D, textures[1]);
@@ -162,7 +162,7 @@ int main(int argc, char** argv){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB,
-            GL_UNSIGNED_BYTE, buf);
+    GL_UNSIGNED_BYTE, buf);
 
     delete[] buf;
 
@@ -186,6 +186,23 @@ int main(int argc, char** argv){
     return 0;  // instruction jamais exécutée
 }
 
+void drawFPS(){
+    clock_t diff = clock() - lastFrameTime;
+    lastFrameTime = clock();
+
+    if((0. + lastFrameTime - lastFPSRenderTime)/CLOCKS_PER_SEC > .01){
+        lastFPSRenderTime = lastFrameTime;
+        float fps = (1. / diff) * CLOCKS_PER_SEC;
+        if(isRealtimeRaytracing)fps *= THREADS;
+        sprintf(screenFPS, "%.1f fps", fps);
+    }
+
+    int i = -1;
+    while(screenFPS[++i] != '\0'){
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, screenFPS[i]);
+    }
+}
+
 /**
  * Fonctions de gestion opengl à ne pas toucher
  */
@@ -196,6 +213,7 @@ void display(void){
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     // Effacer tout
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // la couleur et le z
+    drawFPS();
 
     glLoadIdentity();  // repere camera
 

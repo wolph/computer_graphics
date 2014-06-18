@@ -7,8 +7,6 @@ Vec3Df testRayOrigin;
 Vec3Df testRayDestination;
 string mesh;
 extern unsigned int textures[2];
-clock_t lastFrameTime;
-float fps;
 extern Tree MyTree;
 
 //use this function for any preprocessing of the mesh.
@@ -33,8 +31,6 @@ int init(int argc, char **argv){
         option::printUsage(fwrite, stdout, usage, columns);
         return 2;
     }
-
-    lastFrameTime = clock();
 
     if(options[MESH]){
         const char* arg = options[MESH].last()->arg;
@@ -258,7 +254,6 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
 }
 
 void yourDebugDraw(){
-    drawFPS();
 }
 
 void yourKeyboardFunc(char t, int x, int y){
@@ -270,20 +265,4 @@ void yourKeyboardFunc(char t, int x, int y){
 
     std::cout << t << " pressed! The mouse was in location " << x << "," << y
             << "!" << std::endl;
-}
-
-void drawFPS(){
-    clock_t diff = clock() - lastFrameTime;
-    lastFrameTime = clock();
-    fps = 1 / ((float)diff / (float)CLOCKS_PER_SEC / (float)THREADS);
-
-    char *screenFPS = (char*)malloc(sizeof(char) * 10);
-    sprintf(screenFPS, "%.1f fps", fps);
-
-    glLoadIdentity();
-    //glRasterPos2f(1.0f, 1.0f); // FPS draws on the lefthand bottom side of the screen now, if anyone knows how to get it to the lefthand top of the screen please fix it ;)
-    int i = -1;
-    while(screenFPS[++i] != '\0'){
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, screenFPS[i]);
-    }
 }
