@@ -24,7 +24,8 @@ struct AABB {
 
 	void split();
 	int follow(Vec3Df& v);
-	Triangle* collide(Ray& ray);
+	float collide(Ray& ray, Triangle** out);
+	bool collidePlane(int axis, Ray& ray);
 };
 
 class Tree {
