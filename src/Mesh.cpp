@@ -335,7 +335,7 @@ bool Mesh::loadMtl(const char * filename,
 
     memset(line, 0, LINE_LEN);
     while(_in && !feof(_in)){
-        fgets(line, LINE_LEN, _in);
+        if(!fgets(line, LINE_LEN, _in))continue;
         if(line[0] == '#') // skip comments
                 {
             memset(line, 0, LINE_LEN);
