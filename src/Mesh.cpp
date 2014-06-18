@@ -320,6 +320,7 @@ bool Mesh::loadMtl(const char * filename,
         std::map<string, unsigned int> & materialIndex){
     FILE * _in;
     _in = fopen(filename, "r");
+
     if(!_in){
         printf("  Warning! Material file '%s' not found!\n", filename);
         return false;
@@ -335,7 +336,7 @@ bool Mesh::loadMtl(const char * filename,
 
     memset(line, 0, LINE_LEN);
     while(_in && !feof(_in)){
-        if(!fgets(line, LINE_LEN, _in))continue;
+        fgets(line, LINE_LEN, _in);
         if(line[0] == '#') // skip comments
                 {
             memset(line, 0, LINE_LEN);
@@ -347,7 +348,7 @@ bool Mesh::loadMtl(const char * filename,
                 if(materialIndex.find(key) == materialIndex.end()){
                     mat.set_name(key);
                     materials.push_back(mat);
-                    materialIndex[key] = materials.size() - 1;
+                    materialIndex[key] = (unsigned int)materials.size() - 1;
                 }
                 mat.cleanup();
             }
@@ -419,13 +420,12 @@ bool Mesh::loadMtl(const char * filename,
             if(materialIndex.find(key) == materialIndex.end()){
                 mat.set_name(key);
                 materials.push_back(mat);
-                materialIndex[key] = materials.size() - 1;
+                materialIndex[key] = (unsigned int)materials.size() - 1;
             }
         }
         memset(line, 0, LINE_LEN);
     }
-    unsigned int msize = materials.size();
-    printf("%u  materials loaded.\n", msize);
+    printf("%d  materials loaded.\n", materials.size());
     fclose(_in);
     return true;
 }
