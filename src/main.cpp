@@ -190,16 +190,17 @@ void drawFPS(){
     clock_t diff = clock() - lastFrameTime;
     lastFrameTime = clock();
 
-    if((0. + lastFrameTime - lastFPSRenderTime)/CLOCKS_PER_SEC > .01){
+    if((0. + lastFrameTime - lastFPSRenderTime) / CLOCKS_PER_SEC > .01){
         lastFPSRenderTime = lastFrameTime;
         float fps = (1. / diff) * CLOCKS_PER_SEC;
-        if(isRealtimeRaytracing)fps *= THREADS;
+        if(isRealtimeRaytracing)
+            fps *= THREADS;
         sprintf(screenFPS, "%.1f fps", fps);
     }
 
-    int i = -1;
-    while(screenFPS[++i] != '\0'){
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, screenFPS[i]);
+    int i = 0;
+    while(screenFPS[i] != '\0'){
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, screenFPS[i++]);
     }
 }
 
