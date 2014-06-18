@@ -206,7 +206,7 @@ void startRayTracing(int texIndex, bool verbose){
 
     if(verbose)
         printf("Rendering took %d ms cpu seconds and %d ms wall time\n",
-                millis, millis/max(THREADS, 1));
+                millis, millis/max(4, 1));
 
     // write to texture
     glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
@@ -238,7 +238,7 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     float hit = VEWY_HIGH; /* distance to hit triangle */
     unsigned int numTriangles = MyMesh.triangles.size();
     for(unsigned int i = 0;i < numTriangles;i++){
-        float ins = ray.intersect(MyMesh.triangles[i]);
+        float ins = ray.intersect(&MyMesh.triangles[i]);
         if(ins < VEWY_HIGH && ins < hit && ins > 0){
             hit = ins;
             idx = i;

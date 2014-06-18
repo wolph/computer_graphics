@@ -37,4 +37,5 @@ public:
 
 	void build(Mesh& mesh);
 	void add(Triangle& tr);
+	float collide(Ray& ray, Triangle** out);
 };

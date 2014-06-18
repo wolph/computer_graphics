@@ -157,7 +157,7 @@ void Tree::add(Triangle& tr) {
 		a1 = current->follow(tr.vertices[1].p);
 		a2 = current->follow(tr.vertices[2].p);
 
-		printf("follow: %d, %d, %d\n", a0, a1, a2);
+		//printf("follow: %d, %d, %d\n", a0, a1, a2);
 
 		if (a0 != a1 || a1 != a2)
 			break;
@@ -167,7 +167,11 @@ void Tree::add(Triangle& tr) {
 		depth++;
 	}
 
-	printf("Depth: %d\n\n", depth);
+	//printf("Depth: %d\n\n", depth);
 
 	current->leaves.push_back(&tr);
+}
+
+float Tree::collide(Ray& ray, Triangle** out) {
+	return root->collide(ray, out);
 }

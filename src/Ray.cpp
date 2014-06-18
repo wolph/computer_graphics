@@ -24,9 +24,10 @@ void Ray::setColor(const float red, const float green, const float blue){
     this->color[2] = blue;
 }
 
-float Ray::intersect(Triangle* triangle){
+float Ray::intersect(Triangle* triangle2){
+	Triangle& triangle = *triangle2;
     
-	return alternateIntersect(&triangle);
+	return alternateIntersect(triangle);
 
 	// The cosine of the angle of the vectors (dotproduct of the vectors).
     const float angle = dot(triangle.normal, dir);
