@@ -59,7 +59,7 @@ void drawAxes(float length){
  */
 void drawTexture(int texIndex){
     glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
+    glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
     glBegin(GL_QUADS);
     glTexCoord2f(0, 0);
     glVertex3f(0, 0, 0);
@@ -163,23 +163,25 @@ int main(int argc, char** argv){
     char* buf = new char[1024 * 1024 * 3];
     glGenTextures(2, textures);
 
-	// texture 1
+    // texture 1
     glBindTexture(GL_TEXTURE_2D, textures[0]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB,
+            GL_UNSIGNED_BYTE, buf);
 
-	// texture 2
-	glBindTexture(GL_TEXTURE_2D, textures[1]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
+    // texture 2
+    glBindTexture(GL_TEXTURE_2D, textures[1]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB,
+            GL_UNSIGNED_BYTE, buf);
 
     delete[] buf;
 
@@ -192,8 +194,10 @@ int main(int argc, char** argv){
     glutIdleFunc(animate);
 
     int ret = init(argc, argv);
-    if(ret == 255)return 0;
-    if(ret > 0)return ret;
+    if(ret == 255)
+        return 0;
+    if(ret > 0)
+        return ret;
 
     // lancement de la boucle principale
     glutMainLoop();
@@ -214,30 +218,28 @@ void display(void){
 
     glLoadIdentity();  // repere camera
 
-
     if(isDrawingTexture || isRealtimeRaytracing){
         GLdouble tb_matrix2[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -2, -2, -4,
                 1};
 
         glMultMatrixd(tb_matrix2);
-		drawTexture(activeTexIndex);
+        drawTexture(activeTexIndex);
 
-		// reset view
-		glLoadIdentity();
-		tbVisuTransform();
+        // reset view
+        glLoadIdentity();
+        tbVisuTransform();
 
-		// swap buffers; draw on back buffer
-		if (isRealtimeRaytracing) {
-			startRayTracing(!activeTexIndex, false);
-			activeTexIndex = !activeTexIndex;
-		}
-		else {
-			if (needRebuild == true) {
-				startRayTracing(activeTexIndex, true);
-				needRebuild = false;
-			}
-		}
-		yourDebugDraw();
+        // swap buffers; draw on back buffer
+        if(isRealtimeRaytracing){
+            startRayTracing(!activeTexIndex, false);
+            activeTexIndex = !activeTexIndex;
+        }else{
+            if(needRebuild == true){
+                startRayTracing(activeTexIndex, true);
+                needRebuild = false;
+            }
+        }
+        yourDebugDraw();
     }else{
         tbVisuTransform(); // origine et orientation de la scene
         draw();
@@ -262,8 +264,8 @@ void keyboard(unsigned char key, int x, int y){
     fflush(stdout);
     switch(key){
         case 't':
-			isDrawingTexture = 0;
-			isRealtimeRaytracing = 0;
+            isDrawingTexture = 0;
+            isRealtimeRaytracing = 0;
             break;
         case 'L':
             MyLightPositions.push_back(getCameraPosition());
@@ -272,16 +274,16 @@ void keyboard(unsigned char key, int x, int y){
             MyLightPositions[MyLightPositions.size() - 1] = getCameraPosition();
             break;
         case 'r':
-			needRebuild = true;
+            needRebuild = true;
             isDrawingTexture = 1;
-			isRealtimeRaytracing = 0;
-			break;
-		case 'b':
-		    cout << "Using " << numThreads << " threads and resolution of "
-		        << previewResX << "x" << previewResY << endl;
-			isRealtimeRaytracing = 1;
-			isDrawingTexture = 0;
-			break;
+            isRealtimeRaytracing = 0;
+            break;
+        case 'b':
+            cout << "Using " << numThreads << " threads and resolution of "
+                    << previewResX << "x" << previewResY << endl;
+            isRealtimeRaytracing = 1;
+            isDrawingTexture = 0;
+            break;
         case 27:     // touche ESC
             exit(0);
     }

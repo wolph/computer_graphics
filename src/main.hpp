@@ -16,7 +16,10 @@
 #include <ctime>
 #include <GL/glut.h>
 #include <assert.h>
+
+#if THREADS != 0
 #include <thread>
+#endif
 
 #include "Mesh.hpp"
 #include "Ray.hpp"

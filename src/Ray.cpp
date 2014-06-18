@@ -29,7 +29,7 @@ float Ray::intersect(Triangle& triangle){
     const float angle = dot(triangle.normal, dir);
 
     /* Floats are only rarely exactly 0, are you sure this is correct? */
-    if(angle == 0){
+    if(abs(angle) < 0.01){
         // If the ray and the plane are parallel (so their angle is 0), they won't intersect.
         return VEWY_HIGH;
     }

@@ -38,7 +38,7 @@ int init(int argc, char **argv){
         return 2;
     }
 
-	lastFrameTime = clock();
+    lastFrameTime = clock();
 
     if(options[MESH]){
         const char* arg = options[MESH].last()->arg;
@@ -112,140 +112,143 @@ Vec3Df origin01, dest01;
 Vec3Df origin10, dest10;
 Vec3Df origin11, dest11;
 
-void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh) {
-	Vec3Df origin, dest;
-	for (float y = yy; y < hh; y++){
-		for (float x = xx; x < ww; x++){
-			//svp, decidez vous memes quels parametres vous allez passer à la fonction
-			//c'est le stront a la plafond, c'est drôle
-			//e.g., maillage, triangles, sphères etc.
-			Vec3Df total(0, 0, 0);
-			for (unsigned int xs = 0; xs < msaa; xs++) {
-				for (unsigned int ys = 0; ys < msaa; ys++) {
+void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
+    Vec3Df origin, dest;
+    for(float y = yy;y < hh;y++){
+        for(float x = xx;x < ww;x++){
+            //svp, decidez vous memes quels parametres vous allez passer à la fonction
+            //c'est le stront a la plafond, c'est drôle
+            //e.g., maillage, triangles, sphères etc.
+            Vec3Df total(0, 0, 0);
+            for(unsigned int xs = 0;xs < msaa;xs++){
+                for(unsigned int ys = 0;ys < msaa;ys++){
 
-					float xscale = 1.0f - (x + float(xs) / msaa) / (w - 1);
-#ifdef WIN32
-					float yscale = float(y + float(ys) / msaa) / (h - 1);
-#else
-					float yscale = 1.0f - (y + float(ys) / msaa) / (h - 1);
-#endif
-					origin = yscale * (xscale * origin00 + (1 - xscale) * origin10)
-						+ (1 - yscale)
-						* (xscale * origin01 + (1 - xscale) * origin11);
-					dest = yscale * (xscale * dest00 + (1 - xscale) * dest10)
-						+ (1 - yscale) * (xscale * dest01 + (1 - xscale) * dest11);
+                    float xscale = 1.0f - (x + float(xs) / msaa) / (w - 1);
+                    float yscale = float(y + float(ys) / msaa) / (h - 1);
+                    origin = yscale
+                            * (xscale * origin00 + (1 - xscale) * origin10)
+                            + (1 - yscale)
+                                    * (xscale * origin01
+                                            + (1 - xscale) * origin11);
+                    dest = yscale * (xscale * dest00 + (1 - xscale) * dest10)
+                            + (1 - yscale)
+                                    * (xscale * dest01 + (1 - xscale) * dest11);
 
-					total += performRayTracing(origin, dest);
-				}
-			}
+                    total += performRayTracing(origin, dest);
+                }
+            }
 
-			// calculate average color
-			total /= msaa * msaa;
-			// result->_image
-			result->_image[(y * result->_width + x) * 3 + 0] = total[0];
-			result->_image[(y * result->_width + x) * 3 + 1] = total[1];
-			result->_image[(y * result->_width + x) * 3 + 2] = total[2];
-		}
-	}
+            // calculate average color
+            total /= msaa * msaa;
+            // result->_image
+            result->_image[(y * result->_width + x) * 3 + 0] = total[0];
+            result->_image[(y * result->_width + x) * 3 + 1] = total[1];
+            result->_image[(y * result->_width + x) * 3 + 2] = total[2];
+        }
+    }
 }
 
 void startRayTracing(int texIndex, bool verbose){
-    //C'est nouveau!!!
-    //commencez ici et lancez vos propres fonctions par rayon.
-
-	if (verbose) cout << "Raytracing" << endl;
-	int w = RayTracingResolutionX;
-	int h = RayTracingResolutionY;
-	if (!verbose) w = previewResX;
-	if (!verbose) h = previewResY;
-	Image result(w, h);
+    if(verbose)
+        cout << "Raytracing" << endl;
+    int w = RayTracingResolutionX;
+    int h = RayTracingResolutionY;
+    if(!verbose)
+        w = previewResX;
+    if(!verbose)
+        h = previewResY;
+    Image result(w, h);
 
     produceRay(0, 0, &origin00, &dest00);
     produceRay(0, WindowSizeX - 1, &origin01, &dest01);
     produceRay(WindowSizeX - 1, 0, &origin10, &dest10);
-    produceRay(WindowSizeX - 1, WindowSizeY - 1, &origin11,
-            &dest11);
+    produceRay(WindowSizeX - 1, WindowSizeY - 1, &origin11, &dest11);
 
     // Perform timing
     time_t start, end, ticks;
     start = clock();
 
     // multithread
-	std::thread** th = (std::thread**) alloca(numThreads * sizeof(std::thread*));
-	int subw = w / numThreads;
+#if THREADS != 0
+    std::thread** th = (std::thread**)alloca(numThreads * sizeof(std::thread*));
+    int subw = w / numThreads;
 
-	for (unsigned int i = 0; i < numThreads; i++)
-		th[i] = new std::thread(raytracePart, &result, w, h, i*subw, 0, (i+1)*subw, h);// i * subw, 0, subw, h);
+    for(unsigned int i = 0;i < numThreads;i++)
+    th[i] = new std::thread(raytracePart, &result, w, h, i * subw, 0,
+            (i + 1) * subw, h);			// i * subw, 0, subw, h);
 
-	// wait for them to finish
-	for (unsigned int i = 0; i < numThreads; i++)
-		th[i]->join();
+    // wait for them to finish
+    for(unsigned int i = 0;i < numThreads;i++)
+    th[i]->join();
 
-	// kill them all
-	for (unsigned int i = 0; i < numThreads; i++)
-		delete th[i];
+    // kill them all
+    for(unsigned int i = 0;i < numThreads;i++)
+    delete th[i];
+#else
+    raytracePart(&result, w, h, 0, 0, w, h);
+#endif
 
     // calculate elapsed time
     end = clock();
     ticks = end - start;
-	start = end;
+    start = end;
     int millis = ticks * 1000 / CLOCKS_PER_SEC;
 
-    if (verbose) printf("Rendering took %d ms\n", millis);
+    if(verbose)
+        printf("Rendering took %d ms\n", millis);
 
     // write to texture
-	glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w,
-		h, 0, GL_RGB, GL_FLOAT, &result._image[0]);
+    glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_FLOAT,
+            &result._image[0]);
 
-	// calculate elapsed time
-	end = clock();
-	ticks = end - start;
-	millis = ticks * 1000 / CLOCKS_PER_SEC;
+    // calculate elapsed time
+    end = clock();
+    ticks = end - start;
+    millis = ticks * 1000 / CLOCKS_PER_SEC;
 
-	if (verbose) printf("Uploading to GPU took %d ms\n", millis);
+    if(verbose)
+        printf("Uploading to GPU took %d ms\n", millis);
 
-    if (verbose) result.writeImage("result");
+    if(verbose)
+        result.writeImage("result");
 }
 
-#define rayOrig ray.orig
-#define rayDir ray.dir
 #define VEWY_HIGH 10e6f
 
 Vec3Df black(0, 0, 0);
 
 //return the color of your pixel.
 Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
-	Ray ray = Ray(black, origin, dest);
+    Ray ray = Ray(black, origin, dest);
 
-	// calculate nearest triangle
-	int idx = -1; /* the triangle that was hit */
-	float hit = VEWY_HIGH; /* distance to hit triangle */
-	unsigned int numTriangles = MyMesh.triangles.size();
-	for (unsigned int i = 0; i < numTriangles; i++){
-		float ins = ray.intersect(MyMesh.triangles[i]);
-		if (ins < VEWY_HIGH && ins < hit && ins > 0) {
-			hit = ins;
-			idx = i;
-		}
-	}
+    // calculate nearest triangle
+    int idx = -1; /* the triangle that was hit */
+    float hit = VEWY_HIGH; /* distance to hit triangle */
+    unsigned int numTriangles = MyMesh.triangles.size();
+    for(unsigned int i = 0;i < numTriangles;i++){
+        float ins = ray.intersect(MyMesh.triangles[i]);
+        if(ins < VEWY_HIGH && ins < hit && ins > 0){
+            hit = ins;
+            idx = i;
+        }
+    }
 
+    // using black
+    if(idx == -1)
+        return black;
 
-	// using black
-	if (idx == -1)
-		return black;
+    Vec3Df& normal = MyMesh.triangles[idx].normal;
+    float angle = -dot(normal, origin) * 0.33333;
 
-	Vec3Df& normal = MyMesh.triangles[idx].normal;
-	float angle = -dot(normal, origin) * 0.33333;
-
-	return (normal * 0.2f + Vec3Df(angle, angle, angle)) / 2;
+    return (normal * 0.2f + Vec3Df(angle, angle, angle)) / 2;
 }
 
 void yourDebugDraw(){
     //draw open gl debug stuff
     //this function is called every frame
 
-	drawFPS();
+    drawFPS();
 
     //as an example:
     glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -276,18 +279,18 @@ void yourKeyboardFunc(char t, int x, int y){
 }
 
 void drawFPS(){
-	clock_t diff = clock() - lastFrameTime;
-	lastFrameTime = clock();
-	fps = 1 / ((float)diff / (float)CLOCKS_PER_SEC);
+    clock_t diff = clock() - lastFrameTime;
+    lastFrameTime = clock();
+    fps = 1 / ((float)diff / (float)CLOCKS_PER_SEC);
 
-	if (framesSinceLastDraw++ > 29){
-		framesSinceLastDraw = 0;
-		screenFPS = to_string((int)fps);
-	}
+    if(framesSinceLastDraw++ > 29){
+        framesSinceLastDraw = 0;
+        screenFPS = to_string((int)fps);
+    }
 
-	glLoadIdentity();
-	//glRasterPos2f(1.0f, 1.0f); // FPS draws on the lefthand bottom side of the screen now, if anyone knows how to get it to the lefthand top of the screen please fix it ;)
-	for (unsigned int i = 0; i < screenFPS.length(); i++){
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, screenFPS[i]);
-	}
+    glLoadIdentity();
+    //glRasterPos2f(1.0f, 1.0f); // FPS draws on the lefthand bottom side of the screen now, if anyone knows how to get it to the lefthand top of the screen please fix it ;)
+    for(unsigned int i = 0;i < screenFPS.length();i++){
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, screenFPS[i]);
+    }
 }
