@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <thread>
 
+#include "constants.hpp"
 #include "Mesh.hpp"
 #include "Ray.hpp"
 #include "Image.hpp"
@@ -20,10 +21,6 @@ extern Mesh MyMesh; //Main mesh;
 extern std::vector<Vec3Df> MyLightPositions;
 extern Vec3Df MyCameraPosition; //currCamera
 extern unsigned int activeTexIndex;
-extern unsigned int WindowSizeX; //window resolution width
-extern unsigned int WindowSizeY; //window resolution height
-extern unsigned int RayTracingResolutionX;  // largeur fenetre
-extern unsigned int RayTracingResolutionY;  // largeur fenetre
 
 option::ArgStatus checkMeshArg(const option::Option& option, bool msg);
 

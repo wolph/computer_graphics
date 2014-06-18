@@ -16,11 +16,13 @@
 #include <ctime>
 #include <GL/glut.h>
 #include <assert.h>
+#include <cstdlib>
 
 #if THREADS != 0
 #include <thread>
 #endif
 
+#include "constants.hpp"
 #include "Mesh.hpp"
 #include "Tree.hpp"
 #include "Ray.hpp"
@@ -47,18 +49,6 @@ enum {
 };
 unsigned int type = MODEL;
 
-extern unsigned int WindowSize_X;  // largeur fenetre
-extern unsigned int WindowSize_Y;  // hauteur fenetre
-
-extern unsigned int RayTracingResolutionX;  // largeur fenetre
-extern unsigned int RayTracingResolutionY;  // largeur fenetre
-
-extern unsigned int previewResX;
-extern unsigned int previewResY;
-
-extern unsigned int numThreads;
-extern unsigned int msaa;
-
 void drawAxes(float length);
 void draw();
 void animate();
@@ -66,5 +56,11 @@ int main(int argc, char** argv);
 void display(void);
 void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
+
+clock_t lastFrameTime = clock();
+clock_t lastFPSRenderTime = clock();
+char screenFPS[20];
+void drawFPS();
+
 
 #endif /* MAIN_HPP_ */
