@@ -81,7 +81,7 @@ float AABB::collide(Ray& ray, Triangle** out) {
 	Triangle* res = 0;
 
 	// check with leaves
-	for (int i = 0; i < leaves.size(); i++) {
+	for (unsigned int i = 0; i < leaves.size(); i++) {
 		float dist = ray.intersect(leaves[i]);
 		if (dist < shortest) {
 			shortest = dist;

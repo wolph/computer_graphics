@@ -10,8 +10,8 @@ ifeq ($(OS),Windows_NT)
 else
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
-        CCFLAGS += -D LINUX 
-        LFLAGS += -lGL -lGLU -lglut
+        CCFLAGS += -D LINUX
+        LFLAGS += -lGL -lGLU -lglut -pthread
         LFLAGS += -L /usr/lib/nvidia-319
         LFLAGS += -L /usr/lib/nvidia-331
         PNG = true
@@ -41,5 +41,6 @@ else
     ifeq ($(shell hostname),Infinity)
         PNG = true
         PRODUCTION = true
+        CCFLAGS += -D THREADS=2
     endif
 endif
