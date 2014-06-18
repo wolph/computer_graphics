@@ -22,6 +22,7 @@
 #endif
 
 #include "Mesh.hpp"
+#include "Tree.hpp"
 #include "Ray.hpp"
 #include "Image.hpp"
 #include "traqueboule.hpp"
@@ -37,6 +38,7 @@ extern unsigned int activeTexIndex;
 extern unsigned int isDrawingTexture;
 extern unsigned int isRealtimeRaytracing;
 extern Mesh MyMesh; //Main mesh
+extern Tree MyTree;
 
 // Utilisé pour essayer différents types de rendu
 // Utilisé via le paramètre "-t" en ligne de commande

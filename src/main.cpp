@@ -11,6 +11,7 @@ unsigned int activeTexIndex = 0;
 unsigned int isDrawingTexture = 0;
 unsigned int isRealtimeRaytracing = 0;
 Mesh MyMesh; //Main mesh
+Tree MyTree;
 
 unsigned int WindowSizeX = 1024;  // largeur fenetre
 unsigned int WindowSizeY = 1024;  // hauteur fenetre
@@ -23,8 +24,8 @@ bool needRebuild = false; // if the raytrace needs to be built
 unsigned int previewResX = PREVIEW_RES;
 unsigned int previewResY = PREVIEW_RES;
 #else
-unsigned int previewResX = 512;
-unsigned int previewResY = 512;
+unsigned int previewResX = 256;
+unsigned int previewResY = 256;
 #endif
 
 #ifdef THREADS
