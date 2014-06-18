@@ -63,8 +63,7 @@ int init(int argc, char **argv){
     mesh = string("mesh/").append(mesh).append(".obj");
     MyMesh.loadMesh(mesh.c_str(), true);
     MyMesh.computeVertexNormals();
-	MyTree.build(MyMesh);
-
+    MyTree.build(MyMesh);
 
     //one first move: initialize the first light source
     //at least ONE light source has to be in the scene!!!
@@ -119,7 +118,6 @@ Vec3Df origin11, dest11;
 #define linux true
 #endif
 
-
 void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
     Vec3Df origin, dest;
     for(float y = yy;y < hh;y++){
@@ -134,7 +132,7 @@ void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
                     float xscale = 1.0f - (x + float(xs) / msaa) / (w - 1);
                     float yscale = float(y + float(ys) / msaa) / (h - 1);
                     if(linux)
-                    	yscale = 1.0f - yscale;
+                        yscale = 1.0f - yscale;
                     origin = yscale
                             * (xscale * origin00 + (1 - xscale) * origin10)
                             + (1 - yscale)
@@ -184,16 +182,16 @@ void startRayTracing(int texIndex, bool verbose){
     int subw = w / numThreads;
 
     for(unsigned int i = 0;i < numThreads;i++)
-		th[i] = new std::thread(raytracePart, &result, w, h, i * subw, 0,
+    th[i] = new std::thread(raytracePart, &result, w, h, i * subw, 0,
             (i + 1) * subw, h);			// i * subw, 0, subw, h);
 
     // wait for them to finish
     for(unsigned int i = 0;i < numThreads;i++)
-		th[i]->join();
+    th[i]->join();
 
     // kill them all
     for(unsigned int i = 0;i < numThreads;i++)
-		delete th[i];
+    delete th[i];
 #else
     raytracePart(&result, w, h, 0, 0, w, h);
 #endif
@@ -205,8 +203,8 @@ void startRayTracing(int texIndex, bool verbose){
     int millis = ticks * 1000 / CLOCKS_PER_SEC;
 
     if(verbose)
-        printf("Rendering took %d ms cpu seconds and %d ms wall time\n",
-                millis, millis/max(4, 1));
+        printf("Rendering took %d ms cpu seconds and %d ms wall time\n", millis,
+                millis / max(numThreads, 1u));
 
     // write to texture
     glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
