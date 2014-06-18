@@ -1,33 +1,31 @@
 #include "Tree.hpp"
 #include <cstdio>
 
-AABB::AABB() : bin(0), sub(0), radius(-1) { }
+AABB::AABB() : sub(0), radius(-1) { }
 
-AABB::AABB(Vec3Df& pos, float dim) : pos(pos), radius(radius), sub(0) {
-	bin = new Vertex[BINSIZE];
-	len = 0;
+AABB::AABB(Vec3Df& pos, float radius) : pos(pos), radius(radius), sub(0) {
 }
 
 AABB::~AABB() {
 	// can safeley delete the null pointer
-	delete[] bin;
 	delete[] sub;
 }
 
-AABB* AABB::follow(Vec3Df& v) {
-	if (!sub)
-		return 0;
-
+int AABB::follow(Vec3Df& v) {
 	int axis = 0;
 	for (int a = 0; a < 3; a++) {
 		if (v.p[a] > pos.p[a] + radius)
 			axis |= 1 << a;
 	}
 
-	return sub[axis];
+	return axis;
 }
 
 void AABB::split() {
+	// if already subdivided, return
+	if (sub)
+		return;
+
 	// make leaves
 	sub = new AABB*[8];
 	for (int x = 0; x < 2; x++)
@@ -38,15 +36,23 @@ void AABB::split() {
 		
 		sub[z * 4 + y * 2 + x] = new AABB(subpos, subradius);
 	}
+}
 
-	// spread this bin
-	for (int i = 0; i < BINSIZE; i++) {
-		AABB* child = follow(bin[i].p);
-		child->bin[child->len++] = bin[i];
-	}
+Triangle* AABB::collide(Ray& ray) {
+	// check x plane
+	float x = pos.p[0];
+	float a = (x - ray.orig.p[0]) / ray.dir.p[0];
 
-	// clean
-	delete[] bin;
+	float y = a * ray.dir.p[1] + ray.orig.p[1];
+	float z = a * ray.dir.p[2] + ray.orig.p[2];
+
+	if (pos.p[1] < y && y < pos.p[1] + 2 * radius)
+		if (pos.p[2] < z && y < pos.p[2] + 2 * radius)
+			printf("erin\n");
+
+	printf("(%f, %f)\n", y, z);
+
+	return 0;
 }
 
 void Tree::calcSize(Mesh& mesh) {
@@ -79,27 +85,35 @@ void Tree::build(Mesh& mesh) {
 	printf("Building tree!\n");
 	calcSize(mesh);
 
-	//for (int i = 0; i < mesh.triangles.size(); i++)
-	//	add(mesh.triangles[i]);
+	for (int i = 0; i < mesh.triangles.size(); i++)
+		add(mesh.triangles[i]);
+
+	Ray ray = Ray(Vec3Df(0, 0, 0), Vec3Df(-2, -5, 0), Vec3Df(-1, 0, 0));
+	Triangle* tr = root->collide(ray);
 }
 
 void Tree::add(Triangle& tr) {
-	for (int i = 0; i < 3; i++) { // vertex
-		AABB* current = root;
-		Vec3Df& v = tr.vertices[i].p;
+	bool same = true;
+	AABB* current = root;
+	int a0, a1, a2;
 
-		// get fitting sub AABB
-		int id = 0;
-		while (current->sub)
-		{current = current->follow(v); id++;}
+	int depth = 0;
+	while (depth < MAX_DEPTH) {
+		a0 = current->follow(tr.vertices[0].p);
+		a1 = current->follow(tr.vertices[1].p);
+		a2 = current->follow(tr.vertices[2].p);
 
-		// check if it's full
-		if (current->len == BINSIZE) {
-			printf("splitting @ depth %d\n", id);
-			current->split();
-			current = current->follow(v);
-		}
-		printf("adding\n");// %d\n", )
-		current->bin[current->len++] = tr.vertices[i];
+		printf("follow: %d, %d, %d\n", a0, a1, a2);
+
+		if (a0 != a1 || a1 != a2)
+			break;
+
+		current->split();
+		current = current->sub[a0];
+		depth++;
 	}
+
+	printf("Depth: %d\n\n", depth);
+
+	current->leaves.push_back(&tr);
 }

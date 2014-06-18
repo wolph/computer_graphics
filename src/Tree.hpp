@@ -4,14 +4,13 @@
 */
 #pragma once
 #include "Mesh.hpp"
-
-#define BINSIZE 1
+#include "Ray.hpp"
+#define MAX_DEPTH 7
 
 struct AABB {
 	// the subtrees, if any
 	AABB** sub;
-	Vertex* bin;
-	int len;
+	vector<Triangle*> leaves; // triangle indices
 
 	// top left up corner
 	Vec3Df pos;
@@ -24,7 +23,8 @@ struct AABB {
 	~AABB();
 
 	void split();
-	AABB* follow(Vec3Df& v);
+	int follow(Vec3Df& v);
+	Triangle* collide(Ray& ray);
 };
 
 class Tree {
