@@ -113,6 +113,12 @@ Vec3Df origin00, dest00;
 Vec3Df origin01, dest01;
 Vec3Df origin10, dest10;
 Vec3Df origin11, dest11;
+#ifdef WIN32
+#define linux false
+#else
+#define linux true
+#endif
+
 
 void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
     Vec3Df origin, dest;
@@ -127,6 +133,8 @@ void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
 
                     float xscale = 1.0f - (x + float(xs) / msaa) / (w - 1);
                     float yscale = float(y + float(ys) / msaa) / (h - 1);
+                    if(linux)
+                    	yscale = 1.0f - yscale;
                     origin = yscale
                             * (xscale * origin00 + (1 - xscale) * origin10)
                             + (1 - yscale)
