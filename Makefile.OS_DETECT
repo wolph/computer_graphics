@@ -10,6 +10,7 @@ ifeq ($(OS),Windows_NT)
 else
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
+		# Please override this stuff in your Makefile.local file!
         CCFLAGS += -D LINUX
         LFLAGS += -lGL -lGLU -lglut -pthread
         LFLAGS += -L /usr/lib/nvidia-319
@@ -20,12 +21,6 @@ else
     ifeq ($(UNAME_S),Darwin)
         CCFLAGS += -D OSX
         CCFLAGS += -D GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
-        CCFLAGS += -D RAYTRACE_RES=512
-        CCFLAGS += -D PREVIEW_RES=1024
-        CCFLAGS += -D WINDOW_RES=1024
-        CCFLAGS += -D MSAA=2
-        CCFLAGS += -D THREADS=8
-        #CCFLAGS += -D THREADS=0
         LFLAGS += -framework OpenGL -framework GLUT
         LFLAGS += -D GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
         PNG = true
@@ -42,8 +37,9 @@ else
         CCFLAGS += -D ARM
     endif
     ifeq ($(shell hostname),Infinity)
+		# Please override this stuff in your Makefile.local file!
         PNG = true
         PRODUCTION = true
-        CCFLAGS += -D THREADS=2
+        THREADS = 2
     endif
 endif

@@ -7,6 +7,14 @@ OBJDIR = obj
 # overwriting stuff
 BINDIR = bin
 
+# Please override this stuff in your Makefile.local file!
+RESOLUTION = 512
+RAYTRACE_RES = $(RESOLUTION)
+PREVIEW_RES = 128
+WINDOW_RES = $(RESOLUTION)
+MSAA = 1
+THREADS = 4
+
 SRCS := $(wildcard $(SRCDIR)/*.cpp)
 INCL := $(wildcard $(SRCDIR)/*.hpp)
 OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
@@ -25,6 +33,7 @@ ifdef CCACHE_EXISTS
 endif
 
 include Makefile.OS_DETECT
+-include Makefile.local
 
 ifdef PNG
 	LFLAGS += -lpng
@@ -39,6 +48,12 @@ endif
 
 CCFLAGS += $(FLAGS)
 LFLAGS += $(FLAGS)
+
+CCFLAGS += -D RAYTRACE_RES=$(RAYTRACE_RES)
+CCFLAGS += -D PREVIEW_RES=$(PREVIEW_RES)
+CCFLAGS += -D WINDOW_RES=$(WINDOW_RES)
+CCFLAGS += -D MSAA=$(MSAA)
+CCFLAGS += -D THREADS=$(THREADS)
 
 $(BINDIR)/$(TARGET): $(OBJS)
 	@echo "Linking "$<
