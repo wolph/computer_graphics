@@ -270,7 +270,7 @@ void yourKeyboardFunc(char t, int x, int y){
 void drawFPS(){
     clock_t diff = clock() - lastFrameTime;
     lastFrameTime = clock();
-    fps = 1 / ((float)diff / (float)CLOCKS_PER_SEC);
+    fps = 1 / ((float)diff / (float)CLOCKS_PER_SEC / (float)numThreads);
 
     if(framesSinceLastDraw++ > 29){
         framesSinceLastDraw = 0;
