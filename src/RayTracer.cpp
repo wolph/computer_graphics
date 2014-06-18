@@ -228,9 +228,6 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     Vec3Df tocam = origin - impact;
     tolight.normalize();
 
-    if(!triangle)
-        return black;
-
 	// background
 	if (!triangle) {
 		if (ray.dir.p[2] < 0) {
