@@ -205,7 +205,8 @@ void startRayTracing(int texIndex, bool verbose){
     int millis = ticks * 1000 / CLOCKS_PER_SEC;
 
     if(verbose)
-        printf("Rendering took %d ms\n", millis);
+        printf("Rendering took %d ms cpu seconds and %d ms wall time\n",
+                millis, millis/max(THREADS, 1));
 
     // write to texture
     glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
