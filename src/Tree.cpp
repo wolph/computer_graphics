@@ -3,7 +3,7 @@
 
 AABB::AABB() : sub(0), radius(-1) { }
 
-AABB::AABB(Vec3Df& pos, float radius) : pos(pos), radius(radius), sub(0) {
+AABB::AABB(Vec3Df& pos, float radius) : sub(0), pos(pos), radius(radius) {
 }
 
 AABB::~AABB() {
@@ -147,7 +147,6 @@ void Tree::build(Mesh& mesh) {
 }
 
 void Tree::add(Triangle& tr) {
-	bool same = true;
 	AABB* current = root;
 	int a0, a1, a2;
 
