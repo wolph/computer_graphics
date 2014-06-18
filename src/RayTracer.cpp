@@ -44,9 +44,7 @@ int init(int argc, char **argv){
 
     if(options[MESH]){
         const char* arg = options[MESH].last()->arg;
-        if(arg == 0){
-            mesh = "0";
-        }else{
+        if(arg != 0){
             mesh = arg;
         }
     }else{
