@@ -222,10 +222,42 @@ Vec3Df black(0, 0, 0);
 Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     Ray ray = Ray(black, origin, dest);
 
-    // calculate nearest triangle
-    Triangle* triangle;
-    float dist = MyTree.collide(ray, &triangle);
-    return Vec3Df(1.0f / dist, 1.0f / dist, 1.0f / dist);
+	// calculate nearest triangle
+	Triangle* triangle;
+	float dist = MyTree.collide(ray, &triangle);
+
+	Vec3Df light(17, 8, 20);
+	Vec3Df lightColor(0.2, 0.3, 1.0);
+
+
+	Vec3Df impact = origin + ray.dir * dist;
+	Vec3Df tolight = light - impact;
+	Vec3Df tocam = origin - impact;
+	tolight.normalize();
+
+	if (!triangle)
+		return black;
+
+	// start with black
+	Vec3Df color = black;
+
+	// ambient lighting
+	color += Vec3Df(0.2, 0.2, 0.2);
+
+	// diffuse
+	float angle = dot(triangle->normal, tolight) * 2;
+	if (angle > 0)
+	color += angle * lightColor;
+
+	// specular
+	float angle2 = dot(tocam, tolight) * 0.5f;
+	if (angle2 > 0)
+	color += angle2 * lightColor;
+
+	// reflection
+	
+	// return color
+	return color;
 }
 
 void yourDebugDraw(){

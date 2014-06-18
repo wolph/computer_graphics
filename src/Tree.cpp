@@ -174,5 +174,6 @@ void Tree::add(Triangle& tr) {
 }
 
 float Tree::collide(Ray& ray, Triangle** out) {
+	*out = 0;
 	return root->collide(ray, out);
 }
