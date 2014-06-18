@@ -88,8 +88,8 @@ void Tree::build(Mesh& mesh) {
 	for (int i = 0; i < mesh.triangles.size(); i++)
 		add(mesh.triangles[i]);
 
-	Ray ray = Ray(Vec3Df(0, 0, 0), Vec3Df(-2, -5, 0), Vec3Df(-1, 0, 0));
-	Triangle* tr = root->collide(ray);
+	//Ray ray = Ray(Vec3Df(0, 0, 0), Vec3Df(-2, -5, 0), Vec3Df(-1, 0, 0));
+	//Triangle* tr = root->collide(ray);
 }
 
 void Tree::add(Triangle& tr) {

@@ -24,8 +24,8 @@ bool needRebuild = false; // if the raytrace needs to be built
 unsigned int previewResX = PREVIEW_RES;
 unsigned int previewResY = PREVIEW_RES;
 #else
-unsigned int previewResX = 128;
-unsigned int previewResY = 128;
+unsigned int previewResX = 32;
+unsigned int previewResY = 32;
 #endif
 
 #ifdef THREADS
