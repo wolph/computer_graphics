@@ -20,7 +20,10 @@ else
     ifeq ($(UNAME_S),Darwin)
         CCFLAGS += -D OSX
         CCFLAGS += -D GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
-        CCFLAGS += -D PREVIEW_RES=128
+        CCFLAGS += -D RAYTRACE_RES=512
+        CCFLAGS += -D PREVIEW_RES=1024
+        CCFLAGS += -D WINDOW_RES=1024
+        CCFLAGS += -D MSAA=2
         CCFLAGS += -D THREADS=8
         #CCFLAGS += -D THREADS=0
         LFLAGS += -framework OpenGL -framework GLUT

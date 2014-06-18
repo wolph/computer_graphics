@@ -11,10 +11,6 @@ clock_t lastFrameTime;
 float fps;
 unsigned int framesSinceLastDraw = 30;
 string screenFPS;
-extern unsigned int previewResX;
-extern unsigned int previewResY;
-extern unsigned int msaa;
-extern unsigned int numThreads;
 extern Tree MyTree;
 
 //use this function for any preprocessing of the mesh.
@@ -121,11 +117,10 @@ void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
             //c'est le stront a la plafond, c'est drôle
             //e.g., maillage, triangles, sphères etc.
             Vec3Df total(0, 0, 0);
-            for(unsigned int xs = 0;xs < msaa;xs++){
-                for(unsigned int ys = 0;ys < msaa;ys++){
-
-                    float xscale = 1.0f - (x + float(xs) / msaa) / (w - 1);
-                    float yscale = float(y + float(ys) / msaa) / (h - 1);
+            for(unsigned int xs = 0;xs < MSAA;xs++){
+                for(unsigned int ys = 0;ys < MSAA;ys++){
+                    float xscale = 1.0f - (x + float(xs) / MSAA) / (w - 1);
+                    float yscale = float(y + float(ys) / MSAA) / (h - 1);
 #ifdef LINUX
                     yscale = 1.0f - yscale;
 #endif
@@ -143,7 +138,7 @@ void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
             }
 
             // calculate average color
-            total /= msaa * msaa;
+            total /= MSAA * MSAA;
             // result->_image
             result->_image[(y * result->_width + x) * 3 + 0] = total[0];
             result->_image[(y * result->_width + x) * 3 + 1] = total[1];
@@ -155,18 +150,18 @@ void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
 void startRayTracing(int texIndex, bool verbose){
     if(verbose)
         cout << "Raytracing" << endl;
-    int w = RayTracingResolutionX;
-    int h = RayTracingResolutionY;
+    int w = RAYTRACE_RES_X;
+    int h = RAYTRACE_RES_Y;
     if(!verbose)
-        w = previewResX;
+        w = PREVIEW_RES_X;
     if(!verbose)
-        h = previewResY;
+        h = PREVIEW_RES_Y;
     Image result(w, h);
 
     produceRay(0, 0, &origin00, &dest00);
-    produceRay(0, WindowSizeX - 1, &origin01, &dest01);
-    produceRay(WindowSizeX - 1, 0, &origin10, &dest10);
-    produceRay(WindowSizeX - 1, WindowSizeY - 1, &origin11, &dest11);
+    produceRay(0, WINDOW_RES_X - 1, &origin01, &dest01);
+    produceRay(WINDOW_RES_X - 1, 0, &origin10, &dest10);
+    produceRay(WINDOW_RES_X - 1, WINDOW_RES_Y - 1, &origin11, &dest11);
 
     // Perform timing
     time_t start, end, ticks;
@@ -174,19 +169,19 @@ void startRayTracing(int texIndex, bool verbose){
 
     // multithread
 #if THREADS != 0
-    std::thread** th = (std::thread**)alloca(numThreads * sizeof(std::thread*));
-    int subw = w / numThreads;
+    std::thread** th = (std::thread**)alloca(THREADS * sizeof(std::thread*));
+    int subw = w / THREADS;
 
-    for(unsigned int i = 0;i < numThreads;i++)
+    for(unsigned int i = 0;i < THREADS;i++)
     th[i] = new std::thread(raytracePart, &result, w, h, i * subw, 0,
             (i + 1) * subw, h);			// i * subw, 0, subw, h);
 
     // wait for them to finish
-    for(unsigned int i = 0;i < numThreads;i++)
+    for(unsigned int i = 0;i < THREADS;i++)
     th[i]->join();
 
     // kill them all
-    for(unsigned int i = 0;i < numThreads;i++)
+    for(unsigned int i = 0;i < THREADS;i++)
     delete th[i];
 #else
     raytracePart(&result, w, h, 0, 0, w, h);
@@ -200,7 +195,7 @@ void startRayTracing(int texIndex, bool verbose){
 
     if(verbose)
         printf("Rendering took %d ms cpu seconds and %d ms wall time\n", millis,
-                millis / max(numThreads, 1u));
+                millis / max(THREADS, 1));
 
     // write to texture
     glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
@@ -270,7 +265,7 @@ void yourKeyboardFunc(char t, int x, int y){
 void drawFPS(){
     clock_t diff = clock() - lastFrameTime;
     lastFrameTime = clock();
-    fps = 1 / ((float)diff / (float)CLOCKS_PER_SEC / (float)numThreads);
+    fps = 1 / ((float)diff / (float)CLOCKS_PER_SEC / (float)THREADS);
 
     if(framesSinceLastDraw++ > 29){
         framesSinceLastDraw = 0;

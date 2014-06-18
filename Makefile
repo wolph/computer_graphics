@@ -5,7 +5,7 @@ SRCDIR = src
 OBJDIR = obj
 # Debug is the default for Eclipse, so let's not use it... Eclipse keeps
 # overwriting stuff
-BINDIR = bin/
+BINDIR = bin
 
 SRCS := $(wildcard $(SRCDIR)/*.cpp)
 INCL := $(wildcard $(SRCDIR)/*.hpp)
@@ -32,7 +32,7 @@ ifdef PNG
 endif
 
 ifdef PRODUCTION
-	FLAGS = -O3
+	FLAGS = -O3 -g3
 else
 	FLAGS = -O0 -g3
 endif

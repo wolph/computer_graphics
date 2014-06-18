@@ -21,6 +21,7 @@
 #include <thread>
 #endif
 
+#include "constants.hpp"
 #include "Mesh.hpp"
 #include "Tree.hpp"
 #include "Ray.hpp"
@@ -46,18 +47,6 @@ enum {
     TRIANGLE = 0, MODEL = 1
 };
 unsigned int type = MODEL;
-
-extern unsigned int WindowSize_X;  // largeur fenetre
-extern unsigned int WindowSize_Y;  // hauteur fenetre
-
-extern unsigned int RayTracingResolutionX;  // largeur fenetre
-extern unsigned int RayTracingResolutionY;  // largeur fenetre
-
-extern unsigned int previewResX;
-extern unsigned int previewResY;
-
-extern unsigned int numThreads;
-extern unsigned int msaa;
 
 void drawAxes(float length);
 void draw();

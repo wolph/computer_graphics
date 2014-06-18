@@ -13,27 +13,7 @@ unsigned int isRealtimeRaytracing = 0;
 Mesh MyMesh; //Main mesh
 Tree MyTree;
 
-unsigned int WindowSizeX = 1024;  // largeur fenetre
-unsigned int WindowSizeY = 1024;  // hauteur fenetre
-
-unsigned int RayTracingResolutionX = 1024;  // largeur fenetre
-unsigned int RayTracingResolutionY = 1024;  // largeur fenetre
 bool needRebuild = false; // if the raytrace needs to be built
-
-#ifdef PREVIEW_RES
-unsigned int previewResX = PREVIEW_RES;
-unsigned int previewResY = PREVIEW_RES;
-#else
-unsigned int previewResX = 64;
-unsigned int previewResY = 64;
-#endif
-
-#ifdef THREADS
-unsigned int numThreads = THREADS;
-#else
-unsigned int numThreads = 4;
-#endif
-unsigned int msaa = 2;
 
 void drawAxes(float length){
     glDisable(GL_LIGHTING);
@@ -125,7 +105,7 @@ int main(int argc, char** argv){
 
     // position et taille de la fenetre
     glutInitWindowPosition(200, 100);
-    glutInitWindowSize(WindowSizeX, WindowSizeY);
+    glutInitWindowSize(WINDOW_RES_X, WINDOW_RES_Y);
     glutCreateWindow(argv[0]);
 
     // Initialisation du point de vue
@@ -280,8 +260,8 @@ void keyboard(unsigned char key, int x, int y){
             isRealtimeRaytracing = 0;
             break;
         case 'b':
-            cout << "Using " << numThreads << " threads and resolution of "
-                    << previewResX << "x" << previewResY << endl;
+            cout << "Using " << THREADS << " threads and resolution of "
+                    << PREVIEW_RES_X << "x" << PREVIEW_RES_Y << endl;
             isRealtimeRaytracing = 1;
             isDrawingTexture = 0;
             break;
