@@ -184,16 +184,16 @@ void startRayTracing(int texIndex, bool verbose){
     int subw = w / numThreads;
 
     for(unsigned int i = 0;i < numThreads;i++)
-    th[i] = new std::thread(raytracePart, &result, w, h, i * subw, 0,
+		th[i] = new std::thread(raytracePart, &result, w, h, i * subw, 0,
             (i + 1) * subw, h);			// i * subw, 0, subw, h);
 
     // wait for them to finish
     for(unsigned int i = 0;i < numThreads;i++)
-    th[i]->join();
+		th[i]->join();
 
     // kill them all
     for(unsigned int i = 0;i < numThreads;i++)
-    delete th[i];
+		delete th[i];
 #else
     raytracePart(&result, w, h, 0, 0, w, h);
 #endif
