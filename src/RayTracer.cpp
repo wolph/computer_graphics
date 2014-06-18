@@ -200,7 +200,7 @@ void startRayTracing(int texIndex, bool verbose){
 
     if(verbose)
         printf("Rendering took %d ms cpu seconds and %d ms wall time\n", millis,
-                millis / max(numThreads, 1u));
+                millis / fmax(numThreads, 1u));
 
     // write to texture
     glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
@@ -240,8 +240,26 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
 	Vec3Df tocam = origin - impact;
 	tolight.normalize();
 
-	if (!triangle)
-		return black;
+	// background
+	if (!triangle) {
+		if (ray.dir.p[2] < 0) {
+			float height = origin.p[2];
+			float a = height / ray.dir.p[2];
+			float x = origin.p[0] + a * origin.p[0];
+			float y = origin.p[1] + a * origin.p[1];
+
+			bool white = true;
+			if (fmodf(x, 1) > 0.5)
+				white = !white;
+			if (fmodf(y, 1) > 0.5)
+				white = !white;
+
+			if (white) return Vec3Df(0.1, 0.1, 0.1);
+			else return Vec3Df(0.9, 0.9, 0.9);
+		}
+		else
+			return Vec3Df(0, 0, 1);
+	}
 
 	// start with black
 	Vec3Df color = black;

@@ -131,8 +131,8 @@ void Tree::calcSize(Mesh& mesh) {
 
 	Vec3Df dim = p2 - p1;
 	float sdim = dim.p[0];
-	sdim = max(sdim, dim.p[1]);
-	sdim = max(sdim, dim.p[2]);
+	sdim = fmax(sdim, dim.p[1]);
+	sdim = fmax(sdim, dim.p[2]);
 
 	root = new AABB(p1, sdim * 0.5f);
 }
