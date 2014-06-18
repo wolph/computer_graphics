@@ -37,6 +37,7 @@ public:
     }
     virtual ~Ray();
     float intersect(Triangle& triangle);
+	float alternateIntersect(Triangle& triangle);
     const Vec3Df& getColor() const;
     void setColor(const Vec3Df& color = Vec3Df(1, 1, 1));
     void setColor(const float red, const float green, const float blue);
