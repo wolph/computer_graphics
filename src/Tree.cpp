@@ -59,7 +59,7 @@ void Tree::calcSize(Mesh& mesh) {
 	Vec3Df p1; // min
 	Vec3Df p2; // max
 
-	for (int i = 0; i < mesh.triangles.size(); i++) { // triangle
+	for (unsigned int i = 0; i < mesh.triangles.size(); i++) { // triangle
 		for (int v = 0; v < 3; v++) { // vertex
 			for (int d = 0; d < 3; d++) { // dimension
 				const float dim = mesh.triangles[i].vertices[v].p.p[d];
@@ -85,7 +85,7 @@ void Tree::build(Mesh& mesh) {
 	printf("Building tree!\n");
 	calcSize(mesh);
 
-	for (int i = 0; i < mesh.triangles.size(); i++)
+	for (unsigned int i = 0; i < mesh.triangles.size(); i++)
 		add(mesh.triangles[i]);
 
 	//Ray ray = Ray(Vec3Df(0, 0, 0), Vec3Df(-2, -5, 0), Vec3Df(-1, 0, 0));
