@@ -33,13 +33,12 @@ int init(int argc, char **argv){
         return 2;
     }
 
+	mesh = "0";
     if(options[MESH]){
         const char* arg = options[MESH].last()->arg;
         if(arg != 0){
             mesh = arg;
         }
-    }else{
-        mesh = "0";
     }
 
 	if (options[RAYTRACEX]){
