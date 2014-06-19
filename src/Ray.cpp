@@ -54,7 +54,7 @@ Intersection Ray::intersect(const Triangle* triangle){
     t = dot(e2, Q) * inv_det;
 
     if(t > 0.00000001){
-        return Intersection(true, Vec3Df(0, 0, 0), t);
+        return Intersection(true, Vec3Df(0, 0, 0), t, triangle);
     }
     return Intersection(false);
 }

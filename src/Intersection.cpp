@@ -15,8 +15,9 @@ Intersection::Intersection(bool h){
 	distance = OUTOFRANGE;
 }
 
-Intersection::Intersection(bool h, Vec3Df p, float d){
+Intersection::Intersection(bool h, Vec3Df p, float d, const Triangle *t){
 	hit = h;
 	point = p;
 	distance = d;
+	triangle = t;
 }
