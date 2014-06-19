@@ -85,7 +85,7 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
 
     if(randomizeTriangulation)
         /* Randomization should use an actual _RANDOM_ thing */
-        srand(time(NULL));
+        srand((unsigned int)time(NULL));
 
     materials.clear();
     Material defaultMat;
@@ -114,7 +114,7 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
     std::string matname;
     std::string path_;
     std::string temp(realFilename);
-    int pos = temp.rfind("/");
+    int pos = (int)temp.rfind("/");
 
     if(pos < 0){
         path_ = "";
@@ -140,7 +140,7 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
             std::string t = p1;
             unsigned int i;
             for(i = 0;i < t.length();++i){
-                if(t[i] < 32 || t[i] == 255){
+                if(t[i] < 32 || t[i] == (char)255){
                     break;
                 }
             }
@@ -425,7 +425,7 @@ bool Mesh::loadMtl(const char * filename,
         }
         memset(line, 0, LINE_LEN);
     }
-    printf("%d  materials loaded.\n", materials.size());
+    printf("%d  materials loaded.\n", (int)materials.size());
     fclose(_in);
     return true;
 }
