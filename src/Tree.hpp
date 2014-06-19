@@ -5,7 +5,7 @@
 #pragma once
 #include "Mesh.hpp"
 #include "Ray.hpp"
-#define MAX_DEPTH 7
+#define MAX_DEPTH 20
 
 struct AABB {
 	// the subtrees, if any
@@ -22,6 +22,7 @@ struct AABB {
 	AABB(Vec3Df& pos, float radius);
 	~AABB();
 
+	bool hit(Ray& ray);
 	void split();
 	int follow(Vec3Df& v);
 	float collide(Ray& ray, Triangle** out);

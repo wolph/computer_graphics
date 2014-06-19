@@ -36,10 +36,4 @@ else
     ifneq ($(filter arm%,$(UNAME_P)),)
         CCFLAGS += -D ARM
     endif
-    ifeq ($(shell hostname),Infinity)
-		# Please override this stuff in your Makefile.local file!
-        PNG = true
-        PRODUCTION = true
-        THREADS = 2
-    endif
 endif

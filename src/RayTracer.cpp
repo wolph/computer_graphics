@@ -1,6 +1,7 @@
 #include "RayTracer.hpp"
 #include "Tree.hpp"
 #include <ctime>
+#include <math.h>
 
 //temporary variables
 Vec3Df testRayOrigin;
@@ -228,26 +229,32 @@ Vec3Df black(0, 0, 0);
 //return the color of your pixel.
 Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     Ray ray = Ray(black, origin, dest);
-
+    return performRayTracing(ray);
+}
+Vec3Df performRayTracing(Ray ray) {
     // calculate nearest triangle
     Triangle* triangle;
     float dist = MyTree.collide(ray, &triangle);
 
+	//if (dist < 1e8)
+	//	return Vec3Df(1, 1, 1);
+	//return black;
+
     Vec3Df light(17, 8, 20);
     Vec3Df lightColor(0.2f, 0.3f, 1.0f);
 
-    Vec3Df impact = origin + ray.dir * dist;
+    Vec3Df impact = ray.orig + ray.dir * dist;
     Vec3Df tolight = light - impact;
-    Vec3Df tocam = origin - impact;
+    Vec3Df tocam = ray.orig - impact;
     tolight.normalize();
 
     // background
     if(!triangle){
         if(ray.dir.p[2] < 0){
-			float height = origin.p[2];
+			float height = ray.orig.p[2] + 2;
             float a = -height / ray.dir.p[2];
-            float x = origin.p[0] + a * ray.dir.p[0];
-			float y = origin.p[1] + a * ray.dir.p[1];
+            float x = ray.orig.p[0] + a * ray.dir.p[0];
+			float y = ray.orig.p[1] + a * ray.dir.p[1];
 			if (height < 0)
 				return Vec3Df(0, 0.3f, 0);
 
@@ -277,13 +284,67 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     if(angle2 > 0)
         color += angle2 * lightColor;
 
-    // reflection
+    //dont want infinite reflected rays
+    if(ray.bounceCount > 0) {
+		// reflection
+		Vec3Df r = ray.dir - 2*dot(ray.dir, triangle->normal)*triangle->normal;
+		Ray reflectedRay = Ray(ray.color, impact, impact + r, ray.bounceCount-1);
+		color += performRayTracing(reflectedRay) * 0.2f;
 
+		// refraction
+		float inIndex = 1;
+		float outIndex = 1;
+		float inDivOut = inIndex/outIndex;
+		float cosIncident = dot(ray.dir, triangle->normal);
+		float temp = inDivOut*inDivOut * 1-cosIncident*cosIncident;
+		if(temp <= 1) {
+			Vec3Df t =inDivOut * ray.dir + (inDivOut *  cosIncident - sqrt(1-temp))*triangle->normal;
+			Ray transmittedRay = Ray(ray.color, impact, impact + t, ray.bounceCount-1);
+		} //temp > 1 means no refraction, only (total) reflection.
+    }
     // return color
     return color;
 }
 
+void drawCube(AABB* cube) {
+	if (cube->sub) {
+		//glColor3f(1, 0.5, 0.5);
+		for (int i = 0; i < 8; i++)
+			drawCube(cube->sub[i]);
+	}
+	if (!cube->leaves.empty()) {
+		//glColor3f(0, 0.5, 0.5);
+		float dim = cube->radius * 2;
+		for (int axis = 0; axis < 3; axis++) {
+			for (int x = 0; x < 2; x++) {
+				for (int y = 0; y < 2; y++) {
+					Vec3Df v = cube->pos;
+					v.p[(axis + 1) % 3] += x * dim;
+					v.p[(axis + 2) % 3] += y * dim;
+
+					glVertex3f(v.p[0], v.p[1], v.p[2]);
+					glVertex3f(
+						v.p[0] + ((axis == 0) ? dim : 0),
+						v.p[1] + ((axis == 1) ? dim : 0),
+						v.p[2] + ((axis == 2) ? dim : 0)
+						);
+				}
+			}
+		}
+	}
+}
+
+extern unsigned int isDrawingTexture;
+extern unsigned int isRealtimeRaytracing;
+
 void yourDebugDraw(){
+	if (!isRealtimeRaytracing && !isDrawingTexture) {
+		glColor3f(1, 0.5, 0.5);
+		glLineWidth(10);
+		glBegin(GL_LINES);
+		drawCube(MyTree.root);
+		glEnd();
+	}
 }
 
 void yourKeyboardFunc(char t, int x, int y){
