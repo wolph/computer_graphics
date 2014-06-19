@@ -390,7 +390,7 @@ void drawNormal(Vec3Df& avg, Vec3Df& n) {
 }
 
 void drawNormals() {
-	for (int i = 0; i < MyMesh.triangles.size(); i++) {
+	for (unsigned int i = 0; i < MyMesh.triangles.size(); i++) {
 		Vec3Df avg;
 		for (int t = 0; t < 3; t++)
 			avg += MyMesh.triangles[i].vertices[t].p * 0.333f;
@@ -398,7 +398,7 @@ void drawNormals() {
 		//drawNormal(avg, MyMesh.triangles[i].normal);
 	}
 
-	for (int i = 0; i < MyMesh.vertices.size(); i++)
+	for (unsigned int i = 0; i < MyMesh.vertices.size(); i++)
 		drawNormal(MyMesh.vertices[i].p, MyMesh.vertices[i].n);
 }
 
