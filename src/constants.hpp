@@ -13,14 +13,14 @@
 #endif
 
 #ifndef MSAA
-#define MSAA 1
+#define MSAA 2
 #endif
 
 #ifndef PREVIEW_RES_X
 #ifdef PREVIEW_RES
 #define PREVIEW_RES_X PREVIEW_RES
 #else
-#define PREVIEW_RES_X 64
+#define PREVIEW_RES_X 256
 #endif
 #endif
 
@@ -28,7 +28,7 @@
 #ifdef PREVIEW_RES
 #define PREVIEW_RES_Y PREVIEW_RES
 #else
-#define PREVIEW_RES_Y 64
+#define PREVIEW_RES_Y 256
 #endif
 #endif
 

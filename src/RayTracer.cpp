@@ -244,23 +244,23 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     // background
     if(!triangle){
         if(ray.dir.p[2] < 0){
-            float height = origin.p[2];
-            float a = height / ray.dir.p[2];
-            float x = origin.p[0] + a * origin.p[0];
-            float y = origin.p[1] + a * origin.p[1];
+			float height = origin.p[2];
+            float a = -height / ray.dir.p[2];
+            float x = origin.p[0] + a * ray.dir.p[0];
+			float y = origin.p[1] + a * ray.dir.p[1];
+			if (height < 0)
+				return Vec3Df(0, 0.3f, 0);
 
             bool white = true;
-            if(fmodf(x, 1) > 0.5)
-                white = !white;
-            if(fmodf(y, 1) > 0.5)
-                white = !white;
+			if (x > floor(x) + 0.5f) white = !white;
+			if (y > floor(y) + 0.5f) white = !white;
 
             if(white)
                 return Vec3Df(0.1f, 0.1f, 0.1f);
             else
                 return Vec3Df(0.9f, 0.9f, 0.9f);
         }else
-            return Vec3Df(0, 0, 1);
+            return Vec3Df(0, 0.6, 0.99);
     }
 
     // ambient lighting
