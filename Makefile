@@ -86,6 +86,9 @@ monkey: all
 dodge: all
 	$(BINDIR)/$(TARGET) -m3
 
+sphere: all
+	$(BINDIR)/$(TARGET) -m4
+
 trace_cube: all
 	$(BINDIR)/$(TARGET) -m0 -r
 

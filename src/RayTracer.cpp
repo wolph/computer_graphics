@@ -67,6 +67,8 @@ int init(int argc, char **argv){
         mesh = "monkey";
     else if(mesh == "3")
         mesh = "dodgeColorTest";
+    else if(mesh == "4")
+    	mesh = "sphere";
 
     mesh = string("mesh/").append(mesh).append(".obj");
     MyMesh.loadMesh(mesh.c_str(), true);
@@ -338,7 +340,7 @@ Vec3Df performRayTracing(Ray ray) {
 		// reflection
 		Vec3Df r = ray.dir - 2*dot(ray.dir, normal)*normal;
 		Ray reflectedRay = Ray(ray.color, impact, impact + r, ray.bounceCount-1);
-		color += performRayTracing(reflectedRay) * 0.2f;
+		color += performRayTracing(reflectedRay) * 0.5f;
 
 		// refraction
 		float inIndex = 1;
@@ -352,6 +354,11 @@ Vec3Df performRayTracing(Ray ray) {
 		} //temp > 1 means no refraction, only (total) reflection.
     }
     // return color
+    for (int i = 0; i < 3; i++) {
+    	if(color.p[i] > 1)
+    	    	color.p[i] = 1;
+    }
+
     return color;
 }
 
