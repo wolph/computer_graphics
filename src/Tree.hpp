@@ -5,7 +5,7 @@
 #pragma once
 #include "Mesh.hpp"
 #include "Ray.hpp"
-#define MAX_DEPTH 7
+#define MAX_DEPTH 20
 
 struct AABB {
 	// the subtrees, if any
