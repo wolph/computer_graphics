@@ -1,4 +1,5 @@
 #include "main.hpp"
+#include "Scene.hpp"
 
 // don't define anything in headers! only declare it!!!1!one!
 Vec3Df MyCameraPosition;
@@ -12,6 +13,7 @@ unsigned int isDrawingTexture = 0;
 unsigned int isRealtimeRaytracing = 0;
 Mesh MyMesh; //Main mesh
 Tree MyTree;
+Scene MyScene;
 
 // options
 extern bool g_phong;
