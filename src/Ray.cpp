@@ -6,55 +6,42 @@
  */
 
 #include "Ray.hpp"
-#include "Intersection.hpp"
 
-Ray::~Ray(){
-}
+Intersection FalseIntersection = Intersection(false);
 
-const Vec3Df& Ray::getColor() const{
-    return color;
-}
+const Intersection Ray::intersect(const Triangle* const triangle){
+    const Vertex* vertices = triangle->vertices;
+    const Vec3Df& v0 = vertices[0].p;
+    const Vec3Df& v1 = vertices[1].p;
+    const Vec3Df& v2 = vertices[2].p;
 
-void Ray::setColor(const Vec3Df& color){
-    this->color = color;
-}
+    const Vec3Df e1 = v1 - v0;
+    const Vec3Df e2 = v2 - v0;
 
-void Ray::setColor(const float red, const float green, const float blue){
-    this->color[0] = red;
-    this->color[1] = green;
-    this->color[2] = blue;
-}
-
-Intersection Ray::intersect(const Triangle* triangle){
-    float det, inv_det, u, v, t;
-
-    Vec3Df e1 = triangle->vertices[1].p - triangle->vertices[0].p;
-    Vec3Df e2 = triangle->vertices[2].p - triangle->vertices[0].p;
-
-    Vec3Df P = cross(dir, e2);
-    det = dot(e1, P);
+    const Vec3Df P = cross(dir, e2);
+    const float det = dot(e1, P);
 
     if(abs(det) < 0.000000001)
-        return Intersection(false);
+        return FalseIntersection;
 
-    inv_det = 1.0f / det;
+    const float inv_det = 1.0f / det;
 
-    Vec3Df T = orig - triangle->vertices[0].p;
+    const Vec3Df T = orig - vertices[0].p;
 
-    u = dot(T, P) * inv_det;
+    const float u = dot(T, P) * inv_det;
     if(u < 0.0f || u > 1.0f)
-        return Intersection(false);
+        return FalseIntersection;
 
-    Vec3Df Q = cross(T, e1);
+    const Vec3Df Q = cross(T, e1);
 
-    v = dot(dir, Q) *inv_det;
+    const float v = dot(dir, Q) *inv_det;
     if(v < 0.0f || u + v > 1.0f)
-        return Intersection(false);
+        return FalseIntersection;
 
-    t = dot(e2, Q) * inv_det;
+    const float t = dot(e2, Q) * inv_det;
 
     if(t > 0.00000001){
         return Intersection(true, Vec3Df(0, 0, 0), t, triangle);
     }
-    return Intersection(false);
+    return FalseIntersection;
 }

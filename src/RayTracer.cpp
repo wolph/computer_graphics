@@ -229,12 +229,9 @@ void startRayTracing(int texIndex, bool verbose){
 
 #define VEWY_HIGH 10e6f
 
-Vec3Df black(0, 0, 0);
-
 //return the color of your pixel.
 Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
-    Ray ray = Ray(black, origin, dest);
-    return performRayTracing(ray);
+    return performRayTracing(Ray(origin, dest));
 }
 
 // surface of triangle
