@@ -278,6 +278,12 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
         color += angle2 * lightColor;
 
     // reflection
+    Vec3Df r = ray.dir - 2*dot(ray.dir, triangle->normal)*triangle->normal;
+    Ray reflectedRay = Ray(ray.color, impact, impact + r);
+
+
+    // refraction
+
 
     // return color
     return color;
