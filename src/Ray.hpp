@@ -11,10 +11,9 @@
 /* fixed recursive includes */
 class Ray;
 
-#define VEWY_HIGH 10e6f
-
 #include "Vec3D.hpp"
 #include "Mesh.hpp"
+#include "Intersection.hpp"
 
 inline const Vec3Df normal(const Vec3Df& in){
     /* WARNING! This is actually unsafe, but it's fast so who cares ;) */
@@ -36,7 +35,7 @@ public:
             color(color_), orig(orig_), dest(dest_), dir(normal(dest_ - orig)){
     }
     virtual ~Ray();
-    float intersect(const Triangle* triangle);
+	Intersection intersect(const Triangle* triangle);
     const Vec3Df& getColor() const;
     void setColor(const Vec3Df& color = Vec3Df(1, 1, 1));
     void setColor(const float red, const float green, const float blue);

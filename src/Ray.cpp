@@ -6,6 +6,7 @@
  */
 
 #include "Ray.hpp"
+#include "Intersection.hpp"
 
 Ray::~Ray(){
 }
@@ -24,7 +25,7 @@ void Ray::setColor(const float red, const float green, const float blue){
     this->color[2] = blue;
 }
 
-float Ray::intersect(const Triangle* triangle){
+Intersection Ray::intersect(const Triangle* triangle){
     float det, inv_det, u, v, t;
 
     Vec3Df e1 = triangle->vertices[1].p - triangle->vertices[0].p;
@@ -34,7 +35,7 @@ float Ray::intersect(const Triangle* triangle){
     det = dot(e1, P);
 
     if(abs(det) < 0.000000001)
-        return VEWY_HIGH;
+        return Intersection(false);
 
     inv_det = 1.0f / det;
 
@@ -42,18 +43,18 @@ float Ray::intersect(const Triangle* triangle){
 
     u = dot(T, P) * inv_det;
     if(u < 0.0f || u > 1.0f)
-        return VEWY_HIGH;
+        return Intersection(false);
 
     Vec3Df Q = cross(T, e1);
 
     v = dot(dir, Q) *inv_det;
     if(v < 0.0f || u + v > 1.0f)
-        return VEWY_HIGH;
+        return Intersection(false);
 
     t = dot(e2, Q) * inv_det;
 
     if(t > 0.00000001){
-        return t;
+        return Intersection(true, Vec3Df(0, 0, 0), t);
     }
-    return VEWY_HIGH;
+    return Intersection(false);
 }

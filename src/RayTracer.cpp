@@ -218,7 +218,7 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     float dist = MyTree.collide(ray, &triangle);
 
     Vec3Df light(17, 8, 20);
-    Vec3Df lightColor(0.2, 0.3, 1.0);
+    Vec3Df lightColor(0.2f, 0.3f, 1.0f);
 
     Vec3Df impact = origin + ray.dir * dist;
     Vec3Df tolight = light - impact;
@@ -240,16 +240,16 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
                 white = !white;
 
             if(white)
-                return Vec3Df(0.1, 0.1, 0.1);
+                return Vec3Df(0.1f, 0.1f, 0.1f);
             else
-                return Vec3Df(0.9, 0.9, 0.9);
+                return Vec3Df(0.9f, 0.9f, 0.9f);
         }else
             return Vec3Df(0, 0, 1);
     }
 
     // ambient lighting
     Vec3Df color;
-    color += Vec3Df(0.2, 0.2, 0.2);
+    color += Vec3Df(0.2f, 0.2f, 0.2f);
 
     // diffuse
     float angle = dot(triangle->normal, tolight) * 2;
