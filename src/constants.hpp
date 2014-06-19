@@ -16,6 +16,10 @@
 #define MSAA 1
 #endif
 
+#ifndef PREVIEW_MSAA
+#define PREVIEW_MSAA 1
+#endif
+
 #ifndef PREVIEW_RES_X
 #ifdef PREVIEW_RES
 #define PREVIEW_RES_X PREVIEW_RES

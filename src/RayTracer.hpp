@@ -21,6 +21,8 @@ extern Mesh MyMesh; //Main mesh;
 extern std::vector<Vec3Df> MyLightPositions;
 extern Vec3Df MyCameraPosition; //currCamera
 extern unsigned int activeTexIndex;
+extern unsigned int isDrawingTexture;
+extern unsigned int isRealtimeRaytracing;
 
 option::ArgStatus checkMeshArg(const option::Option& option, bool msg);
 
