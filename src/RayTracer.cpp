@@ -390,7 +390,7 @@ void drawCube(AABB* cube) {
 	}
 }
 
-void drawNormal(Vec3Df& avg, Vec3Df& n) {
+void drawNormal(const Vec3Df& avg, const Vec3Df& n) {
 	glVertex3f(avg.p[0], avg.p[1], avg.p[2]);
 	Vec3Df d = avg + n * 0.1f;
 	glVertex3f(d.p[0], d.p[1], d.p[2]);
