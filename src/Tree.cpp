@@ -11,7 +11,7 @@ AABB::~AABB() {
 	delete[] sub;
 }
 
-int AABB::follow(Vec3Df& v) {
+int AABB::follow(const Vec3Df& v) {
 	int axis = 0;
 	for (int a = 0; a < 3; a++) {
 		if (v.p[a] > pos.p[a] + radius)

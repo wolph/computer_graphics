@@ -67,7 +67,6 @@ int init(int argc, char **argv){
 
     mesh = string("mesh/").append(mesh).append(".obj");
     MyMesh.loadMesh(mesh.c_str(), true);
-    MyMesh.computeVertexNormals();
     MyTree.build(MyMesh);
 
     //one first move: initialize the first light source

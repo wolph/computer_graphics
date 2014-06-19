@@ -6,29 +6,6 @@ using namespace std;
 const unsigned int LINE_LEN = 256;
 
 /************************************************************
- * Normal calculations
- ************************************************************/
-void Mesh::computeVertexNormals(){
-    //initialisation des normales des vertex
-    for(unsigned int i = 0;i < vertices.size();i++)
-        vertices[i].n = Vec3Df(0.0, 0.0, 0.0);
-
-    //Sum up neighboring normals
-    for(unsigned int i = 0;i < triangles.size();i++){
-        Vec3Df edge01 = triangles[i].vertices[1].p - triangles[i].vertices[0].p;
-        Vec3Df edge02 = triangles[i].vertices[2].p - triangles[i].vertices[0].p;
-        Vec3Df n = Vec3Df::crossProduct(edge01, edge02);
-        n.normalize();
-        for(unsigned int j = 0;j < 3;j++)
-            triangles[i].vertices[j].n += n;
-    }
-
-    //Normalize
-    for(unsigned int i = 0;i < vertices.size();i++)
-        vertices[i].n.normalize();
-}
-
-/************************************************************
  * draw
  ************************************************************/
 void Mesh::drawSmooth(){
@@ -40,9 +17,6 @@ void Mesh::drawSmooth(){
 
         glColor3fv(col.pointer());
         for(int v = 0;v < 3;v++){
-            glNormal3f(triangles[i].vertices[v].n[0],
-                    triangles[i].vertices[v].n[1],
-                    triangles[i].vertices[v].n[2]);
             glVertex3f(triangles[i].vertices[v].p[0],
                     triangles[i].vertices[v].p[1],
                     triangles[i].vertices[v].p[2]);
@@ -59,8 +33,8 @@ void Mesh::draw(){
         unsigned int triMat = triangleMaterials.at(i);
         Vec3Df col = this->materials.at(triMat).Kd();
         glColor3fv(col.pointer());
-        Vec3Df edge01 = triangles[i].vertices[1].p - triangles[i].vertices[0].p;
-        Vec3Df edge02 = triangles[i].vertices[2].p - triangles[i].vertices[0].p;
+        const Vec3Df edge01 = triangles[i].vertices[1].p - triangles[i].vertices[0].p;
+        const Vec3Df edge02 = triangles[i].vertices[2].p - triangles[i].vertices[0].p;
         Vec3Df n = Vec3Df::crossProduct(edge01, edge02);
         n.normalize();
         glNormal3f(n[0], n[1], n[2]);
