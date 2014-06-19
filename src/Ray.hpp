@@ -28,12 +28,16 @@ public:
     const Vec3Df orig;
     const Vec3Df dest;
     const Vec3Df dir;
+    const unsigned int bounceCount;
 
 //public:
     //Ray(Vec3Df& color, const Vec3Df& orig, const Vec3Df& dest);
     inline Ray(Vec3Df& color_, const Vec3Df& orig_, const Vec3Df& dest_) :
-            color(color_), orig(orig_), dest(dest_), dir(normal(dest_ - orig)){
-    }
+                color(color_), orig(orig_), dest(dest_), dir(normal(dest_ - orig)), bounceCount(10){
+        }
+    inline Ray(Vec3Df& color_, const Vec3Df& orig_, const Vec3Df& dest_, const unsigned int bounceCount_) :
+                color(color_), orig(orig_), dest(dest_), dir(normal(dest_ - orig)), bounceCount(bounceCount_){
+        }
     virtual ~Ray();
 	Intersection intersect(const Triangle* triangle);
     const Vec3Df& getColor() const;
