@@ -22,6 +22,7 @@ struct AABB {
 	AABB(Vec3Df& pos, float radius);
 	~AABB();
 
+	bool hit(Ray& ray);
 	void split();
 	int follow(Vec3Df& v);
 	float collide(Ray& ray, Triangle** out);

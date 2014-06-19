@@ -41,7 +41,7 @@ void AABB::split() {
 bool AABB::collidePlane(int axis, Ray& ray) {
 	// check axis plane
 	float v1 = pos.p[axis];
-	if (ray.dir.p[axis] > 0)
+	if (ray.dir.p[axis] < 0)
 		v1 += 2 * radius;
 
 	// factor
@@ -62,19 +62,19 @@ bool AABB::collidePlane(int axis, Ray& ray) {
 	return false;
 }
 
+bool AABB::hit(Ray& ray) {
+	for (int i = 0; i < 3; i++)
+		if (collidePlane(i, ray))
+			return true;
+	return false;
+}
+
 float AABB::collide(Ray& ray, Triangle** out) {
 	// check hit with this cube
-	bool hit = false;
-	for (int i = 0; i < 3; i++) {
-		if (collidePlane(i, ray)) {
-			hit = true;
-			break;
-		}
+	if (!hit(ray)) {
+		*out = 0;
+		return 1e10f;
 	}
-
-	// return when no hit
-	if (!hit)
-		return 0;
 
 	// current closest triangle
 	float shortest = 1e10f;
@@ -98,6 +98,7 @@ float AABB::collide(Ray& ray, Triangle** out) {
 			if (dist < shortest) {
 				res = res2;
 				shortest = dist;
+				//printf("%f\n", shortest);
 			}
 		}
 	}
@@ -105,10 +106,6 @@ float AABB::collide(Ray& ray, Triangle** out) {
 	// hit
 	*out = res;
 	return shortest;
-
-	//printf("(%f, %f)\n", y, z);
-
-	return 0;
 }
 
 void Tree::calcSize(Mesh& mesh) {

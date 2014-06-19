@@ -233,6 +233,10 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     Triangle* triangle;
     float dist = MyTree.collide(ray, &triangle);
 
+	//if (dist < 1e8)
+	//	return Vec3Df(1, 1, 1);
+	//return black;
+
     Vec3Df light(17, 8, 20);
     Vec3Df lightColor(0.2f, 0.3f, 1.0f);
 
@@ -244,7 +248,7 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     // background
     if(!triangle){
         if(ray.dir.p[2] < 0){
-			float height = origin.p[2];
+			float height = origin.p[2] + 2;
             float a = -height / ray.dir.p[2];
             float x = origin.p[0] + a * ray.dir.p[0];
 			float y = origin.p[1] + a * ray.dir.p[1];
@@ -278,6 +282,8 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
         color += angle2 * lightColor;
 
     // reflection
+	Vec3Df bounce = -2 * dot(ray.dir, triangle->normal) * triangle->normal + ray.dir;
+	color = performRayTracing(impact + bounce * 0.1f, impact + bounce);
 
     // return color
     return color;
@@ -311,12 +317,17 @@ void drawCube(AABB* cube) {
 	}
 }
 
+extern unsigned int isDrawingTexture;
+extern unsigned int isRealtimeRaytracing;
+
 void yourDebugDraw(){
-	glColor3f(1, 0.5, 0.5);
-	glLineWidth(10);
-	glBegin(GL_LINES);
-	drawCube(MyTree.root);
-	glEnd();
+	if (!isRealtimeRaytracing && !isDrawingTexture) {
+		glColor3f(1, 0.5, 0.5);
+		glLineWidth(10);
+		glBegin(GL_LINES);
+		drawCube(MyTree.root);
+		glEnd();
+	}
 }
 
 void yourKeyboardFunc(char t, int x, int y){
