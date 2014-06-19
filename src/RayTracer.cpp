@@ -290,8 +290,7 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     float cosIncident = dot(ray.dir, triangle->normal);
     float temp = inDivOut*inDivOut * 1-cosIncident*cosIncident;
     if(temp <= 1) {
-    	float temp2 = inDivOut *  cosIncident - sqrt(1-temp);
-    	Vec3Df t =inDivOut * ray.dir + Vec3Df(temp2, temp2, temp);
+    	Vec3Df t =inDivOut * ray.dir + (inDivOut *  cosIncident - sqrt(1-temp))*triangle->normal;
     	Ray transmittedRay = Ray(ray.color, impact, impact + t);
     } //temp > 1 means no refraction, only (total) reflection.
 
