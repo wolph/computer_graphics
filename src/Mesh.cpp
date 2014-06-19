@@ -10,7 +10,7 @@ const unsigned int LINE_LEN = 256;
  ************************************************************/
 void Mesh::computeVertexNormals(){
     //initialisation des normales des vertex
-    for(unsigned int i = 0;i < vertices.size();i++)
+    /*for(unsigned int i = 0;i < vertices.size();i++)
         vertices[i].n = Vec3Df(0.0, 0.0, 0.0);
 
     //Sum up neighboring normals
@@ -25,7 +25,7 @@ void Mesh::computeVertexNormals(){
 
     //Normalize
     for(unsigned int i = 0;i < vertices.size();i++)
-        vertices[i].n.normalize();
+        vertices[i].n.normalize();*/
 }
 
 /************************************************************
@@ -297,20 +297,36 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
         memset(&s, 0, LINE_LEN);
     }
 
-    if(texcoords.size()){
-        for(auto & triangle : tempTriangles){
-            triangles.push_back(
-                    Triangle(vertices[triangle[0]], vertices[triangle[1]],
-                            vertices[triangle[2]], texcoords[triangle[3]],
-                            texcoords[triangle[4]], texcoords[triangle[5]]));
-        }
-    }else{
-        for(auto & triangle : tempTriangles){
-            triangles.push_back(
-                    Triangle(vertices[triangle[0]], vertices[triangle[1]],
-                            vertices[triangle[2]]));
-        }
+	// make triangles
+    for(auto& triangle : tempTriangles){
+		Triangle tr;
+		if (!texcoords.empty())
+			tr = Triangle(vertices[triangle[0]], vertices[triangle[1]],
+                        vertices[triangle[2]], texcoords[triangle[3]],
+						texcoords[triangle[4]], texcoords[triangle[5]]);
+		else
+			tr = Triangle(vertices[triangle[0]], vertices[triangle[1]],
+						vertices[triangle[2]]);
+
+		// add normals
+		for (int i = 0; i < 3; i++)
+			vertices[triangle[i]].n += tr.normal;
+
+		triangles.push_back(tr);
     }
+
+	// normalize normals
+	for (Vertex& v : vertices)
+		v.n.normalize();
+
+	// calculate vertex normals
+	int idx = 0;
+	for (auto& triangle : tempTriangles){
+		for (int i = 0; i < 3; i++)
+			triangles[idx].vertices[i].n = vertices[triangle[i]].n;
+
+		idx++;
+	}
 
     fclose(in);
     return true;
