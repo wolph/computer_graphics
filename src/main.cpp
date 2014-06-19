@@ -13,6 +13,9 @@ unsigned int isRealtimeRaytracing = 0;
 Mesh MyMesh; //Main mesh
 Tree MyTree;
 
+// options
+extern bool g_phong;
+
 bool needRebuild = false; // if the raytrace needs to be built
 
 void drawAxes(float length){
@@ -263,6 +266,9 @@ void keyboard(unsigned char key, int x, int y){
     printf("key %d pressed at %d,%d\n", key, x, y);
     fflush(stdout);
     switch(key){
+		case '1':
+			g_phong = !g_phong;
+			break;
         case 't':
             isDrawingTexture = 0;
             isRealtimeRaytracing = 0;

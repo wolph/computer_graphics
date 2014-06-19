@@ -11,6 +11,9 @@ extern unsigned int textures[2];
 extern Tree MyTree;
 int alternateX, alternateY;
 
+// runtime options
+bool g_phong = true;
+
 //use this function for any preprocessing of the mesh.
 int init(int argc, char **argv){
     // skip program name argv[0] if present
@@ -299,21 +302,23 @@ Vec3Df performRayTracing(Ray ray) {
 	}
 
 	// calculate normal
-	// Point = impact
+	Vec3Df normal = triangle2->normal;
 
-	// calc areas
-	float a1 = surface(triangle2->vertices[1].p, impact, triangle2->vertices[2].p);
-	float a2 = surface(triangle2->vertices[0].p, impact, triangle2->vertices[2].p);
-	float a3 = surface(triangle2->vertices[0].p, impact, triangle2->vertices[1].p);
-	float total = a1 + a2 + a3;
+	if (g_phong) {
+		// calc areas
+		float a1 = surface(triangle2->vertices[1].p, impact, triangle2->vertices[2].p);
+		float a2 = surface(triangle2->vertices[0].p, impact, triangle2->vertices[2].p);
+		float a3 = surface(triangle2->vertices[0].p, impact, triangle2->vertices[1].p);
+		float total = a1 + a2 + a3;
 
-	// factors
-	float f1 = a1 / total;
-	float f2 = a2 / total;
-	float f3 = a3 / total;
+		// factors
+		float f1 = a1 / total;
+		float f2 = a2 / total;
+		float f3 = a3 / total;
 
-	// calc normal
-	Vec3Df normal = f1 * triangle2->vertices[0].n + f2 * triangle2->vertices[1].n + f3 * triangle2->vertices[2].n;
+		// calc normal
+		normal = f1 * triangle2->vertices[0].n + f2 * triangle2->vertices[1].n + f3 * triangle2->vertices[2].n;
+	}
 
     // ambient lighting
     Vec3Df color;
