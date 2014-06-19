@@ -11,7 +11,7 @@ const char* image_exts[] = {"png", "bmp", "ppm"};
 
 #if IMAGE_FORMAT == BMP
 // convert value from little to big-endian
-inline unsigned int htonl(unsigned int n){
+inline unsigned int htonl_(unsigned int n){
 	return
 		(n & 0xFF000000 >> 24) |
 		(n & 0xFF0000 >> 8) |
@@ -137,9 +137,9 @@ bool Image::writeImage(const char * filename2){
 	unsigned int* h = (unsigned int*)(header + 22);
 
 	// modify header
-	*filesize = htonl(sizeof(header) + len);
-	*w = htonl(_width);
-	*h = htonl(_height);
+	*filesize = htonl_(sizeof(header) + len);
+	*w = htonl_(_width);
+	*h = htonl_(_height);
 
 	// fill buffer, convert from RGB to BGR
 	for (unsigned int i = 0; i < _image.size() / 3; i++) {

@@ -42,3 +42,4 @@ result.*
 *.vcsproj.user
 *.suo
 Thumbs.db
+Makefile.local
