@@ -13,14 +13,14 @@
 #endif
 
 #ifndef MSAA
-#define MSAA 4
+#define MSAA 1
 #endif
 
 #ifndef PREVIEW_RES_X
 #ifdef PREVIEW_RES
 #define PREVIEW_RES_X PREVIEW_RES
 #else
-#define PREVIEW_RES_X 256
+#define PREVIEW_RES_X 64
 #endif
 #endif
 
@@ -28,7 +28,7 @@
 #ifdef PREVIEW_RES
 #define PREVIEW_RES_Y PREVIEW_RES
 #else
-#define PREVIEW_RES_Y 256
+#define PREVIEW_RES_Y 64
 #endif
 #endif
 
@@ -62,10 +62,6 @@
 #else
 #define RAYTRACE_RES_Y 512
 #endif
-#endif
-
-#ifndef MAX_OCTREE_DEPTH
-#define MAX_OCTREE_DEPTH 7
 #endif
 
 #endif /* CONSTANTS_HPP_ */

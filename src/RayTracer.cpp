@@ -231,15 +231,15 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
 	// background
 	if (!triangle) {
 		if (ray.dir.p[2] < 0) {
-			float height = origin.p[2] + 2.0f;
+			float height = origin.p[2];
 			float a = height / ray.dir.p[2];
-			float x = origin.p[0] + a * ray.dir.p[0];
-			float y = origin.p[1] + a * ray.dir.p[1];
+			float x = origin.p[0] + a * origin.p[0];
+			float y = origin.p[1] + a * origin.p[1];
 
 			bool white = true;
-			if (fmodf(x, 1) > 0.5 || fmodf(x, 1) < -0.5)
+			if (fmodf(x, 1) > 0.5)
 				white = !white;
-			if (fmodf(y, 1) > 0.5 || fmodf(y, 1) < -0.5)
+			if (fmodf(y, 1) > 0.5)
 				white = !white;
 
 			if (white) return Vec3Df(0.1, 0.1, 0.1);

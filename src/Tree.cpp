@@ -153,7 +153,7 @@ void Tree::add(Triangle& tr) {
 	int a0, a1, a2;
 
 	int depth = 0;
-	while (depth < MAX_OCTREE_DEPTH) {
+	while (depth < MAX_DEPTH) {
 		a0 = current->follow(tr.vertices[0].p);
 		a1 = current->follow(tr.vertices[1].p);
 		a2 = current->follow(tr.vertices[2].p);
