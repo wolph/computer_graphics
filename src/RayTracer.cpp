@@ -289,7 +289,7 @@ Vec3Df performRayTracing(Ray ray) {
 		// reflection
 		Vec3Df r = ray.dir - 2*dot(ray.dir, triangle->normal)*triangle->normal;
 		Ray reflectedRay = Ray(ray.color, impact, impact + r, ray.bounceCount-1);
-
+		color += performRayTracing(reflectedRay) * 0.2f;
 
 		// refraction
 		float inIndex = 1;
