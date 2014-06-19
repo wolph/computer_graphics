@@ -18,26 +18,6 @@ extern bool g_phong;
 
 bool needRebuild = false; // if the raytrace needs to be built
 
-void drawAxes(float length){
-    glDisable(GL_LIGHTING);
-
-    glBegin(GL_LINES);
-    glColor3f(1, 0, 0);
-    glVertex3f(0, 0, 0);
-    glVertex3f(length, 0, 0);
-
-    glColor3f(0, 1, 0);
-    glVertex3f(0, 0, 0);
-    glVertex3f(0, length, 0);
-
-    glColor3f(0, 0, 1);
-    glVertex3f(0, 0, 0);
-    glVertex3f(0, 0, length);
-    glEnd();
-    glEnable(GL_LIGHTING);
-
-}
-
 /**
  * draw a full-screen texture
  */
@@ -56,39 +36,7 @@ void drawTexture(int texIndex){
     glEnd();
 }
 
-/**
- * Appel des différentes fonctions de dessin
- */
-void draw(){
-
-    switch(type){
-        case TRIANGLE:
-            glutSolidSphere(1, 10, 10);
-            drawAxes(1);
-            break;
-        case MODEL: {
-            MyMesh.draw();
-            //glBegin(GL_TRIANGLES);
-
-            //for (unsigned int i=0;i<MyMesh.triangles.size();++i)
-            //{
-            //	glColor3f(MyMesh.materials[MyMesh.triangleMaterials[i]].Kd()[0], MyMesh.materials[MyMesh.triangleMaterials[i]].Kd()[1], MyMesh.materials[MyMesh.triangleMaterials[i]].Kd()[2]);
-            //	glVertex3f(MyMesh.vertices[MyMesh.triangles[i].v[0]].p[0], MyMesh.vertices[MyMesh.triangles[i].v[0]].p[1], MyMesh.vertices[MyMesh.triangles[i].v[0]].p[2]);
-            //	glVertex3f(MyMesh.vertices[MyMesh.triangles[i].v[1]].p[0], MyMesh.vertices[MyMesh.triangles[i].v[1]].p[1], MyMesh.vertices[MyMesh.triangles[i].v[1]].p[2]);
-            //	glVertex3f(MyMesh.vertices[MyMesh.triangles[i].v[2]].p[0], MyMesh.vertices[MyMesh.triangles[i].v[2]].p[1], MyMesh.vertices[MyMesh.triangles[i].v[2]].p[2]);
-            //}
-            //glEnd();
-            break;
-        }
-        default:
-            drawAxes(1); // Par défaut
-            break;
-    }
-
-    yourDebugDraw();
-}
-
-void animate(){
+void animate() {
     MyCameraPosition = getCameraPosition();
     glutPostRedisplay();
 }
@@ -97,9 +45,7 @@ void display(void);
 void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
 
-/**
- * Programme principal
- */
+// entry point
 int main(int argc, char** argv){
     glutInit(&argc, argv);
 
@@ -189,6 +135,7 @@ int main(int argc, char** argv){
     return 0;  // instruction jamais exécutée
 }
 
+// draw fps
 void drawFPS(){
     clock_t diff = clock() - lastFrameTime;
     lastFrameTime = clock();
@@ -207,12 +154,8 @@ void drawFPS(){
     }
 }
 
-/**
- * Fonctions de gestion opengl à ne pas toucher
- */
-// Actions d'affichage
-// Ne pas changer
-void display(void){
+// display
+void display(void) {
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     // Effacer tout
@@ -222,10 +165,14 @@ void display(void){
     glLoadIdentity();  // repere camera
 
     if(isDrawingTexture || isRealtimeRaytracing){
-        GLdouble tb_matrix2[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -2, -2, -4,
-                1};
+        const static GLdouble viewport[] = {
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+		   -2,-2,-4, 1
+		};
 
-        glMultMatrixd(tb_matrix2);
+        glMultMatrixd(viewport);
         drawTexture(activeTexIndex);
 
         // reset view
@@ -236,16 +183,17 @@ void display(void){
         if(isRealtimeRaytracing){
             startRayTracing(!activeTexIndex, false);
             activeTexIndex = !activeTexIndex;
-        }else{
+        } else {
             if(needRebuild == true){
                 startRayTracing(activeTexIndex, true);
                 needRebuild = false;
             }
         }
-        yourDebugDraw();
-    }else{
+		drawFPS();
+    } else {
         tbVisuTransform(); // origine et orientation de la scene
-        draw();
+        MyMesh.draw();
+		yourDebugDraw();
     }
 
     glutSwapBuffers();
@@ -263,8 +211,6 @@ void reshape(int w, int h){
 
 // prise en compte du clavier
 void keyboard(unsigned char key, int x, int y){
-    printf("key %d pressed at %d,%d\n", key, x, y);
-    fflush(stdout);
     switch(key){
 		case '1':
 			g_phong = !g_phong;
