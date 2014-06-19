@@ -12,6 +12,18 @@ public:
 	Vec3Df pos;
 };
 
+#pragma pack(push,1)
+struct PolyIdx {
+	unsigned short a, b, c;
+};
+#pragma pack(pop)
+
+class Model {
+public:
+	vector<Vec3Df> vertices;
+	vector<PolyIdx> polygons;
+};
+
 class Scene {
 private:
 	vector<Light> lights;
