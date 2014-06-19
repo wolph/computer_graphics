@@ -41,7 +41,7 @@ struct Arg: public option::Arg
 };
 
 enum optionIndex{
-    UNKNOWN, HELP, RAYTRACE, MESH
+    UNKNOWN, HELP, RAYTRACE, MESH, RAYTRACEX, RAYTRACEY
 };
 const option::Descriptor usage[] = {
         {UNKNOWN, 0, "", "", Arg::Unknown,
@@ -52,9 +52,13 @@ const option::Descriptor usage[] = {
             "--raytrace, -r \tRay trace and exit."},
         {MESH, 0, "m", "mesh", Arg::Optional,
             "--mesh, -m \tMesh to load"},
-        {UNKNOWN, 0, "" ,  "", Arg::None, "\nExamples:\n"
-                "computer_graphics --trace\n"},
-     {0,0,0,0,0,0}
+ 		{RAYTRACEX, 0, "x", "raytraceX", Arg::Optional,
+				"--raytraceX, -x \tChoose raytracer resolution X."},
+		{RAYTRACEY, 0, "y", "raytraceY", Arg::Optional,
+				"--raytraceY, -y \tChoose raytracer resolution Y." },
+        //{UNKNOWN, 0, "" ,  "", Arg::None, "\nExamples:\n" This example doesn't do anything...
+        //        "computer_graphics --trace\n"},
+		{ 0, 0, 0, 0, 0, 0 }
 };
 
 //use this function for any preprocessing of the mesh.

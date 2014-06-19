@@ -8,6 +8,7 @@ Vec3Df testRayDestination;
 string mesh;
 extern unsigned int textures[2];
 extern Tree MyTree;
+int alternateX, alternateY;
 
 //use this function for any preprocessing of the mesh.
 int init(int argc, char **argv){
@@ -40,6 +41,20 @@ int init(int argc, char **argv){
     }else{
         mesh = "0";
     }
+
+	if (options[RAYTRACEX]){
+		const char* arg = options[RAYTRACEX].last()->arg;
+		if (arg != 0){
+			alternateX = stoi(arg);
+		}
+	}
+
+	if(options[RAYTRACEY]){
+		const char* arg = options[RAYTRACEY].last()->arg;
+		if (arg != 0){
+			alternateY = stoi(arg);
+		}
+	}
 
     if(mesh == "0")
         mesh = "cube";
@@ -144,8 +159,10 @@ void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
 void startRayTracing(int texIndex, bool verbose){
     if(verbose)
         cout << "Raytracing" << endl;
-    const int w = verbose ? RAYTRACE_RES_X : PREVIEW_RES_X;
-    const int h = verbose ? RAYTRACE_RES_Y : PREVIEW_RES_Y;
+    int w = verbose ? RAYTRACE_RES_X : PREVIEW_RES_X;
+    int h = verbose ? RAYTRACE_RES_Y : PREVIEW_RES_Y;
+	w = alternateX ? alternateX : w;
+	h = alternateY ? alternateY : h;
 
     Image result(w, h);
 
