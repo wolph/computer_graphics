@@ -67,6 +67,7 @@ int init(int argc, char **argv){
 
     mesh = string("mesh/").append(mesh).append(".obj");
     MyMesh.loadMesh(mesh.c_str(), true);
+    MyMesh.computeVertexNormals();
     MyTree.build(MyMesh);
 
     //one first move: initialize the first light source
@@ -230,51 +231,96 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
     Ray ray = Ray(black, origin, dest);
     return performRayTracing(ray);
 }
+
+// surface of triangle
+// heron formula
+float surface(float* t) {
+	
+	// side lengths
+	float a = sqrt((t[0] - t[3]) * (t[0] - t[3]) + (t[1] - t[4]) * (t[1] - t[4]) + (t[2] - t[5]) * (t[2] - t[5]));
+	float b = sqrt((t[0] - t[6]) * (t[0] - t[6]) + (t[1] - t[7]) * (t[1] - t[7]) + (t[2] - t[8]) * (t[2] - t[8]));
+	float c = sqrt((t[3] - t[6]) * (t[3] - t[6]) + (t[4] - t[7]) * (t[4] - t[7]) + (t[5] - t[8]) * (t[5] - t[8]));
+
+	// om
+	float s = 0.5f * (a + b + c);
+
+	// area
+	float area = sqrt(s * (s - a) * (s - b) * (s - c));
+	return area;
+}
+
+// incredibly beautiful convenience function
+float surface(const Vec3Df& a, const Vec3Df& b, const Vec3Df& c) {
+	float f[9];
+	*((Vec3Df*)&f[0]) = a;
+	*((Vec3Df*)&f[3]) = b;
+	*((Vec3Df*)&f[6]) = c;
+	return surface(f);
+}
+
 Vec3Df performRayTracing(Ray ray) {
-    // calculate nearest triangle
-    Triangle* triangle;
-    float dist = MyTree.collide(ray, &triangle);
+	// calculate nearest triangle
+	Triangle* triangle2;
+	float dist = MyTree.collide(ray, &triangle2);
 
 	//if (dist < 1e8)
 	//	return Vec3Df(1, 1, 1);
 	//return black;
 
-    Vec3Df light(17, 8, 20);
-    Vec3Df lightColor(0.2f, 0.3f, 1.0f);
+	Vec3Df light(17, 8, 20);
+	Vec3Df lightColor(0.2f, 0.3f, 1.0f);
 
-    Vec3Df impact = ray.orig + ray.dir * dist;
-    Vec3Df tolight = light - impact;
-    Vec3Df tocam = ray.orig - impact;
-    tolight.normalize();
+	Vec3Df impact = ray.orig + ray.dir * dist;
+	Vec3Df tolight = light - impact;
+	Vec3Df tocam = ray.orig - impact;
+	tolight.normalize();
 
-    // background
-    if(!triangle){
-        if(ray.dir.p[2] < 0){
+	// background
+	if (!triangle2){
+		if (ray.dir.p[2] < 0){
 			float height = ray.orig.p[2] + 2;
-            float a = -height / ray.dir.p[2];
-            float x = ray.orig.p[0] + a * ray.dir.p[0];
+			float a = -height / ray.dir.p[2];
+			float x = ray.orig.p[0] + a * ray.dir.p[0];
 			float y = ray.orig.p[1] + a * ray.dir.p[1];
 			if (height < 0)
 				return Vec3Df(0, 0.3f, 0);
 
-            bool white = true;
+			bool white = true;
 			if (x > floor(x) + 0.5f) white = !white;
 			if (y > floor(y) + 0.5f) white = !white;
 
-            if(white)
-                return Vec3Df(0.1f, 0.1f, 0.1f);
-            else
-                return Vec3Df(0.9f, 0.9f, 0.9f);
-        }else
-            return Vec3Df(0, 0.6, 0.99);
-    }
+			if (white)
+				return Vec3Df(0.1f, 0.1f, 0.1f);
+			else
+				return Vec3Df(0.9f, 0.9f, 0.9f);
+		}
+		else
+			return Vec3Df(0, 0.6, 0.99);
+	}
+
+	// calculate normal
+	// Point = impact
+
+	// calc areas
+	float a1 = surface(triangle2->vertices[1].p, impact, triangle2->vertices[2].p);
+	float a2 = surface(triangle2->vertices[0].p, impact, triangle2->vertices[2].p);
+	float a3 = surface(triangle2->vertices[0].p, impact, triangle2->vertices[1].p);
+	float total = a1 + a2 + a3;
+
+	// factors
+	float f1 = a1 / total;
+	float f2 = a2 / total;
+	float f3 = a3 / total;
+
+	// calc normal
+	Vec3Df normal = f1 * triangle2->vertices[0].n + f2 * triangle2->vertices[1].n + f3 * triangle2->vertices[2].n;
 
     // ambient lighting
     Vec3Df color;
     color += Vec3Df(0.2f, 0.2f, 0.2f);
 
     // diffuse
-    float angle = dot(triangle->normal, tolight) * 2;
+    float angle = dot(normal, tolight) * 2;
     if(angle > 0)
         color += angle * lightColor;
 
@@ -284,9 +330,9 @@ Vec3Df performRayTracing(Ray ray) {
         color += angle2 * lightColor;
 
     //dont want infinite reflected rays
-    if(ray.bounceCount > 0) {
+    if(ray.bounceCount) {
 		// reflection
-		Vec3Df r = ray.dir - 2*dot(ray.dir, triangle->normal)*triangle->normal;
+		Vec3Df r = ray.dir - 2*dot(ray.dir, normal)*normal;
 		Ray reflectedRay = Ray(ray.color, impact, impact + r, ray.bounceCount-1);
 		color += performRayTracing(reflectedRay) * 0.2f;
 
@@ -294,10 +340,10 @@ Vec3Df performRayTracing(Ray ray) {
 		float inIndex = 1;
 		float outIndex = 1;
 		float inDivOut = inIndex/outIndex;
-		float cosIncident = dot(ray.dir, triangle->normal);
+		float cosIncident = dot(ray.dir, normal);
 		float temp = inDivOut*inDivOut * 1-cosIncident*cosIncident;
 		if(temp <= 1) {
-			Vec3Df t =inDivOut * ray.dir + (inDivOut *  cosIncident - sqrt(1-temp))*triangle->normal;
+			Vec3Df t =inDivOut * ray.dir + (inDivOut *  cosIncident - sqrt(1-temp))*normal;
 			Ray transmittedRay = Ray(ray.color, impact, impact + t, ray.bounceCount-1);
 		} //temp > 1 means no refraction, only (total) reflection.
     }
@@ -333,15 +379,35 @@ void drawCube(AABB* cube) {
 	}
 }
 
+void drawNormal(Vec3Df& avg, Vec3Df& n) {
+	glVertex3f(avg.p[0], avg.p[1], avg.p[2]);
+	Vec3Df d = avg + n * 0.1f;
+	glVertex3f(d.p[0], d.p[1], d.p[2]);
+}
+
+void drawNormals() {
+	for (unsigned int i = 0; i < MyMesh.triangles.size(); i++) {
+		Vec3Df avg;
+		for (int t = 0; t < 3; t++)
+			avg += MyMesh.triangles[i].vertices[t].p * 0.333f;
+
+		//drawNormal(avg, MyMesh.triangles[i].normal);
+	}
+
+	for (unsigned int i = 0; i < MyMesh.vertices.size(); i++)
+		drawNormal(MyMesh.vertices[i].p, MyMesh.vertices[i].n);
+}
+
 extern unsigned int isDrawingTexture;
 extern unsigned int isRealtimeRaytracing;
 
 void yourDebugDraw(){
 	if (!isRealtimeRaytracing && !isDrawingTexture) {
 		glColor3f(1, 0.5, 0.5);
-		glLineWidth(10);
+		glLineWidth(3);
 		glBegin(GL_LINES);
-		drawCube(MyTree.root);
+		//drawCube(MyTree.root);
+		drawNormals();
 		glEnd();
 	}
 }

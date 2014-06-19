@@ -6,6 +6,29 @@ using namespace std;
 const unsigned int LINE_LEN = 256;
 
 /************************************************************
+ * Normal calculations
+ ************************************************************/
+void Mesh::computeVertexNormals(){
+    //initialisation des normales des vertex
+    /*for(unsigned int i = 0;i < vertices.size();i++)
+        vertices[i].n = Vec3Df(0.0, 0.0, 0.0);
+
+    //Sum up neighboring normals
+    for(unsigned int i = 0;i < triangles.size();i++){
+        Vec3Df edge01 = triangles[i].vertices[1].p - triangles[i].vertices[0].p;
+        Vec3Df edge02 = triangles[i].vertices[2].p - triangles[i].vertices[0].p;
+        Vec3Df n = Vec3Df::crossProduct(edge01, edge02);
+        n.normalize();
+        for(unsigned int j = 0;j < 3;j++)
+            triangles[i].vertices[j].n += n;
+    }
+
+    //Normalize
+    for(unsigned int i = 0;i < vertices.size();i++)
+        vertices[i].n.normalize();*/
+}
+
+/************************************************************
  * draw
  ************************************************************/
 void Mesh::drawSmooth(){
@@ -17,6 +40,9 @@ void Mesh::drawSmooth(){
 
         glColor3fv(col.pointer());
         for(int v = 0;v < 3;v++){
+            glNormal3f(triangles[i].vertices[v].n[0],
+                    triangles[i].vertices[v].n[1],
+                    triangles[i].vertices[v].n[2]);
             glVertex3f(triangles[i].vertices[v].p[0],
                     triangles[i].vertices[v].p[1],
                     triangles[i].vertices[v].p[2]);
@@ -333,20 +359,27 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
         memset(&s, 0, LINE_LEN);
     }
 
-    if(texcoords.size()){
-        for(auto & triangle : tempTriangles){
-            triangles.push_back(
-                    Triangle(vertices[triangle[0]], vertices[triangle[1]],
-                            vertices[triangle[2]], texcoords[triangle[3]],
-                            texcoords[triangle[4]], texcoords[triangle[5]]));
-        }
-    }else{
-        for(auto & triangle : tempTriangles){
-            triangles.push_back(
-                    Triangle(vertices[triangle[0]], vertices[triangle[1]],
-                            vertices[triangle[2]]));
-        }
+	// make triangles
+    for(auto& triangle : tempTriangles){
+		if (!texcoords.empty())
+			triangles.push_back(Triangle(vertices[triangle[0]], vertices[triangle[1]],
+                        vertices[triangle[2]], texcoords[triangle[3]],
+						texcoords[triangle[4]], texcoords[triangle[5]]));
+		else
+			triangles.push_back(Triangle(vertices[triangle[0]], vertices[triangle[1]],
+						vertices[triangle[2]]));
+
+		Triangle tr = triangles[triangles.size()-1];
+
+		// add normals
+		for (int i = 0; i < 3; i++)
+			vertices[triangle[i]].n += tr.normal;
+
     }
+
+	// normalize normals
+	for (Vertex& v : vertices)
+		v.n.normalize();
 
     fclose(in);
     return true;

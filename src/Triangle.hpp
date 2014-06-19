@@ -31,24 +31,36 @@ public:
             const Texture & t0, const Texture & t1, const Texture & t2):
         vertices{v0, v1, v2},
         textures{t0, t1, t2},
-        normal(calculateNormal(v0.p, v1.p, v2.p))
+        normal(calculateNormal(v0, v1, v2))
         {};
-
+    inline Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2,
+            const Texture & t0, const Texture & t1, const Texture & t2, const Vec3Df n):
+        vertices{v0, v1, v2},
+        textures{t0, t1, t2},
+        normal(n)
+        {};
     inline Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2):
     vertices{v0, v1, v2}
     {};
     inline virtual ~Triangle(){}
-//    inline Triangle & operator=(const Triangle & t2);
-    static inline Vec3Df calculateNormal(const Vec3Df& v0, const Vec3Df& v1, const Vec3Df& v2){
-        Vec3Df normal = Vec3Df::crossProduct(v1 - v0, v2 - v1);
+//    inline Triangle & operator=(const Triangle & t){
+//        return Triangle(
+//            t.vertices[0],
+//            t.vertices[1],
+//            t.vertices[2],
+//            t.textures[0],
+//            t.textures[1],
+//            t.textures[2],
+//            t.normal
+//        );
+//    }
+    static inline const Vec3Df calculateNormal(const Vertex& v0, const Vertex& v1, const Vertex& v2){
+        Vec3Df normal = Vec3Df::crossProduct(v1.p - v0.p, v2.p - v1.p);
         float length = normal.getLength();
         if(length > 0)
             normal /= normal.getLength();
-        return normal;
-    }
 
-    inline void calculateNormal(){
-        normal = calculateNormal(vertices[0].p, vertices[1].p, vertices[2].p);
+        return normal;
     }
 };
 
