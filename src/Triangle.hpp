@@ -14,33 +14,34 @@ class Triangle;
 #include "Vec3D.hpp"
 #include "Vertex.hpp"
 #include "Texture.hpp"
+#include <array>
 
 class Triangle{
 public:
-    const Vertex vertices[3];
-    Texture textures[3];
-    Vec3Df normal;
-    inline Triangle(): vertices{Vertex(0), Vertex(0), Vertex(0)},
-    textures{Texture(0), Texture(0), Texture(0)}, normal(0){};
+	const std::array<Vertex, 3> vertices;
+	const std::array<Texture, 3> textures;
+	Vec3Df normal;
+	inline Triangle() : vertices({ Vertex(0), Vertex(0), Vertex(0) }) {}
+   // textures{Texture(0), Texture(0), Texture(0)}, normal(0){};
     inline Triangle(const Triangle & triangle) :
-        vertices{triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]},
-        textures{triangle.textures[0], triangle.textures[1], triangle.textures[2]},
+        vertices({triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]}),
+        textures({triangle.textures[0], triangle.textures[1], triangle.textures[2]}),
         normal(triangle.normal)
         {};
     inline Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2,
             const Texture & t0, const Texture & t1, const Texture & t2):
-        vertices{v0, v1, v2},
-        textures{t0, t1, t2},
+        vertices({v0, v1, v2}),
+        textures({t0, t1, t2}),
         normal(calculateNormal(v0, v1, v2))
         {};
     inline Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2,
-            const Texture & t0, const Texture & t1, const Texture & t2, const Vec3Df n):
-        vertices{v0, v1, v2},
-        textures{t0, t1, t2},
+		const Texture & t0, const Texture & t1, const Texture & t2, const Vec3Df n) :
+		vertices({ v0, v1, v2 }),
+		textures({ t0, t1, t2 }),
         normal(n)
         {};
-    inline Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2):
-    vertices{v0, v1, v2}
+	inline Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2) :
+		vertices({ v0, v1, v2 })
     {};
     inline virtual ~Triangle(){}
 //    inline Triangle & operator=(const Triangle & t){
