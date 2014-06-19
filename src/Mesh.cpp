@@ -133,6 +133,7 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
 
         // material file
         else if(strncmp(s, "mtllib ", 7) == 0){
+            // Which material file to include
             char *p0 = s + 6, *p1;
             while(isspace(*++p0))
                 ;
@@ -154,6 +155,15 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
         }
         // usemtl
         else if(strncmp(s, "usemtl ", 7) == 0){
+            /* The material to use for this object
+             
+             The use material command lets you name a material to use. All 'f'
+             face commands that follow will use the same material, until
+             another usemtl command is encountered. For all of the Poser OBJ
+             files I've seen, all 'g' commands should be followed by a 'usemtl'
+             command.
+            */
+            
             char *p0 = s + 6, *p1;
             while(isspace(*++p0))
                 ;
@@ -166,32 +176,84 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
                 printf(
                         "Warning! Material '%s' not defined in material file. Taking default!\n",
                         matname.c_str());
+                throw runtime_error("Material is missing, exiting.");
                 matname = "";
             }
         }
 
         // vertex
         else if(strncmp(s, "v ", 2) == 0){
+            /* The vertices themselves, these are just points in the geometry
+             
+             The vertex command, this specifies a vertex by its three
+             coordinates. The vertex is implicitly named by the order it is
+             found in the file. For example, the first vertex in the file is
+             referenced as '1', the second as '2' and so on. None of the vertex
+             commands actually specify any geometry, they are just points in
+             space.
+             */
             sscanf(s, "v %f %f %f", &x, &y, &z);
-            //vertices.push_back(Vec3Df(x - 0.5f, y - 0.5f, z - 0.5f));
 			vertices.push_back(Vec3Df(x, y, z));
         }
 
         // texture coord
         else if(strncmp(s, "vt ", 3) == 0){
+            /* Vertex texture mapping
+             
+             The vertex texture command specifies the UV (and optionally W)
+             mapping. These will be floating point values between 0 and 1 which
+             say how to map the texture. They really don't tell you anything by
+             themselves, they must be grouped with a vertex in a 'f' face
+             command.
+            */
             //we do nothing
-            Vec3Df texCoords(0, 0, 0);
+            Vec3Df textureCoordinates(0, 0, 0);
 
             //we only support 2d tex coords
-            sscanf(s, "vt %f %f", &texCoords[0], &texCoords[1]);
-            texcoords.push_back(texCoords);
+            sscanf(s, "vt %f %f", &textureCoordinates[0], &textureCoordinates[1]);
+            texcoords.push_back(textureCoordinates);
         }
         // normal
         else if(strncmp(s, "vn ", 3) == 0){
-            //are recalculated
+            /* The normals, we calculate them in the triangles
+             
+             The vertex normal command specifies a normal vector. A lot of
+             times these aren't used, because the 'f' face command will use the
+             order the 'v' commands are given to determine the normal instead.
+             Like the 'vt' commands, they don't mean anything until grouped
+             with a vertex in the 'f' face command.
+            */
         }
         // face
         else if(strncmp(s, "f ", 2) == 0){
+            /* Create a polygon from the points added to the vertices list
+             
+             The face command specifies a polygon made from the verticies
+             listed. You may have as many verticies as you like. To reference a
+             vertex you just give its index in the file, for example 'f 54 55
+             56 57' means a face built from vertecies 54 - 57. For each vertex,
+             there may also be an associated vt, which says how to map the
+             texture at this point, and/or a vn, which specifies a normal at
+             this point. If you specify a vt or vn for one vertex, you must
+             specify one for all. If you want to have a vertex and a vertex
+             normal, but no vertex texture, it will look like: 'f v1//vt1'. The
+             normal is what tells it which way the polygon faces. If you don't
+             give one, it is determined by the order the verticies are given.
+             They are assumed to be in counter-clockwise direction. If you
+             aren't using vn's to specify the normal and you wanted to 'flip
+             the normal' you would reverse the order of the verticies. In most
+             3D programs, if the normal points the wrong way, there will appear
+             to be a hole in the object. Luckily, Poser 3 renders both sides of
+             a polygon, so even if you are editing something in another program
+             that looks like it has holes, they will effectively go away inside
+             Poser (NOTE: I read that somewhere, but haven't personally
+             confirmed that fact.) One more thing, if you ever see a negative
+             v, vt, or vn, that is a relative offset. It means go back that
+             many verticies from where you are now in the file to find the
+             vertex. This is part of the OBJ file spec, but I haven't seen any
+             Poser OBJs that use it.
+             */
+
             int component(0), nV(0);
             bool endOfVertex(false);
             char *p0, *p1(s + 2); //place behind the "f "

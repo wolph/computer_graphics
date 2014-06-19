@@ -60,9 +60,9 @@ private:
     Vec3Df Ks_;
     bool Ks_is_set_; // specular
     float Ns_;
-    bool Ns_is_set_;
+    bool Ns_is_set_; // specular
     float Ni_;
-    bool Ni_is_set_;
+    bool Ni_is_set_; // specular
     int illum_;
     bool illum_is_set_; //illumination model
     float Tr_;
