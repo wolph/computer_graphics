@@ -1,6 +1,7 @@
 #include "RayTracer.hpp"
 #include "Tree.hpp"
 #include <ctime>
+#include <math.h>
 
 //temporary variables
 Vec3Df testRayOrigin;
@@ -282,8 +283,20 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
         color += angle2 * lightColor;
 
     // reflection
-	Vec3Df bounce = -2 * dot(ray.dir, triangle->normal) * triangle->normal + ray.dir;
-	color = performRayTracing(impact + bounce * 0.1f, impact + bounce);
+    Vec3Df r = ray.dir - 2*dot(ray.dir, triangle->normal)*triangle->normal;
+    Ray reflectedRay = Ray(ray.color, impact, impact + r);
+
+
+    // refraction
+    float inIndex = 1;
+    float outIndex = 1;
+    float inDivOut = inIndex/outIndex;
+    float cosIncident = dot(ray.dir, triangle->normal);
+    float temp = inDivOut*inDivOut * 1-cosIncident*cosIncident;
+    if(temp <= 1) {
+    	Vec3Df t =inDivOut * ray.dir + (inDivOut *  cosIncident - sqrt(1-temp))*triangle->normal;
+    	Ray transmittedRay = Ray(ray.color, impact, impact + t);
+    } //temp > 1 means no refraction, only (total) reflection.
 
     // return color
     return color;
