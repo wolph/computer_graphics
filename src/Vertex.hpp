@@ -24,11 +24,6 @@ public:
     }
     inline virtual ~Vertex(){
     }
-    inline Vertex & operator=(const Vertex & v){
-        p = v.p;
-        n = v.n;
-        return (*this);
-    }
     Vec3Df p;
     Vec3Df n;
 };

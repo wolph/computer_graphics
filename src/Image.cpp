@@ -90,7 +90,11 @@ bool Image::writeImage(const char * filename2){
         png_byte *row = (png_byte*)png_malloc(png_ptr,
                 sizeof(uint8_t) * _width * PIXEL_SIZE);
 
+#ifdef OSX
+        row_pointers[_height - y - 1] = row;
+#else
         row_pointers[y] = row;
+#endif
         for(x = 0;x < _width;++x){
             for(z = 0;z < PIXEL_SIZE;z++)
             *row++ = _image[i++] * 255.0f;

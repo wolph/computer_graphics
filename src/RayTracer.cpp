@@ -125,16 +125,17 @@ Vec3Df origin11, dest11;
 
 void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
     Vec3Df origin, dest;
+    const unsigned int msaa = isRealtimeRaytracing ? PREVIEW_MSAA : MSAA;
     for(float y = yy;y < hh;y++){
         for(float x = xx;x < ww;x++){
             //svp, decidez vous memes quels parametres vous allez passer à la fonction
             //c'est le stront a la plafond, c'est drôle
             //e.g., maillage, triangles, sphères etc.
             Vec3Df total(0, 0, 0);
-            for(unsigned int xs = 0;xs < MSAA;xs++){
-                for(unsigned int ys = 0;ys < MSAA;ys++){
-                    float xscale = 1.0f - (x + float(xs) / MSAA) / (w - 1);
-                    float yscale = float(y + float(ys) / MSAA) / (h - 1);
+            for(unsigned int xs = 0;xs < msaa;xs++){
+                for(unsigned int ys = 0;ys < msaa;ys++){
+                    float xscale = 1.0f - (x + float(xs) / msaa) / (w - 1);
+                    float yscale = float(y + float(ys) / msaa) / (h - 1);
 #ifdef LINUX
                     yscale = 1.0f - yscale;
 #endif
@@ -152,7 +153,7 @@ void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
             }
 
             // calculate average color
-            total /= MSAA * MSAA;
+            total /= msaa * msaa;
             // result->_image
             result->_image[(y * result->_width + x) * 3 + 0] = total[0];
             result->_image[(y * result->_width + x) * 3 + 1] = total[1];
@@ -212,8 +213,7 @@ void startRayTracing(int texIndex, bool verbose){
 
     // write to texture
     glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_FLOAT,
-            &result._image[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_FLOAT, &result._image[0]);
 
     // calculate elapsed time
     end = clock();
@@ -390,7 +390,7 @@ void drawCube(AABB* cube) {
 	}
 }
 
-void drawNormal(Vec3Df& avg, Vec3Df& n) {
+void drawNormal(const Vec3Df& avg, const Vec3Df& n) {
 	glVertex3f(avg.p[0], avg.p[1], avg.p[2]);
 	Vec3Df d = avg + n * 0.1f;
 	glVertex3f(d.p[0], d.p[1], d.p[2]);
@@ -408,9 +408,6 @@ void drawNormals() {
 	for (unsigned int i = 0; i < MyMesh.vertices.size(); i++)
 		drawNormal(MyMesh.vertices[i].p, MyMesh.vertices[i].n);
 }
-
-extern unsigned int isDrawingTexture;
-extern unsigned int isRealtimeRaytracing;
 
 void yourDebugDraw(){
 	if (!isRealtimeRaytracing && !isDrawingTexture) {
