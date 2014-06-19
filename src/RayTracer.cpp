@@ -213,8 +213,7 @@ void startRayTracing(int texIndex, bool verbose){
 
     // write to texture
     glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_FLOAT,
-            &result._image[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_FLOAT, &result._image[0]);
 
     // calculate elapsed time
     end = clock();
