@@ -24,7 +24,7 @@ struct AABB {
 
 	bool hit(Ray& ray);
 	void split();
-	int follow(Vec3Df& v);
+	int follow(const Vec3Df& v);
 	float collide(Ray& ray, Triangle** out);
 	bool collidePlane(int axis, Ray& ray);
 };

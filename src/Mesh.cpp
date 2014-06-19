@@ -59,8 +59,8 @@ void Mesh::draw(){
         unsigned int triMat = triangleMaterials.at(i);
         Vec3Df col = this->materials.at(triMat).Kd();
         glColor3fv(col.pointer());
-        Vec3Df edge01 = triangles[i].vertices[1].p - triangles[i].vertices[0].p;
-        Vec3Df edge02 = triangles[i].vertices[2].p - triangles[i].vertices[0].p;
+        const Vec3Df edge01 = triangles[i].vertices[1].p - triangles[i].vertices[0].p;
+        const Vec3Df edge02 = triangles[i].vertices[2].p - triangles[i].vertices[0].p;
         Vec3Df n = Vec3Df::crossProduct(edge01, edge02);
         n.normalize();
         glNormal3f(n[0], n[1], n[2]);
@@ -361,34 +361,25 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
 
 	// make triangles
     for(auto& triangle : tempTriangles){
-		Triangle tr;
 		if (!texcoords.empty())
-			tr = Triangle(vertices[triangle[0]], vertices[triangle[1]],
+			triangles.push_back(Triangle(vertices[triangle[0]], vertices[triangle[1]],
                         vertices[triangle[2]], texcoords[triangle[3]],
-						texcoords[triangle[4]], texcoords[triangle[5]]);
+						texcoords[triangle[4]], texcoords[triangle[5]]));
 		else
-			tr = Triangle(vertices[triangle[0]], vertices[triangle[1]],
-						vertices[triangle[2]]);
+			triangles.push_back(Triangle(vertices[triangle[0]], vertices[triangle[1]],
+						vertices[triangle[2]]));
+
+		Triangle tr = triangles[triangles.size()-1];
 
 		// add normals
 		for (int i = 0; i < 3; i++)
 			vertices[triangle[i]].n += tr.normal;
 
-		triangles.push_back(tr);
     }
 
 	// normalize normals
 	for (Vertex& v : vertices)
 		v.n.normalize();
-
-	// calculate vertex normals
-	int idx = 0;
-	for (auto& triangle : tempTriangles){
-		for (int i = 0; i < 3; i++)
-			triangles[idx].vertices[i].n = vertices[triangle[i]].n;
-
-		idx++;
-	}
 
     fclose(in);
     return true;

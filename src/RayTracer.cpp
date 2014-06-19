@@ -300,7 +300,7 @@ Vec3Df performRayTracing(Ray ray) {
 				return Vec3Df(0.9f, 0.9f, 0.9f);
 		}
 		else
-			return Vec3Df(0, 0.6, 0.99);
+			return Vec3Df(0, 0.6f, 0.99f);
 	}
 
 	// calculate normal
