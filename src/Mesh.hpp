@@ -31,7 +31,6 @@ public:
     bool loadMesh(const char * filename, bool randomizeTriangulation);
     bool loadMtl(const char * filename,
             std::map<std::string, unsigned int> & materialIndex);
-    void computeVertexNormals();
     void draw();
     void drawSmooth();
 

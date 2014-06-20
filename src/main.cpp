@@ -119,7 +119,9 @@ int main(int argc, char** argv){
 
     // cablage des callback
     glutReshapeFunc(reshape);
+	glutSetKeyRepeat(true);
     glutKeyboardFunc(keyboard);
+	glutKeyboardUpFunc(keyup);
     glutDisplayFunc(display);
     glutMouseFunc(tbMouseFunc);    // traqueboule utilise la souris
     glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
@@ -242,6 +244,10 @@ void keyboard(unsigned char key, int x, int y){
             exit(0);
     }
 
-    yourKeyboardFunc(key, x, y);
+	yourKeyboardPress(key, x, y);
+}
+
+void keyup(unsigned char key, int x, int y) {
+	yourKeyboardRelease(key, x, y);
 }
 

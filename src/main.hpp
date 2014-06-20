@@ -39,23 +39,13 @@ extern unsigned int textures[2];
 extern unsigned int activeTexIndex;
 extern unsigned int isDrawingTexture;
 extern unsigned int isRealtimeRaytracing;
-extern Mesh MyMesh; //Main mesh
-extern Tree MyTree;
 
-// Utilisé pour essayer différents types de rendu
-// Utilisé via le paramètre "-t" en ligne de commande
-enum {
-    TRIANGLE = 0, MODEL = 1
-};
-unsigned int type = MODEL;
-
-void drawAxes(float length);
-void draw();
 void animate();
 int main(int argc, char** argv);
 void display(void);
 void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
+void keyup(unsigned char key, int x, int y);
 
 clock_t lastFrameTime = clock();
 clock_t lastFPSRenderTime = clock();

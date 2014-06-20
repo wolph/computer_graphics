@@ -6,29 +6,6 @@ using namespace std;
 const unsigned int LINE_LEN = 256;
 
 /************************************************************
- * Normal calculations
- ************************************************************/
-void Mesh::computeVertexNormals(){
-    //initialisation des normales des vertex
-    /*for(unsigned int i = 0;i < vertices.size();i++)
-        vertices[i].n = Vec3Df(0.0, 0.0, 0.0);
-
-    //Sum up neighboring normals
-    for(unsigned int i = 0;i < triangles.size();i++){
-        Vec3Df edge01 = triangles[i].vertices[1].p - triangles[i].vertices[0].p;
-        Vec3Df edge02 = triangles[i].vertices[2].p - triangles[i].vertices[0].p;
-        Vec3Df n = Vec3Df::crossProduct(edge01, edge02);
-        n.normalize();
-        for(unsigned int j = 0;j < 3;j++)
-            triangles[i].vertices[j].n += n;
-    }
-
-    //Normalize
-    for(unsigned int i = 0;i < vertices.size();i++)
-        vertices[i].n.normalize();*/
-}
-
-/************************************************************
  * draw
  ************************************************************/
 void Mesh::drawSmooth(){

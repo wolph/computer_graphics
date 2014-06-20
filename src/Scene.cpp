@@ -117,15 +117,15 @@ const unsigned int ids[] = {
 	0xB030, // Hierarchy Position
 };
 
-Scene::Scene() {
+Scene::Scene() { }
+
+void Model::load(string file) {
 	printf("Loading model!\n");
 	FILE* fp = fopen("mesh/temp/traintank.3ds", "rb");
 	if (!fp) {
 		printf("hoi\n");
 		return;
 	}
-
-	Model model;
 
 	for (int i = 0; i < 1e5; i++) {
 	//while (!feof(fp)) {
@@ -171,7 +171,7 @@ Scene::Scene() {
 			for (int i = 0; i < qty; i++) {
 				Vec3Df vec;
 				fread(vec.p, sizeof(vec), 1, fp);
-				model.vertices.push_back(vec);
+				vertices.push_back(vec);
 				//printf("(%f,%f,%f)\n", vec.p[0], vec.p[1], vec.p[2]);
 			}
 			break;
@@ -183,7 +183,7 @@ Scene::Scene() {
 				unsigned short flags;
 				fread(&p, sizeof(p), 1, fp);
 				fread(&flags, sizeof(unsigned short), 1, fp);
-				model.polygons.push_back(p);
+				polygons.push_back(p);
 			}
 			break;
 		case COORDMAP:
@@ -206,4 +206,53 @@ Scene::Scene() {
 	}
 
 	fclose(fp);
+}
+
+void Scene::add(Object* object) {
+	objects.push_back(object);
+}
+
+void Scene::draw() {
+	for (Object* obj : objects)
+		obj->draw();
+}
+
+void Scene::update() {
+	for (Object* obj : objects)
+		obj->pos += obj->vel;
+}
+
+float Scene::raytrace(Ray& ray, Triangle** tr) {
+	//return objects[0]->raytrace(ray, tr);
+
+	float close = 1e10;
+	*tr = 0;
+	for (int i = 0; i < objects.size(); i++) {
+		Triangle* temp;
+		float dist = objects[i]->raytrace(ray, &temp);
+		if (dist < close) {
+			close = dist;
+			*tr = temp;
+		}
+	}
+	return close;
+}
+
+void Scene::addLightPoint(Vec3Df& lightPos) {
+	lights.push_back(lightPos);
+}
+
+Object::Object(Vec3Df& pos, Mesh& mesh) : pos(pos), mesh(mesh) {
+	tree.build(mesh);
+
+	vel = Vec3Df(0, 0, 0);
+}
+
+void Object::draw() {
+	mesh.drawSmooth();
+}
+
+float Object::raytrace(Ray& ray, Triangle** tr) {
+	Ray disp = Ray(ray.orig + pos, ray.dest + pos);
+	return tree.collide(disp, tr);
 }

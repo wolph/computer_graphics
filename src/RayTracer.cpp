@@ -1,5 +1,6 @@
 #include "RayTracer.hpp"
 #include "Tree.hpp"
+#include "Scene.hpp"
 #include <ctime>
 #include <math.h>
 
@@ -9,6 +10,9 @@ Vec3Df testRayDestination;
 string mesh;
 extern unsigned int textures[2];
 extern Tree MyTree;
+extern Scene MyScene;
+Object* monkey;
+Object* cube;
 int alternateX, alternateY;
 
 // runtime options
@@ -71,14 +75,17 @@ int init(int argc, char **argv){
     	mesh = "sphere";
 
     mesh = string("mesh/").append(mesh).append(".obj");
-    MyMesh.loadMesh(mesh.c_str(), true);
-    MyMesh.computeVertexNormals();
-    MyTree.build(MyMesh);
 
-    //one first move: initialize the first light source
-    //at least ONE light source has to be in the scene!!!
-    //here, we set it to the current location of the camera
-    MyLightPositions.push_back(MyCameraPosition);
+
+	Mesh* sh1 = new Mesh;
+	Mesh* sh2 = new Mesh;
+	sh1->loadMesh("mesh/monkey.obj", true);
+	sh2->loadMesh("mesh/cube.obj", true);
+	monkey = new Object(Vec3Df(-1, 0, 0), *sh1);
+	cube = new Object(Vec3Df(1, 0, 0), *sh2);
+
+	MyScene.add(monkey);
+	MyScene.add(cube);
 
     if(options[RAYTRACE]){
         startRayTracing(activeTexIndex, true);
@@ -128,10 +135,11 @@ void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
             //c'est le stront a la plafond, c'est drôle
             //e.g., maillage, triangles, sphères etc.
             Vec3Df total(0, 0, 0);
-            for(unsigned int xs = 0;xs < msaa;xs++){
-                for(unsigned int ys = 0;ys < msaa;ys++){
-                    float xscale = 1.0f - (x + float(xs) / msaa) / (w - 1);
-                    float yscale = float(y + float(ys) / msaa) / (h - 1);
+			float step = 1.0 / msaa;
+			for (float xs = 0; xs < 1.0f; xs += step) {
+                for(float ys = 0; ys < 1.0f; ys += step) {
+                    float xscale = 1.0f - (x + xs) / (w - 1);
+                    float yscale = float(y + ys) / (h - 1);
 #ifdef LINUX
                     yscale = 1.0f - yscale;
 #endif
@@ -161,6 +169,9 @@ void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
 void startRayTracing(int texIndex, bool verbose){
     int w = isRealtimeRaytracing ? PREVIEW_RES_X : RAYTRACE_RES_X;
     int h = isRealtimeRaytracing ? PREVIEW_RES_Y : RAYTRACE_RES_Y;
+	// update scene
+	MyScene.update();
+
 	w = alternateX ? alternateX : w;
 	h = alternateY ? alternateY : h;
 
@@ -257,46 +268,43 @@ inline float surface(const Vec3Df& a, const Vec3Df& b, const Vec3Df& c) {
 	return surface(f);
 }
 
-Vec3Df performRayTracing(Ray ray) {
+inline Vec3Df background(Ray& ray) {
+	if (ray.dir.p[2] < 0){
+		float height = ray.orig.p[2] + 2;
+		float a = -height / ray.dir.p[2];
+		float x = ray.orig.p[0] + a * ray.dir.p[0];
+		float y = ray.orig.p[1] + a * ray.dir.p[1];
+		if (height < 0)
+			return Vec3Df(0, 0.3f, 0);
+
+		bool white = true;
+		if (x > floor(x) + 0.5f) white = !white;
+		if (y > floor(y) + 0.5f) white = !white;
+
+		if (white)
+			return Vec3Df(0.1f, 0.1f, 0.1f);
+		else
+			return Vec3Df(0.9f, 0.9f, 0.9f);
+	}
+	else
+		return Vec3Df(0, 0.6f, 0.99f);
+}
+
+Vec3Df performRayTracing(Ray& ray) {
 	// calculate nearest triangle
 	Triangle* triangle2;
-	float dist = MyTree.collide(ray, &triangle2);
-
-	//if (dist < 1e8)
-	//	return Vec3Df(1, 1, 1);
-	//return black;
+	float dist = MyScene.raytrace(ray, &triangle2);
 
 	Vec3Df light(17, 8, 20);
 	Vec3Df lightColor(0.2f, 0.3f, 1.0f);
 
+	// background
+	if (!triangle2)
+		return background(ray);
+
 	const Vec3Df impact = ray.orig + ray.dir * dist;
 	const Vec3Df tolight = normal(light - impact);
 	const Vec3Df tocam = ray.orig - impact;
-
-	// background
-	if (!triangle2){
-		if (ray.dir.p[2] < 0){
-			float height = ray.orig.p[2] + 2;
-			float a = -height / ray.dir.p[2];
-			float x = ray.orig.p[0] + a * ray.dir.p[0];
-			float y = ray.orig.p[1] + a * ray.dir.p[1];
-			if (height < 0)
-				return Vec3Df(0, 0.3f, 0);
-
-			bool white = true;
-			if (x > floor(x) + 0.5f) white = !white;
-			if (y > floor(y) + 0.5f) white = !white;
-
-			if (white)
-				return Vec3Df(0.1f, 0.1f, 0.1f);
-			else
-				return Vec3Df(0.9f, 0.9f, 0.9f);
-		}
-		else
-			return Vec3Df(0, 0.6f, 0.99f);
-	}
-
-	// calculate normal
 	Vec3Df normal = triangle2->normal;
 
 	if (g_phong) {
@@ -333,7 +341,8 @@ Vec3Df performRayTracing(Ray ray) {
 		// reflection
 		Vec3Df r = ray.dir - 2*dot(ray.dir, normal)*normal;
 		Ray reflectedRay = Ray(ray.color, impact, impact + r, ray.bounceCount-1);
-		color += performRayTracing(reflectedRay) * 0.5f;
+		//color += performRayTracing(reflectedRay) * 0.5f;
+		return performRayTracing(reflectedRay) * 0.7f + Vec3Df(0.2, 0, 0);
 
 		// refraction
 		float inIndex = 1;
@@ -413,13 +422,16 @@ void yourDebugDraw(){
 	}
 }
 
-void yourKeyboardFunc(char t, int x, int y){
-    // do what you want with the keyboard input t.
-    // x, y are the screen position
+void yourKeyboardPress(char t, int x, int y) {
+	if (t == 'w') monkey->vel.p[0] = 0.03f;
+	if (t == 's') monkey->vel.p[0] = -0.03f;
+	if (t == 'a') monkey->vel.p[1] = 0.03f;
+	if (t == 'd') monkey->vel.p[1] = -0.03f;
+}
 
-    //here I use it to get the coordinates of a ray, which I then draw in the debug function.
-    produceRay(x, y, testRayOrigin, testRayDestination);
-
-    std::cout << t << " pressed! The mouse was in location " << x << "," << y
-            << "!" << std::endl;
+void yourKeyboardRelease(char t, int x, int y) {
+	if (t == 'w') monkey->vel.p[0] = 0;
+	if (t == 's') monkey->vel.p[0] = 0;
+	if (t == 'a') monkey->vel.p[1] = 0;
+	if (t == 'd') monkey->vel.p[1] = 0;
 }
