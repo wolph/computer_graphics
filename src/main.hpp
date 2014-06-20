@@ -39,18 +39,7 @@ extern unsigned int textures[2];
 extern unsigned int activeTexIndex;
 extern unsigned int isDrawingTexture;
 extern unsigned int isRealtimeRaytracing;
-extern Mesh MyMesh; //Main mesh
-extern Tree MyTree;
 
-// Utilisé pour essayer différents types de rendu
-// Utilisé via le paramètre "-t" en ligne de commande
-enum {
-    TRIANGLE = 0, MODEL = 1
-};
-unsigned int type = MODEL;
-
-void drawAxes(float length);
-void draw();
 void animate();
 int main(int argc, char** argv);
 void display(void);
