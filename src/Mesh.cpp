@@ -355,7 +355,7 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
 		if (!texcoords.empty())
 			triangles.push_back(Triangle(vertices[triangle[0]], vertices[triangle[1]],
                         vertices[triangle[2]], texcoords[triangle[3]],
-						texcoords[triangle[4]], texcoords[triangle[5]]));
+						texcoords[triangle[4]], texcoords[triangle[5]], materials[triangles.size()]));
 		else
 			triangles.push_back(Triangle(vertices[triangle[0]], vertices[triangle[1]],
 						vertices[triangle[2]]));

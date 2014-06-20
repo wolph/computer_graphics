@@ -18,15 +18,15 @@ Triangle::Triangle(const Triangle & triangle){
 
     textures[0] = triangle.textures[0];
     textures[1] = triangle.textures[1];
-    textures[2] = triangle.textures[2];
+	textures[2] = triangle.textures[2];
 
-    normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p,
-            vertices[2].p - vertices[0].p);
-    normal.normalize();
+	calculateNormal();
+
+	material = triangle.material;
 }
 
 Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2,
-        const Texture & t0, const Texture & t1, const Texture & t2){
+        const Texture & t0, const Texture & t1, const Texture & t2, const Material & m){
     if(&v0 != 0)
         vertices[0] = v0;
     if(&v1 != 0)
@@ -39,12 +39,12 @@ Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2,
     if(&t1 != 0)
         textures[1] = t1;
     if(&t2 != 0)
-        textures[2] = t2;
+		textures[2] = t2;
 
-    normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p,
-            vertices[2].p - vertices[0].p);
-    normal.normalize();
+	calculateNormal();
 
+	if (&m != 0)
+		material = m;
 }
 
 Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2){
@@ -53,10 +53,9 @@ Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2){
     if(&v1 != 0)
         vertices[1] = v1;
     if(&v2 != 0)
-        vertices[2] = v2;
-    normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p,
-            vertices[2].p - vertices[0].p);
-    normal.normalize();
+		vertices[2] = v2;
+
+	calculateNormal();
 }
 
 Triangle::~Triangle(){
@@ -71,9 +70,15 @@ Triangle & Triangle::operator=(const Triangle & triangle){
     textures[1] = triangle.textures[1];
     textures[2] = triangle.textures[2];
 
-    normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p,
-            vertices[2].p - vertices[0].p);
-    normal.normalize();
+	calculateNormal();
+
+	material = triangle.material;
 
     return (*this);
+}
+
+void Triangle::calculateNormal(){
+	normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p,
+		vertices[2].p - vertices[0].p);
+	normal.normalize();
 }
