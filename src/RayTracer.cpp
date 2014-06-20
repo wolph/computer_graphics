@@ -236,7 +236,7 @@ Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
 
 // surface of triangle
 // heron formula
-float surface(float* t) {
+inline float surface(float* t) {
 	
 	// side lengths
 	float a = sqrt((t[0] - t[3]) * (t[0] - t[3]) + (t[1] - t[4]) * (t[1] - t[4]) + (t[2] - t[5]) * (t[2] - t[5]));
@@ -252,7 +252,7 @@ float surface(float* t) {
 }
 
 // incredibly beautiful convenience function
-float surface(const Vec3Df& a, const Vec3Df& b, const Vec3Df& c) {
+inline float surface(const Vec3Df& a, const Vec3Df& b, const Vec3Df& c) {
 	float f[9];
 	*((Vec3Df*)&f[0]) = a;
 	*((Vec3Df*)&f[3]) = b;
