@@ -272,10 +272,9 @@ Vec3Df performRayTracing(Ray ray) {
 	Vec3Df light(17, 8, 20);
 	Vec3Df lightColor(0.2f, 0.3f, 1.0f);
 
-	Vec3Df impact = ray.orig + ray.dir * dist;
-	Vec3Df tolight = light - impact;
-	Vec3Df tocam = ray.orig - impact;
-	tolight.normalize();
+	const Vec3Df impact = ray.orig + ray.dir * dist;
+	const Vec3Df tolight = normal(light - impact);
+	const Vec3Df tocam = ray.orig - impact;
 
 	// background
 	if (!triangle2){
