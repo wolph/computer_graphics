@@ -47,6 +47,10 @@ bool AABB::collidePlane(int axis, Ray& ray) {
 	// factor
 	float a = (v1 - ray.orig.p[axis]) / ray.dir.p[axis];
 
+	// behind the plane
+	if (a < 0)
+		return false;
+
 	// other axis
 	int axis2 = (axis + 1) % 3;
 	int axis3 = (axis + 2) % 3;

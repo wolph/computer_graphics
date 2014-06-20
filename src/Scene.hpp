@@ -38,8 +38,9 @@ private:
 public:
 	Scene();
 	void draw();
+	void debugDraw();
 	void update();
 	void add(Object* object);
 	void addLightPoint(Vec3Df& lightPos);
-	float raytrace(Ray& ray, Triangle** tr);
+	float raytrace(Ray& ray, Triangle** tr, Object** obj);
 };

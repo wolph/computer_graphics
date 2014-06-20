@@ -9,11 +9,11 @@
 #define CONSTANTS_HPP_
 
 #ifndef THREADS
-#define THREADS 4
+#define THREADS 2
 #endif
 
 #ifndef MSAA
-#define MSAA 1
+#define MSAA 2
 #endif
 
 #ifndef PREVIEW_MSAA
@@ -56,7 +56,7 @@
 #ifdef RAYTRACE_RES
 #define RAYTRACE_RES_X RAYTRACE_RES
 #else
-#define RAYTRACE_RES_X 512
+#define RAYTRACE_RES_X 1024
 #endif
 #endif
 
@@ -64,7 +64,7 @@
 #ifdef RAYTRACE_RES
 #define RAYTRACE_RES_Y RAYTRACE_RES
 #else
-#define RAYTRACE_RES_Y 512
+#define RAYTRACE_RES_Y 1024
 #endif
 #endif
 

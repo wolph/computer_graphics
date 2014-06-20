@@ -222,17 +222,19 @@ void Scene::update() {
 		obj->pos += obj->vel;
 }
 
-float Scene::raytrace(Ray& ray, Triangle** tr) {
+float Scene::raytrace(Ray& ray, Triangle** tr, Object** obj) {
 	//return objects[0]->raytrace(ray, tr);
 
 	float close = 1e10;
 	*tr = 0;
+	*obj = 0;
 	for (int i = 0; i < objects.size(); i++) {
 		Triangle* temp;
 		float dist = objects[i]->raytrace(ray, &temp);
 		if (dist < close) {
 			close = dist;
 			*tr = temp;
+			*obj = objects[i];
 		}
 	}
 	return close;
@@ -242,6 +244,35 @@ void Scene::addLightPoint(Vec3Df& lightPos) {
 	lights.push_back(lightPos);
 }
 
+void drawNormal(const Vec3Df& avg, const Vec3Df& n){
+	glVertex3f(avg.p[0], avg.p[1], avg.p[2]);
+	Vec3Df d = avg + n * 0.1f;
+	glVertex3f(d.p[0], d.p[1], d.p[2]);
+}
+
+void drawNormals(Object* obj) {
+	for (unsigned int i = 0; i < obj->mesh.triangles.size(); i++){
+		Vec3Df avg;
+		for (int t = 0; t < 3; t++)
+			avg += obj->mesh.triangles[i].vertices[t].p * 0.333f;
+
+		drawNormal(avg + obj->pos, obj->mesh.triangles[i].normal);
+	}
+
+	for (unsigned int i = 0; i < obj->mesh.vertices.size(); i++)
+		drawNormal(obj->mesh.vertices[i].p + obj->pos, obj->mesh.vertices[i].n);
+}
+
+void Scene::debugDraw() {
+		glColor3f(1, 0.5, 0.5);
+		glLineWidth(3);
+		glBegin(GL_LINES);
+		//drawCube(MyTree.root);
+		for (Object* obj : objects)
+			drawNormals(obj);
+		glEnd();
+}
+
 Object::Object(Vec3Df& pos, Mesh& mesh) : pos(pos), mesh(mesh) {
 	tree.build(mesh);
 
@@ -249,7 +280,10 @@ Object::Object(Vec3Df& pos, Mesh& mesh) : pos(pos), mesh(mesh) {
 }
 
 void Object::draw() {
+	glPushMatrix();
+	glTranslatef(pos.p[0], pos.p[1], pos.p[2]);
 	mesh.drawSmooth();
+	glPopMatrix();
 }
 
 float Object::raytrace(Ray& ray, Triangle** tr) {

@@ -79,7 +79,7 @@ int init(int argc, char **argv){
 
     Mesh* sh1 = new Mesh;
     Mesh* sh2 = new Mesh;
-    sh1->loadMesh("mesh/monkey.obj", true);
+    sh1->loadMesh("mesh/simple_monkey.obj", true);
     sh2->loadMesh("mesh/cube.obj", true);
     Vec3Df monkeyPos = Vec3Df(-1, 0, 0);
     Vec3Df cubePos = Vec3Df(1, 0, 0);
@@ -283,7 +283,7 @@ float surface(const Vec3Df& a, const Vec3Df& b, const Vec3Df& c){
 
 inline Vec3Df background(Ray& ray){
     if(ray.dir.p[2] < 0){
-        float height = ray.orig.p[2] + 2;
+        float height = ray.orig.p[2] + 1;
         float a = -height / ray.dir.p[2];
         float x = ray.orig.p[0] + a * ray.dir.p[0];
         float y = ray.orig.p[1] + a * ray.dir.p[1];
@@ -307,7 +307,8 @@ inline Vec3Df background(Ray& ray){
 Vec3Df performRayTracing(Ray& ray){
     // calculate nearest triangle
     Triangle* triangle2;
-    float dist = MyScene.raytrace(ray, &triangle2);
+	Object* obj;
+    float dist = MyScene.raytrace(ray, &triangle2, &obj);
 
     Vec3Df light(17, 8, 20);
     Vec3Df lightColor(0.2f, 0.3f, 1.0f);
@@ -321,14 +322,14 @@ Vec3Df performRayTracing(Ray& ray){
     const Vec3Df tocam = ray.orig - impact;
     Vec3Df normal = triangle2->normal;
 
-    if(g_phong){
+    if (g_phong) {
         // calc areas
-        float a1 = surface(triangle2->vertices[1].p, impact,
-                triangle2->vertices[2].p);
-        float a2 = surface(triangle2->vertices[0].p, impact,
-                triangle2->vertices[2].p);
-        float a3 = surface(triangle2->vertices[0].p, impact,
-                triangle2->vertices[1].p);
+        float a1 = surface(triangle2->vertices[1].p, impact + obj->pos,
+			triangle2->vertices[2].p);
+		float a2 = surface(triangle2->vertices[0].p, impact + obj->pos,
+			triangle2->vertices[2].p);
+		float a3 = surface(triangle2->vertices[0].p, impact + obj->pos,
+			triangle2->vertices[1].p);
         float total = a1 + a2 + a3;
 
         // factors
@@ -347,20 +348,19 @@ Vec3Df performRayTracing(Ray& ray){
     // diffuse
     float angle = dot(normal, tolight) * 2;
     if(angle > 0)
-        color += angle * lightColor;
+        color += 0.3f * angle * lightColor;
 
     // specular
     float angle2 = dot(tocam, tolight) * 0.5f;
     if(angle2 > 0)
-        color += angle2 * lightColor;
+        color += 0.3f * angle2 * lightColor;
 
     //dont want infinite reflected rays
     if(ray.bounceCount){
         // reflection
         Vec3Df r = ray.dir - 2 * dot(ray.dir, normal)*normal;
-        Ray reflectedRay = Ray(ray.color, impact, impact + r, ray.bounceCount-1);
-        //color += performRayTracing(reflectedRay) * 0.5f;
-        return performRayTracing(reflectedRay) * 0.7f + Vec3Df(0.2, 0, 0);
+        Ray reflectedRay = Ray(ray.color, impact + r * 0.01f, impact + r, ray.bounceCount-1);
+        color += performRayTracing(reflectedRay) * 0.5f;
 
         // refraction
         float inIndex = 1;
@@ -408,34 +408,9 @@ void drawCube(AABB* cube){
     }
 }
 
-void drawNormal(const Vec3Df& avg, const Vec3Df& n){
-    glVertex3f(avg.p[0], avg.p[1], avg.p[2]);
-    Vec3Df d = avg + n * 0.1f;
-    glVertex3f(d.p[0], d.p[1], d.p[2]);
-}
-
-void drawNormals(){
-    for(unsigned int i = 0;i < MyMesh.triangles.size();i++){
-        Vec3Df avg;
-        for(int t = 0;t < 3;t++)
-            avg += MyMesh.triangles[i].vertices[t].p * 0.333f;
-
-        //drawNormal(avg, MyMesh.triangles[i].normal);
-    }
-
-    for(unsigned int i = 0;i < MyMesh.vertices.size();i++)
-        drawNormal(MyMesh.vertices[i].p, MyMesh.vertices[i].n);
-}
-
 void yourDebugDraw(){
-    if(!isRealtimeRaytracing && !isDrawingTexture){
-        glColor3f(1, 0.5, 0.5);
-        glLineWidth(3);
-        glBegin(GL_LINES);
-        //drawCube(MyTree.root);
-        drawNormals();
-        glEnd();
-    }
+	if (!isRealtimeRaytracing && !isDrawingTexture)
+		MyScene.debugDraw();
 }
 
 void yourKeyboardPress(char t, int x, int y){

@@ -18,7 +18,6 @@ unsigned int textures[2];
 unsigned int activeTexIndex = 0;
 unsigned int isDrawingTexture = 0;
 unsigned int isRealtimeRaytracing = 0;
-Mesh MyMesh; //Main mesh
 Tree MyTree;
 Scene MyScene;
 
@@ -203,7 +202,7 @@ void display(void) {
 		drawFPS();
     } else {
         tbVisuTransform(); // origine et orientation de la scene
-        MyMesh.draw();
+		MyScene.draw();
 		yourDebugDraw();
     }
 
