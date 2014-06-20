@@ -93,13 +93,9 @@ void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest){
     int viewport[4];
     double modelview[16];
     double projection[16];
-    //point sur near plane
-    //double positionN[3];
-    //point sur far plane
-    //double positionF[3];
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelview); //recuperer matrices
-    glGetDoublev(GL_PROJECTION_MATRIX, projection); //recuperer matrices
-    glGetIntegerv(GL_VIEWPORT, viewport); //viewport
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview); // fetch matrices
+    glGetDoublev(GL_PROJECTION_MATRIX, projection); // fetch matrices
+    glGetIntegerv(GL_VIEWPORT, viewport); // viewport
     int y_new = viewport[3] - y_I;
 
     double x, y, z;
@@ -163,14 +159,15 @@ void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
 }
 
 void startRayTracing(int texIndex, bool verbose){
-    if(verbose)
-        cout << "Raytracing" << endl;
-    int w = verbose ? RAYTRACE_RES_X : PREVIEW_RES_X;
-    int h = verbose ? RAYTRACE_RES_Y : PREVIEW_RES_Y;
+    int w = isRealtimeRaytracing ? PREVIEW_RES_X : RAYTRACE_RES_X;
+    int h = isRealtimeRaytracing ? PREVIEW_RES_Y : RAYTRACE_RES_Y;
 	w = alternateX ? alternateX : w;
 	h = alternateY ? alternateY : h;
 
     Image result(w, h);
+    
+    if(verbose)
+        printf("Raytracing image with resolution of %d by %d\n", w, h);
 
     produceRay(0, 0, &origin00, &dest00);
     produceRay(0, WINDOW_RES_X - 1, &origin01, &dest01);
