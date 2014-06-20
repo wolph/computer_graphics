@@ -1,3 +1,10 @@
+#include <cstdlib>
+#include <cmath>
+#include <ctime>
+#include <GL/glut.h>
+#include <assert.h>
+#include <cstdlib>
+
 #include "main.hpp"
 #include "Scene.hpp"
 

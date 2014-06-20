@@ -11,24 +11,9 @@
 #ifdef WIN32
 #include <windows.h>
 #endif
-#include <cstdlib>
-#include <cmath>
-#include <ctime>
-#include <GL/glut.h>
-#include <assert.h>
-#include <cstdlib>
 
-#if THREADS != 0
-#include <thread>
-#endif
-
-#include "constants.hpp"
-#include "Mesh.hpp"
-#include "Tree.hpp"
-#include "Ray.hpp"
-#include "Image.hpp"
-#include "traqueboule.hpp"
-#include "RayTracer.hpp"
+#include "Vec3D.hpp"
+#include <vector>
 
 extern Vec3Df MyCameraPosition;
 
@@ -52,5 +37,9 @@ clock_t lastFPSRenderTime = clock();
 char screenFPS[20];
 void drawFPS();
 
+
+#include "constants.hpp"
+#include "traqueboule.hpp"
+#include "RayTracer.hpp"
 
 #endif /* MAIN_HPP_ */
