@@ -16,8 +16,11 @@ Object* monkey;
 Object* cube;
 int alternateX, alternateY;
 
+float hardwood[720 * 720 * 3];
+
 // runtime options
 bool g_phong = true;
+bool g_checkerboard = false;
 
 //use this function for any preprocessing of the mesh.
 int init(int argc, char **argv){
@@ -80,14 +83,27 @@ int init(int argc, char **argv){
     Mesh* sh1 = new Mesh;
     Mesh* sh2 = new Mesh;
     sh1->loadMesh("mesh/monkey.obj", true);
-    sh2->loadMesh("mesh/cube.obj", true);
-    Vec3Df monkeyPos = Vec3Df(-1, 0, 0);
-    Vec3Df cubePos = Vec3Df(1, 0, 0);
+    sh2->loadMesh("mesh/sphere.obj", true);
+    Vec3Df monkeyPos = Vec3Df(-2, 0, 0);
+    Vec3Df cubePos = Vec3Df(2, 0, 0);
     monkey = new Object(monkeyPos, *sh1);
-    cube = new Object(cubePos, *sh2);
+	cube = new Object(cubePos, *sh2);
 
     MyScene.add(monkey);
     MyScene.add(cube);
+
+	// load texture
+	FILE* fp = fopen("mesh/hardwood.bmp", "rb");
+	unsigned char* buf = new unsigned char[720 * 720 * 3];
+	fseek(fp, 54, SEEK_SET);
+	fread(buf, 1, 720 * 720 * 3, fp);
+	for (int i = 0; i < 720 * 720; i++) {
+		hardwood[i * 3 + 0] = buf[i * 3 + 2] / 255.0f;
+		hardwood[i * 3 + 1] = buf[i * 3 + 1] / 255.0f;
+		hardwood[i * 3 + 2] = buf[i * 3 + 0] / 255.0f;
+	}
+	delete[] buf;
+	fclose(fp);
 
     if(options[RAYTRACE]){
         startRayTracing(activeTexIndex, true);
@@ -290,17 +306,27 @@ inline Vec3Df background(Ray& ray){
         if(height < 0)
             return Vec3Df(0, 0.3f, 0);
 
-        bool white = true;
-        if(x > floor(x) + 0.5f)
-            white = !white;
-        if(y > floor(y) + 0.5f)
-            white = !white;
+		if (g_checkerboard) {
+			// checkerboard
+			bool white = true;
+			if (x > floor(x) + 0.5f)
+				white = !white;
+			if (y > floor(y) + 0.1f)
+				white = !white;
 
-        if(white)
-            return Vec3Df(0.1f, 0.1f, 0.1f);
-        else
-            return Vec3Df(0.9f, 0.9f, 0.9f);
-    }else
+			if (white)
+				return Vec3Df(0.1f, 0.1f, 0.1f);
+			else
+				return Vec3Df(0.9f, 0.9f, 0.9f);
+		}
+		else {
+			int xidx = (int)(x * 720 * 0.25) % 720;
+			int yidx = (int)(y * 720 * 0.25) % 720;
+			xidx = abs(xidx);
+			yidx = abs(yidx);
+			return *(Vec3Df*)&hardwood[(yidx * 720 + xidx) * 3];
+		}
+    } else
         return Vec3Df(0, 0.6f, 0.99f);
 }
 

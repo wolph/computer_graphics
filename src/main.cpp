@@ -23,6 +23,7 @@ Scene MyScene;
 
 // options
 extern bool g_phong;
+extern bool g_checkerboard;
 
 bool needRebuild = false; // if the raytrace needs to be built
 
@@ -265,6 +266,9 @@ void keyboard(unsigned char key, int x, int y){
     switch(key){
 		case '1':
 			g_phong = !g_phong;
+			break;
+		case '2':
+			g_checkerboard = !g_checkerboard;
 			break;
         case 't':
             isDrawingTexture = 0;
