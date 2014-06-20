@@ -223,6 +223,8 @@ void Scene::update() {
 }
 
 float Scene::raytrace(Ray& ray, Triangle** tr) {
+	return objects[0]->raytrace(ray, tr);
+
 	float close = 1e10;
 	for (int i = 0; i < objects.size(); i++) {
 		Triangle* temp;
@@ -239,8 +241,10 @@ void Scene::addLightPoint(Vec3Df& lightPos) {
 	lights.push_back(lightPos);
 }
 
-Object::Object(Vec3Df& pos, Mesh mesh) : pos(pos), mesh(mesh) {
+Object::Object(Vec3Df& pos, Mesh& mesh) : pos(pos), mesh(mesh) {
 	tree.build(mesh);
+
+	vel = Vec3Df(0, 0, 0);
 }
 
 void Object::draw() {
@@ -248,8 +252,6 @@ void Object::draw() {
 }
 
 float Object::raytrace(Ray& ray, Triangle** tr) {
-	//if (tree.root->hit(ray))
-	//	return 1e10f;
-	//return 2;
-	return tree.collide(ray, tr);
+	Ray disp = Ray(ray.orig + pos, ray.dest + pos);
+	return tree.collide(disp, tr);
 }

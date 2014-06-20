@@ -21,12 +21,13 @@ public:
 };
 
 class Object {
-	Tree tree;
-	Mesh mesh;
 public:
+	Tree tree;
+	Mesh& mesh;
+//public:
 	Vec3Df pos;
 	Vec3Df vel;
-	Object(Vec3Df& pos, Mesh mesh);
+	Object(Vec3Df& pos, Mesh& mesh);
 	void draw();
 	float raytrace(Ray& ray, Triangle** tr);
 };

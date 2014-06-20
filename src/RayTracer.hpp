@@ -76,12 +76,13 @@ void startRayTracing(int texIndex, bool verbose);
 
 //your main function to rewrite
 Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest);
-Vec3Df performRayTracing(Ray ray);
+Vec3Df performRayTracing(Ray& ray);
 //a function to debug --- you can draw in OpenGL here
 void yourDebugDraw();
 
 //want keyboard interaction? Here it is...
-void yourKeyboardFunc(char t, int x, int y);
+void yourKeyboardPress(char t, int x, int y);
+void yourKeyboardRelease(char t, int x, int y);
 
 void drawFPS();
 

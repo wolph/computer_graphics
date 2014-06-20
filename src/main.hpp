@@ -45,6 +45,7 @@ int main(int argc, char** argv);
 void display(void);
 void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
+void keyup(unsigned char key, int x, int y);
 
 clock_t lastFrameTime = clock();
 clock_t lastFPSRenderTime = clock();
