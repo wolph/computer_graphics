@@ -389,6 +389,7 @@ Vec3Df performRayTracing(Ray& ray){
         color += performRayTracing(reflectedRay) * 0.5f;
 
         // refraction
+        /* Can't use this unless we switch away from .mtl files. Need density index for materials.
         float inIndex = 1;
         float outIndex = 1;
         float inDivOut = inIndex/outIndex;
@@ -398,6 +399,7 @@ Vec3Df performRayTracing(Ray& ray){
             Vec3Df t =inDivOut * ray.dir + (inDivOut * cosIncident - sqrt(1-temp))*normal;
             //Ray transmittedRay = Ray(ray.color, impact, impact + t, ray.bounceCount-1);
         } //temp > 1 means no refraction, only (total) reflection.
+        */
     }
     // return color
     for(int i = 0;i < 3;i++){
