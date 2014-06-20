@@ -368,13 +368,6 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
 		else
 			triangles.push_back(Triangle(vertices[triangle[0]], vertices[triangle[1]],
 						vertices[triangle[2]]));
-
-		Triangle tr = triangles[triangles.size()-1];
-
-		// add normals
-		for (int i = 0; i < 3; i++)
-			vertices[triangle[i]].n += tr.normal;
-
     }
 
 	// normalize normals

@@ -4,22 +4,23 @@
 #ifndef INTERSECTION_H
 #define INTERSECTION_H
 
-#define OUTOFRANGE 10e9;
+#define OUTOFRANGE 10e9
 
 class Intersection
 {
 public:
-	Vec3Df point;
-	Vec3Df angle;
-	Vec3Df color;
-	bool hit;
-	float distance;
+	const Vec3Df point;
+	const Vec3Df angle;
+	const Vec3Df color;
+	const bool hit = false;
+	const float distance = OUTOFRANGE;
 	const Triangle *triangle;
 
-	Intersection();
-	~Intersection();
-	Intersection(bool h);
-	Intersection(bool h, Vec3Df p, float d, const Triangle *t);
+	inline Intersection(){};
+	inline ~Intersection(){};
+	inline Intersection(bool h): hit(h), distance(OUTOFRANGE){};
+	inline Intersection(bool h, Vec3Df p, float d, const Triangle *t):
+        point(p), hit(h), distance(d), triangle(t){};
 };
 
 #endif

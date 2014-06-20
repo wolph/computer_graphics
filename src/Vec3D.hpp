@@ -5,50 +5,50 @@
 
 template<typename T> class Vec3D;
 
-template<class T> bool operator!=(const Vec3D<T> & p1, const Vec3D<T> & p2){
+template<class T> inline bool operator!=(const Vec3D<T> & p1, const Vec3D<T> & p2){
     return (p1[0] != p2[0] || p1[1] != p2[1] || p1[2] != p2[2]);
 }
 
-template<class T> const Vec3D<T> operator*(const Vec3D<T> & p, float factor){
+template<class T> const Vec3D<T> inline operator*(const Vec3D<T> & p, float factor){
     return Vec3D<T>(p[0] * factor, p[1] * factor, p[2] * factor);
 }
 
-template<class T> const Vec3D<T> operator*(float factor, const Vec3D<T> & p){
+template<class T> const Vec3D<T> inline operator*(float factor, const Vec3D<T> & p){
     return Vec3D<T>(p[0] * factor, p[1] * factor, p[2] * factor);
 }
 
-template<class T> const Vec3D<T> operator*(const Vec3D<T> & p1,
+template<class T> const Vec3D<T> inline operator*(const Vec3D<T> & p1,
         const Vec3D<T> & p2){
     return Vec3D<T>(p1[0] * p2[0], p1[1] * p2[1], p1[2] * p2[2]);
 }
 
-template<class T> const Vec3D<T> operator+(const Vec3D<T> & p1,
+template<class T> const Vec3D<T> inline operator+(const Vec3D<T> & p1,
         const Vec3D<T> & p2){
     return Vec3D<T>(p1[0] + p2[0], p1[1] + p2[1], p1[2] + p2[2]);
 }
 
-template<class T> const Vec3D<T> operator-(const Vec3D<T> & p1,
+template<class T> const Vec3D<T> inline operator-(const Vec3D<T> & p1,
         const Vec3D<T> & p2){
     return Vec3D<T>(p1[0] - p2[0], p1[1] - p2[1], p1[2] - p2[2]);
 }
 
-template<class T> const Vec3D<T> operator-(const Vec3D<T> & p){
+template<class T> const Vec3D<T> inline operator-(const Vec3D<T> & p){
     return Vec3D<T>(-p[0], -p[1], -p[2]);
 }
 
-template<class T> const Vec3D<T> operator/(const Vec3D<T> & p, float divisor){
+template<class T> const Vec3D<T> inline operator/(const Vec3D<T> & p, float divisor){
     return Vec3D<T>(p[0] / divisor, p[1] / divisor, p[2] / divisor);
 }
 
-template<class T> bool operator==(const Vec3D<T> & p1, const Vec3D<T> & p2){
+template<class T> bool inline operator==(const Vec3D<T> & p1, const Vec3D<T> & p2){
     return (p1[0] == p2[0] && p1[1] == p2[1] && p1[2] == p2[2]);
 }
 
-template<class T> bool operator<(const Vec3D<T> & a, const Vec3D<T> & b){
+template<class T> bool inline operator<(const Vec3D<T> & a, const Vec3D<T> & b){
     return (a[0] < b[0] && a[1] < b[1] && a[2] < b[2]);
 }
 
-template<class T> bool operator>=(const Vec3D<T> & a, const Vec3D<T> & b){
+template<class T> bool inline operator>=(const Vec3D<T> & a, const Vec3D<T> & b){
     return (a[0] >= b[0] || a[1] >= b[1] || a[2] >= b[2]);
 }
 
