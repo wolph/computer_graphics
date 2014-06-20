@@ -9,7 +9,7 @@
 #define CONSTANTS_HPP_
 
 #ifndef THREADS
-#define THREADS 2
+#define THREADS 4
 #endif
 
 #ifndef MSAA

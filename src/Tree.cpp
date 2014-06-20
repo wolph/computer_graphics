@@ -38,7 +38,7 @@ void AABB::split() {
 	}
 }
 
-bool AABB::collidePlane(int axis, Ray& ray) {
+bool AABB::collidePlane(int axis, const Ray& ray) {
 	// check axis plane
 	float v1 = pos.p[axis];
 	if (ray.dir.p[axis] < 0)
@@ -66,14 +66,14 @@ bool AABB::collidePlane(int axis, Ray& ray) {
 	return false;
 }
 
-bool AABB::hit(Ray& ray) {
+bool AABB::hit(const Ray& ray) {
 	for (int i = 0; i < 3; i++)
 		if (collidePlane(i, ray))
 			return true;
 	return false;
 }
 
-float AABB::collide(Ray& ray, Triangle** out) {
+float AABB::collide(const Ray& ray, Triangle** out) {
 	// check hit with this cube
 	if (!hit(ray)) {
 		*out = 0;
@@ -86,8 +86,8 @@ float AABB::collide(Ray& ray, Triangle** out) {
 
 	// check with leaves
 	for (unsigned int i = 0; i < leaves.size(); i++) {
-		float dist = ray.intersect(leaves[i]).distance;
-		if (dist < shortest) {
+		float dist = ray.intersect2(leaves[i]);
+		if (dist && dist < shortest) {
 			shortest = dist;
 			res = leaves[i];
 		}
@@ -102,7 +102,6 @@ float AABB::collide(Ray& ray, Triangle** out) {
 			if (dist < shortest) {
 				res = res2;
 				shortest = dist;
-				//printf("%f\n", shortest);
 			}
 		}
 	}
@@ -144,9 +143,6 @@ void Tree::build(Mesh& mesh) {
 
 	for (unsigned int i = 0; i < mesh.triangles.size(); i++)
 		add(mesh.triangles[i]);
-
-	//Ray ray = Ray(Vec3Df(0, 0, 0), Vec3Df(-2, -5, 0), Vec3Df(-1, 0, 0));
-	//Triangle* tr = root->collide(ray);
 }
 
 void Tree::add(Triangle& tr) {
@@ -159,8 +155,6 @@ void Tree::add(Triangle& tr) {
 		a1 = current->follow(tr.vertices[1].p);
 		a2 = current->follow(tr.vertices[2].p);
 
-		//printf("follow: %d, %d, %d\n", a0, a1, a2);
-
 		if (a0 != a1 || a1 != a2)
 			break;
 
@@ -169,12 +163,9 @@ void Tree::add(Triangle& tr) {
 		depth++;
 	}
 
-	//printf("Depth: %d\n\n", depth);
-
 	current->leaves.push_back(&tr);
 }
 
-float Tree::collide(Ray& ray, Triangle** out) {
-	*out = 0;
+float Tree::collide(const Ray& ray, Triangle** out) {
 	return root->collide(ray, out);
 }

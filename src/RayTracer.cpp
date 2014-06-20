@@ -79,7 +79,7 @@ int init(int argc, char **argv){
 
     Mesh* sh1 = new Mesh;
     Mesh* sh2 = new Mesh;
-    sh1->loadMesh("mesh/simple_monkey.obj", true);
+    sh1->loadMesh("mesh/monkey.obj", true);
     sh2->loadMesh("mesh/cube.obj", true);
     Vec3Df monkeyPos = Vec3Df(-1, 0, 0);
     Vec3Df cubePos = Vec3Df(1, 0, 0);
@@ -370,7 +370,7 @@ Vec3Df performRayTracing(Ray& ray){
         float temp = inDivOut*inDivOut * 1-cosIncident*cosIncident;
         if(temp <= 1){
             Vec3Df t =inDivOut * ray.dir + (inDivOut * cosIncident - sqrt(1-temp))*normal;
-            Ray transmittedRay = Ray(ray.color, impact, impact + t, ray.bounceCount-1);
+            //Ray transmittedRay = Ray(ray.color, impact, impact + t, ray.bounceCount-1);
         } //temp > 1 means no refraction, only (total) reflection.
     }
     // return color
