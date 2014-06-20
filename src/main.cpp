@@ -216,18 +216,21 @@ void display(void) {
 				} else if (expected < 1000 * 60 * 60 * 24 * 365) {
 					printf("RENDERING WILL TAKE VERY LONG!\n");
 					printf("will take %d days\n", expected / 1000 / 60 / 60 / 24);
+				} else if (expected < 1000 * 60 * 60 * 24 * 365 * 1000) {
+					printf("RENDERING will take years!\n");
+					printf("will take %d year\n", expected / 1000 / 60 / 60 / 24 / 365 / 1000);
 				}
-				else if (expected < 1000 * 60 * 60 * 24 * 365 * 1000) {
+				else if (expected < 1000 * 60 * 60 * 24 * 365 * 1000 * 1000) {
 					printf("RENDERING will take thousands of years!\n");
-					printf("will take %d millenia\n", expected / 1000 / 60 / 60 / 24 / 365 / 1000);
+					printf("will take %d millenia\n", expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 1000);
 				}
 				else if (expected < 1000 * 60 * 60 * 24 * 365 * 1000 * 1000) {
 					printf("RENDERING will take millions of years!\n");
-					printf("will take %d millenia\n", expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 1000);
+					printf("will take %d million years\n", expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 1000);
 				}
-				else if (expected < 1000 * 60 * 60 * 24 * 365 * 1000 * 1000 * 100) {
+				else if (expected < 1000 * 60 * 60 * 24 * 365 * 1000 * 1000 * 1000) {
 					printf("If the dinosaurs were alive when you started rendering, it would be ready now.\n");
-					printf("will take %d eras\n", expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 100);
+					printf("will take %d billion years\n", expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 100);
 				}
 				else {
 					printf("THIS IS MADNESS!\n");
