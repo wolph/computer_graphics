@@ -9,11 +9,11 @@
 #define CONSTANTS_HPP_
 
 #ifndef THREADS
-#define THREADS 2
+#define THREADS 4
 #endif
 
 #ifndef MSAA
-#define MSAA 2
+#define MSAA 1
 #endif
 
 #ifndef PREVIEW_MSAA
@@ -24,7 +24,7 @@
 #ifdef PREVIEW_RES
 #define PREVIEW_RES_X PREVIEW_RES
 #else
-#define PREVIEW_RES_X 128
+#define PREVIEW_RES_X 64
 #endif
 #endif
 
@@ -32,7 +32,7 @@
 #ifdef PREVIEW_RES
 #define PREVIEW_RES_Y PREVIEW_RES
 #else
-#define PREVIEW_RES_Y 128
+#define PREVIEW_RES_Y 64
 #endif
 #endif
 

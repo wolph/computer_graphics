@@ -23,6 +23,7 @@ Scene MyScene;
 
 // options
 extern bool g_phong;
+extern bool g_checkerboard;
 
 bool needRebuild = false; // if the raytrace needs to be built
 
@@ -125,9 +126,9 @@ int main(int argc, char** argv){
 
     // cablage des callback
     glutReshapeFunc(reshape);
-	glutSetKeyRepeat(true);
+	// glutSetKeyRepeat(true);
     glutKeyboardFunc(keyboard);
-	glutKeyboardUpFunc(keyup);
+	// glutKeyboardUpFunc(keyup);
     glutDisplayFunc(display);
     glutMouseFunc(tbMouseFunc);    // traqueboule utilise la souris
     glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
@@ -165,6 +166,7 @@ void drawFPS(){
 }
 
 // display
+clock_t ticks;
 void display(void) {
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -190,11 +192,52 @@ void display(void) {
         tbVisuTransform();
 
         // swap buffers; draw on back buffer
-        if(isRealtimeRaytracing){
+		if (isRealtimeRaytracing){
+			clock_t start = clock();
             startRayTracing(!activeTexIndex, false);
+			ticks = clock() - start;
             activeTexIndex = !activeTexIndex;
         } else {
-            if(needRebuild == true){
+            if (needRebuild == true){
+				int millis = ticks * 1000 / CLOCKS_PER_SEC;
+				long long expected = millis;
+				expected *= RAYTRACE_RES_X / PREVIEW_RES_X;
+				expected *= RAYTRACE_RES_Y / PREVIEW_RES_Y;
+				expected *= MSAA / PREVIEW_MSAA;
+				expected *= MSAA / PREVIEW_MSAA;
+				if (expected < 1000)
+					printf("will take %d milliseconds\n", expected);
+				else if (expected < 1000 * 60)
+					printf("will take %d seconds\n", expected / 1000);
+				else if (expected < 1000 * 60 * 60)
+					printf("will take %d minutes\n", expected / 1000 / 60);
+				else if (expected < 1000 * 60 * 60 * 24) {
+					printf("RENDERING WILL TAKE LONG!\n");
+					printf("will take %d hour\n", expected / 1000 / 60 / 60);
+				} else if (expected < (long long)1000 * 60 * 60 * 24 * 365) {
+					printf("RENDERING WILL TAKE VERY LONG!\n");
+					printf("will take %d days\n", expected / 1000 / 60 / 60 / 24);
+				}
+				else if (expected < (long long)1000 * 60 * 60 * 24 * 365 * 1000) {
+					printf("RENDERING will take years!\n");
+					printf("will take %d year\n", expected / 1000 / 60 / 60 / 24 / 365 / 1000);
+				}
+				else if (expected < (long long)1000 * 60 * 60 * 24 * 365 * 1000 * 1000) {
+					printf("RENDERING will take thousands of years!\n");
+					printf("will take %d millenia\n", expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 1000);
+				}
+				else if (expected < (long long)1000 * 60 * 60 * 24 * 365 * 1000 * 1000) {
+					printf("RENDERING will take millions of years!\n");
+					printf("will take %d million years\n", expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 1000);
+				}
+				else if (expected < (float)1000 * 60 * 60 * 24 * 365 * 1000 * 1000 * 1000) {
+					printf("If the dinosaurs were alive when you started rendering, it would be ready now.\n");
+					printf("will take %d billion years\n", expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 100);
+				}
+				else {
+					printf("THIS IS MADNESS!\n");
+					printf("will take %s seconds\n", "<overflow error>");
+				}
                 startRayTracing(activeTexIndex, true);
                 needRebuild = false;
             }
@@ -224,6 +267,9 @@ void keyboard(unsigned char key, int x, int y){
     switch(key){
 		case '1':
 			g_phong = !g_phong;
+			break;
+		case '2':
+			g_checkerboard = !g_checkerboard;
 			break;
         case 't':
             isDrawingTexture = 0;
