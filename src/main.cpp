@@ -126,9 +126,9 @@ int main(int argc, char** argv){
 
     // cablage des callback
     glutReshapeFunc(reshape);
-	glutSetKeyRepeat(true);
+	// glutSetKeyRepeat(true);
     glutKeyboardFunc(keyboard);
-	glutKeyboardUpFunc(keyup);
+	// glutKeyboardUpFunc(keyup);
     glutDisplayFunc(display);
     glutMouseFunc(tbMouseFunc);    // traqueboule utilise la souris
     glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
@@ -214,22 +214,23 @@ void display(void) {
 				else if (expected < 1000 * 60 * 60 * 24) {
 					printf("RENDERING WILL TAKE LONG!\n");
 					printf("will take %d hour\n", expected / 1000 / 60 / 60);
-				} else if (expected < 1000 * 60 * 60 * 24 * 365) {
+				} else if (expected < (long long)1000 * 60 * 60 * 24 * 365) {
 					printf("RENDERING WILL TAKE VERY LONG!\n");
 					printf("will take %d days\n", expected / 1000 / 60 / 60 / 24);
-				} else if (expected < 1000 * 60 * 60 * 24 * 365 * 1000) {
+				}
+				else if (expected < (long long)1000 * 60 * 60 * 24 * 365 * 1000) {
 					printf("RENDERING will take years!\n");
 					printf("will take %d year\n", expected / 1000 / 60 / 60 / 24 / 365 / 1000);
 				}
-				else if (expected < 1000 * 60 * 60 * 24 * 365 * 1000 * 1000) {
+				else if (expected < (long long)1000 * 60 * 60 * 24 * 365 * 1000 * 1000) {
 					printf("RENDERING will take thousands of years!\n");
 					printf("will take %d millenia\n", expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 1000);
 				}
-				else if (expected < 1000 * 60 * 60 * 24 * 365 * 1000 * 1000) {
+				else if (expected < (long long)1000 * 60 * 60 * 24 * 365 * 1000 * 1000) {
 					printf("RENDERING will take millions of years!\n");
 					printf("will take %d million years\n", expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 1000);
 				}
-				else if (expected < 1000 * 60 * 60 * 24 * 365 * 1000 * 1000 * 1000) {
+				else if (expected < (float)1000 * 60 * 60 * 24 * 365 * 1000 * 1000 * 1000) {
 					printf("If the dinosaurs were alive when you started rendering, it would be ready now.\n");
 					printf("will take %d billion years\n", expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 100);
 				}
