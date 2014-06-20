@@ -244,7 +244,8 @@ void startRayTracing(int texIndex, bool verbose){
 
 //return the color of your pixel.
 Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
-    return performRayTracing(Ray(origin, dest));
+    Ray ray = Ray(origin, dest);
+    return performRayTracing(ray);
 }
 
 // surface of triangle
