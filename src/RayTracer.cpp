@@ -12,6 +12,7 @@ extern unsigned int textures[2];
 extern Tree MyTree;
 extern Scene MyScene;
 Object* monkey;
+Object* cube;
 int alternateX, alternateY;
 
 // runtime options
@@ -74,10 +75,17 @@ int init(int argc, char **argv){
     	mesh = "sphere";
 
     mesh = string("mesh/").append(mesh).append(".obj");
-    MyMesh.loadMesh(mesh.c_str(), true);
-    MyTree.build(MyMesh);
-	monkey = new Object(Vec3Df(0,0,0), MyMesh);
+
+
+	Mesh* sh1 = new Mesh;
+	Mesh* sh2 = new Mesh;
+	sh1->loadMesh("mesh/monkey.obj", true);
+	sh2->loadMesh("mesh/cube.obj", true);
+	monkey = new Object(Vec3Df(-1, 0, 0), *sh1);
+	cube = new Object(Vec3Df(1, 0, 0), *sh2);
+
 	MyScene.add(monkey);
+	MyScene.add(cube);
 
     if(options[RAYTRACE]){
         startRayTracing(activeTexIndex, true);
@@ -336,7 +344,8 @@ Vec3Df performRayTracing(Ray& ray) {
 		// reflection
 		Vec3Df r = ray.dir - 2*dot(ray.dir, normal)*normal;
 		Ray reflectedRay = Ray(ray.color, impact, impact + r, ray.bounceCount-1);
-		color += performRayTracing(reflectedRay) * 0.5f;
+		//color += performRayTracing(reflectedRay) * 0.5f;
+		return performRayTracing(reflectedRay) * 0.7f + Vec3Df(0.2, 0, 0);
 
 		// refraction
 		float inIndex = 1;

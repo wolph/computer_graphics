@@ -223,9 +223,10 @@ void Scene::update() {
 }
 
 float Scene::raytrace(Ray& ray, Triangle** tr) {
-	return objects[0]->raytrace(ray, tr);
+	//return objects[0]->raytrace(ray, tr);
 
 	float close = 1e10;
+	*tr = 0;
 	for (int i = 0; i < objects.size(); i++) {
 		Triangle* temp;
 		float dist = objects[i]->raytrace(ray, &temp);
