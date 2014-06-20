@@ -14,6 +14,7 @@
 #include "Ray.hpp"
 #include "Image.hpp"
 #include "OptionParser.hpp"
+#include "Threading.hpp"
 
 extern unsigned int texture;
 

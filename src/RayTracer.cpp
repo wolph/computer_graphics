@@ -16,6 +16,9 @@ Object* monkey;
 Object* cube;
 int alternateX, alternateY;
 
+ThreadPool pool(THREADS);
+
+
 // runtime options
 bool g_phong = true;
 
@@ -132,7 +135,7 @@ Vec3Df origin01, dest01;
 Vec3Df origin10, dest10;
 Vec3Df origin11, dest11;
 
-void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
+int raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
     Vec3Df origin, dest;
     const unsigned int msaa = isRealtimeRaytracing ? PREVIEW_MSAA : MSAA;
     for(float y = yy;y < hh;y++){
@@ -170,6 +173,7 @@ void raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
             result->_image[(y * result->_width + x) * 3 + 2] = total[2];
         }
     }
+    return yy;
 }
 
 void startRayTracing(int texIndex, bool verbose){
@@ -195,24 +199,15 @@ void startRayTracing(int texIndex, bool verbose){
     start = clock();
 
     // multithread
-#if THREADS != 0
-    std::thread** th = (std::thread**)alloca(THREADS * sizeof(std::thread*));
-    int subw = w / THREADS;
+    std::queue<std::future<int>> results;
+    for(int i = 0; i<w; i++){
+        results.push(pool.enqueue(raytracePart, &result, w, h, i, 0, i + 1, h));
+    }
 
-    for(unsigned int i = 0;i < THREADS;i++)
-    th[i] = new std::thread(raytracePart, &result, w, h, i * subw, 0,
-            (i + 1) * subw, h);			// i * subw, 0, subw, h);
-
-    // wait for them to finish
-    for(unsigned int i = 0;i < THREADS;i++)
-    th[i]->join();
-
-    // kill them all
-    for(unsigned int i = 0;i < THREADS;i++)
-    delete th[i];
-#else
-    raytracePart(&result, w, h, 0, 0, w, h);
-#endif
+    while(!results.empty()){
+        results.front().wait();
+        results.pop();
+    }
 
     // calculate elapsed time
     end = clock();
