@@ -10,7 +10,7 @@
 struct AABB {
 	// the subtrees, if any
 	AABB** sub;
-	vector<Triangle*> leaves; // triangle indices
+    std::vector<Triangle*> leaves; // triangle indices
 
 	// top left up corner
 	Vec3Df pos;

@@ -119,7 +119,7 @@ const unsigned int ids[] = {
 
 Scene::Scene() { }
 
-void Model::load(string file) {
+void Model::load(std::string file) {
 	printf("Loading model!\n");
 	FILE* fp = fopen("mesh/temp/traintank.3ds", "rb");
 	if (!fp) {

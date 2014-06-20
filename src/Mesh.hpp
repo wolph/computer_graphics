@@ -1,9 +1,6 @@
 #ifndef MESH_H
 #define MESH_H
 
-/* fixed recursive includes */
-class Mesh;
-
 #ifdef WIN32
 #include <windows.h>
 #endif

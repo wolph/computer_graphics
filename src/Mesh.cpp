@@ -1,8 +1,6 @@
 #include "Mesh.hpp"
 #include <ctime>
 
-using namespace std;
-
 const unsigned int LINE_LEN = 256;
 
 /************************************************************
@@ -76,7 +74,7 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
     defaultMat.set_name(std::string("StandardMaterialInitFromTriMesh"));
     materials.push_back(defaultMat);
 
-    map<string, unsigned int> materialIndex;
+    std::map<std::string, unsigned int> materialIndex;
     char s[LINE_LEN];
     float x, y, z;
 
@@ -153,7 +151,7 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
                 printf(
                         "Warning! Material '%s' not defined in material file. Taking default!\n",
                         matname.c_str());
-                throw runtime_error("Material is missing, exiting.");
+                throw std::runtime_error("Material is missing, exiting.");
                 matname = "";
             }
         }
@@ -356,7 +354,7 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
 }
 
 bool Mesh::loadMtl(const char * filename,
-        std::map<string, unsigned int> & materialIndex){
+        std::map<std::string, unsigned int> & materialIndex){
     FILE * _in;
     _in = fopen(filename, "r");
 

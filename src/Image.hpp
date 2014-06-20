@@ -11,9 +11,6 @@
 /* fixed recursive includes */
 class Image;
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
 #include <vector>
 #include "Vec3D.hpp"
 

@@ -48,8 +48,8 @@ public:
     const float Ns(void) const;
     const int illum(void) const;
     const float Tr(void) const;
-    const string & textureName() const; //name of the texture image file
-    const string & name() const; //name of the material
+    const std::string & textureName() const; //name of the texture image file
+    const std::string & name() const; //name of the material
 
 private:
 
@@ -67,8 +67,8 @@ private:
     bool illum_is_set_; //illumination model
     float Tr_;
     bool Tr_is_set_; // transperency
-    string name_;
-    string textureName_;
+    std::string name_;
+    std::string textureName_;
 };
 
 #endif /* MATERIAL_H_ */

@@ -5,6 +5,10 @@
  *      Author: rick
  */
 
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+
 #include "Image.hpp"
 
 const char* image_exts[] = {"png", "bmp", "ppm"};

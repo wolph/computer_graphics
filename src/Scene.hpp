@@ -5,7 +5,6 @@
 #include "Mesh.hpp"
 #include "Tree.hpp"
 #include <vector>
-using namespace std;
 
 #pragma pack(push,1)
 struct PolyIdx {
@@ -15,9 +14,9 @@ struct PolyIdx {
 
 class Model {
 public:
-	vector<Vec3Df> vertices;
-	vector<PolyIdx> polygons;
-	void load(string file);
+	std::vector<Vec3Df> vertices;
+	std::vector<PolyIdx> polygons;
+	void load(std::string file);
 };
 
 class Object {
@@ -34,8 +33,8 @@ public:
 
 class Scene {
 private:
-	vector<Vec3Df> lights;
-	vector<Object*> objects;
+	std::vector<Vec3Df> lights;
+	std::vector<Object*> objects;
 public:
 	Scene();
 	void draw();

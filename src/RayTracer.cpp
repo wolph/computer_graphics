@@ -2,12 +2,13 @@
 #include "Tree.hpp"
 #include "Scene.hpp"
 #include <ctime>
+
 #include <math.h>
 
 //temporary variables
 Vec3Df testRayOrigin;
 Vec3Df testRayDestination;
-string mesh;
+std::string mesh;
 extern unsigned int textures[2];
 extern Tree MyTree;
 extern Scene MyScene;
@@ -36,7 +37,7 @@ int init(int argc, char **argv){
         return 1;
 
     if(options[HELP]){
-        int columns = getenv("COLUMNS") ? atoi(getenv("COLUMNS")) : 80;
+        int columns = getenv("COLUMNS") ? std::stoi(getenv("COLUMNS")) : 80;
         option::printUsage(fwrite, stdout, usage, columns);
         return 2;
     }
@@ -52,14 +53,14 @@ int init(int argc, char **argv){
     if(options[RAYTRACEX]){
         const char* arg = options[RAYTRACEX].last()->arg;
         if(arg != 0){
-            alternateX = stoi(arg);
+            alternateX = std::stoi(arg);
         }
     }
 
     if(options[RAYTRACEY]){
         const char* arg = options[RAYTRACEY].last()->arg;
         if(arg != 0){
-            alternateY = stoi(arg);
+            alternateY = std::stoi(arg);
         }
     }
 
@@ -74,7 +75,7 @@ int init(int argc, char **argv){
     else if(mesh == "4")
         mesh = "sphere";
 
-    mesh = string("mesh/").append(mesh).append(".obj");
+    mesh = std::string("mesh/").append(mesh).append(".obj");
 
     Mesh* sh1 = new Mesh;
     Mesh* sh2 = new Mesh;
