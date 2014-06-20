@@ -91,9 +91,9 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
     std::string temp(realFilename);
     int pos = (int)temp.rfind("/");
 
-    if(pos < 0){
+    if (pos < 0){
         path_ = "";
-    }else{
+    } else {
         path_ = temp.substr(0, pos + 1);
     }
     memset(&s, 0, LINE_LEN);

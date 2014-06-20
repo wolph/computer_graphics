@@ -40,7 +40,7 @@ const Intersection Ray::intersect(const Triangle* const triangle){
 
     const float t = dot(e2, Q) * inv_det;
 
-    if(t > 0.00000001){
+    if(t > 0.00000001) {
         return Intersection(true, Vec3Df(0, 0, 0), t, triangle);
     }
     return FalseIntersection;
