@@ -228,7 +228,7 @@ float Scene::raytrace(Ray& ray, Triangle** tr, Object** obj) {
 	float close = 1e10;
 	*tr = 0;
 	*obj = 0;
-	for (int i = 0; i < objects.size(); i++) {
+	for (unsigned int i = 0; i < objects.size(); i++) {
 		Triangle* temp;
 		float dist = objects[i]->raytrace(ray, &temp);
 		if (dist < close) {
