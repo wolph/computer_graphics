@@ -15,8 +15,6 @@
 #include "Vec3D.hpp"
 #include <vector>
 
-extern Vec3Df MyCameraPosition;
-
 extern std::vector<Vec3Df> MyLightPositions;
 
 // double buffered
