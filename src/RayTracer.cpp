@@ -13,6 +13,7 @@ extern unsigned int textures[2];
 extern Tree MyTree;
 extern Scene MyScene;
 Object* monkey;
+Object* sphere;
 Object* cube;
 int alternateX, alternateY;
 
@@ -81,19 +82,26 @@ int init(int argc, char **argv){
         mesh = "sphere";
 
     mesh = std::string("mesh/").append(mesh).append(".obj");
-
+	/*
     Mesh* sh1 = new Mesh;
-    Mesh* sh2 = new Mesh;
     sh1->loadMesh("mesh/monkey.obj", true);
-    sh2->loadMesh("mesh/sphere.obj", true);
     Vec3Df monkeyPos(-2, 0, 0);
-    Vec3Df cubePos(2, 0, 0);
     monkey = new Object(monkeyPos, *sh1);
-	cube = new Object(cubePos, *sh2);
 
     MyScene.add(monkey);
-    MyScene.add(cube);
+	*/ 
+	Mesh* sh2 = new Mesh;
+	sh2->loadMesh("mesh/sphere.obj", true);
+	Vec3Df spherePos(2, 0, 0);
+	sphere = new Object(spherePos, *sh2);
 
+	MyScene.add(sphere);
+	 /*
+	Mesh* sh3 = new Mesh;
+	sh3->loadMesh("mesh/cube.obj", true);
+	Vec3Df cubePos(0, 0, 0);
+	cube = new Object(cubePos, *sh3);
+	*/
 	// load texture
 	FILE* fp = fopen("mesh/hardwood.bmp", "rb");
 	unsigned char* buf = new unsigned char[720 * 720 * 3];
@@ -395,6 +403,13 @@ Vec3Df performRayTracing(Ray& ray){
         } //temp > 1 means no refraction, only (total) reflection.
         */
     }
+
+	for (unsigned int i = 0; i < MyLightPositions.size(); i++){
+		Vec3Df lightPos = MyLightPositions[i];
+		Vec3Df lightColor = performRayTracing(impact, lightPos);
+		color += lightColor;
+	}
+
     // return color
     for(int i = 0;i < 3;i++){
         if(color.p[i] > 1)
