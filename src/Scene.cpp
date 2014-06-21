@@ -213,13 +213,14 @@ void Scene::load(string path) {
 	string name;
 	float x, y, z;
 
-	while (scene) {
-		scene >> name >> x >> y >> z;
+	scene >> name >> x >> y >> z;
+	while(scene) {
 		Mesh* mesh = new Mesh;
 		string path = "mesh/" + name + ".obj";
 		mesh->loadMesh(path.c_str(), true);
 		Vec3Df pos(x, y, z);
 		add(new Object(pos, *mesh));
+		scene >> name >> x >> y >> z;
 	}
 }
 
@@ -238,8 +239,6 @@ void Scene::update() {
 }
 
 float Scene::raytrace(Ray& ray, Triangle** tr, Object** obj) {
-	//return objects[0]->raytrace(ray, tr);
-
 	float close = 1e10;
 	*tr = 0;
 	*obj = 0;

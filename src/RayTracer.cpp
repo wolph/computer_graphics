@@ -116,10 +116,6 @@ void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest){
     dest->p[2] = float(z);
 }
 
-void produceRay(int x_I, int y_I, Vec3Df & origin, Vec3Df & dest){
-    produceRay(x_I, y_I, &origin, &dest);
-}
-
 Vec3Df origin00, dest00;
 Vec3Df origin01, dest01;
 Vec3Df origin10, dest10;
@@ -151,7 +147,7 @@ int raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
                             + (1 - yscale)
                                     * (xscale * dest01 + (1 - xscale) * dest11);
 
-                    total += performRayTracing(origin, dest);
+                    total += performRayTracing(Ray(origin, dest));
                 }
             }
 
@@ -228,12 +224,6 @@ void startRayTracing(int texIndex, bool verbose){
 
 #define VEWY_HIGH 10e6f
 
-//return the color of your pixel.
-Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
-    Ray ray(origin, dest);
-    return performRayTracing(ray);
-}
-
 // surface of triangle
 // heron formula
 float surface(float* t){
@@ -291,8 +281,8 @@ inline Vec3Df background(Ray& ray){
 		else {
 			int xidx = (int)(x * 720 * 0.25) % 720;
 			int yidx = (int)(y * 720 * 0.25) % 720;
-			xidx = abs(xidx);
-			yidx = abs(yidx);
+			if (xidx < 0) xidx += 720;
+			if (yidx < 0) yidx += 720;
 			return *(Vec3Df*)&hardwood[(yidx * 720 + xidx) * 3];
 		}
     } else
@@ -373,7 +363,7 @@ Vec3Df performRayTracing(Ray& ray){
 
 	for (unsigned int i = 0; i < MyLightPositions.size(); i++){
 		Vec3Df lightPos = MyLightPositions[i];
-		Vec3Df lightColor = performRayTracing(impact, lightPos);
+		Vec3Df lightColor = performRayTracing(Ray(impact, lightPos));
 		color += lightColor;
 	}
 
