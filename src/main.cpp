@@ -24,6 +24,7 @@ Scene MyScene;
 // options
 extern bool g_phong;
 extern bool g_checkerboard;
+extern bool g_debug;
 
 bool needRebuild = false; // if the raytrace needs to be built
 
@@ -246,7 +247,8 @@ void display(void) {
     } else {
         tbVisuTransform(); // origine et orientation de la scene
         MyScene.draw();
-        yourDebugDraw();
+		if (g_debug)
+			MyScene.debugDraw();
     }
 
     glutSwapBuffers();
@@ -271,6 +273,9 @@ void keyboard(unsigned char key, int x, int y){
         case '2':
             g_checkerboard = !g_checkerboard;
             break;
+		case '3':
+			g_debug = !g_debug;
+			break;
         case 't':
             isDrawingTexture = 0;
             isRealtimeRaytracing = 0;

@@ -44,7 +44,7 @@ public:
             orig(orig_), dest(dest_), dir(normal(dest_ - orig)),
                     bounceCount(bounceCount_){
     }
-    inline virtual ~Ray(){
+    inline ~Ray(){
     }
 	inline float intersect(const Triangle* const triangle) const {
 		const Vertex* vertices = triangle->vertices;

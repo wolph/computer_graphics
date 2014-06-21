@@ -23,10 +23,13 @@ struct AABB {
 	~AABB();
 
 	bool hit(const Ray& ray);
+	bool hit(const Vec3Df& orig, const Vec3Df& dir);
 	void split();
 	int follow(const Vec3Df& v);
 	float collide(const Ray& ray, Triangle** out);
+	float collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr);
 	bool collidePlane(int axis, const Ray& ray);
+	bool collidePlane(int axis, const Vec3Df& orig, const Vec3Df& dir);
 };
 
 class Tree {
@@ -39,4 +42,5 @@ public:
 	void build(Mesh& mesh);
 	void add(Triangle& tr);
 	float collide(const Ray& ray, Triangle** out);
+	float collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr);
 };
