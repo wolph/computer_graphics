@@ -1,5 +1,6 @@
 #include "Scene.hpp"
 #include <cstdio>
+#include <fstream>
 
 enum {
 	MAIN = 0x4D4D, // Main Chunk
@@ -204,6 +205,22 @@ void Model::load(std::string file) {
 	}
 
 	fclose(fp);
+}
+
+void Scene::load(string path) {
+
+	ifstream scene(path);
+	string name;
+	float x, y, z;
+
+	while (scene) {
+		scene >> name >> x >> y >> z;
+		Mesh* mesh = new Mesh;
+		string path = "mesh/" + name + ".obj";
+		mesh->loadMesh(path.c_str(), true);
+		Vec3Df pos(x, y, z);
+		add(new Object(pos, *mesh));
+	}
 }
 
 void Scene::add(Object* object) {

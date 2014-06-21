@@ -1,0 +1,2 @@
+monkey -2 0 0
+sphere 2 0 0

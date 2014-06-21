@@ -38,6 +38,7 @@ private:
 	std::vector<Object*> objects;
 public:
 	inline Scene(){};
+	void load(string path);
 	void draw();
 	void debugDraw();
 	void update();
