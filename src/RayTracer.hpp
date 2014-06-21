@@ -44,7 +44,7 @@ struct Arg: public option::Arg
 };
 
 enum optionIndex{
-    UNKNOWN, HELP, RAYTRACE, MESH, RAYTRACEX, RAYTRACEY
+    UNKNOWN, HELP, RAYTRACE, SCENE, RAYTRACEX, RAYTRACEY
 };
 const option::Descriptor usage[] = {
         {UNKNOWN, 0, "", "", Arg::Unknown,
@@ -53,8 +53,8 @@ const option::Descriptor usage[] = {
             "--help, -h \tPrint usage and exit."},
         {RAYTRACE, 0, "r", "raytrace", Arg::None,
             "--raytrace, -r \tRay trace and exit."},
-        {MESH, 0, "m", "mesh", Arg::Optional,
-            "--mesh, -m \tMesh to load"},
+        {SCENE, 0, "s", "scene", Arg::Optional,
+            "--scene, -s \tScene to load"},
  		{RAYTRACEX, 0, "x", "raytraceX", Arg::Optional,
 				"--raytraceX, -x \tChoose raytracer resolution X."},
 		{RAYTRACEY, 0, "y", "raytraceY", Arg::Optional,

@@ -9,8 +9,6 @@
 extern unsigned int textures[2];
 extern Scene MyScene;
 Object* monkey;
-Object* sphere;
-Object* cube;
 int alternateX, alternateY;
 
 ThreadPool pool(THREADS);
@@ -45,12 +43,8 @@ int init(int argc, char **argv){
         return 2;
     }
 
-    mesh = "0";
-    if(options[MESH]){
-        const char* arg = options[MESH].last()->arg;
-        if(arg != 0){
-            mesh = arg;
-        }
+    if(options[SCENE]){
+        // dostuff
     }
 
     if(options[RAYTRACEX]){
