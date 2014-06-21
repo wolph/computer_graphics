@@ -47,15 +47,15 @@ int init(int argc, char **argv){
         // dostuff
     }
 
-    if(options[RAYTRACEX]){
-        const char* arg = options[RAYTRACEX].last()->arg;
+    if(options[RAYTRACE_X]){
+        const char* arg = options[RAYTRACE_X].last()->arg;
         if(arg != 0){
             alternateX = std::stoi(arg);
         }
     }
 
-    if(options[RAYTRACEY]){
-        const char* arg = options[RAYTRACEY].last()->arg;
+    if(options[RAYTRACE_Y]){
+        const char* arg = options[RAYTRACE_Y].last()->arg;
         if(arg != 0){
             alternateY = std::stoi(arg);
         }
