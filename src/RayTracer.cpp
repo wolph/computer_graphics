@@ -12,6 +12,8 @@ Object* monkey;
 int alternateX, alternateY;
 
 ThreadPool pool(THREADS);
+Image preview_image(PREVIEW_RES_X, PREVIEW_RES_Y);
+Image output_image(RAYTRACE_RES_X, RAYTRACE_RES_Y);
 
 float hardwood[720 * 720 * 3];
 
@@ -161,11 +163,11 @@ void startRayTracing(int texIndex, bool verbose){
     // update scene
     MyScene.update();
 
+    Image& result = isRealtimeRaytracing ? preview_image : output_image;
     int w = isRealtimeRaytracing ? PREVIEW_RES_X : RAYTRACE_RES_X;
     int h = isRealtimeRaytracing ? PREVIEW_RES_Y : RAYTRACE_RES_Y;
     w = alternateX ? alternateX : w;
     h = alternateY ? alternateY : h;
-    Image result(w, h);
 
     if(verbose)
         printf("Raytracing image with resolution of %d by %d\n", w, h);
