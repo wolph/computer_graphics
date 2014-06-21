@@ -86,8 +86,8 @@ int init(int argc, char **argv){
     Mesh* sh2 = new Mesh;
     sh1->loadMesh("mesh/monkey.obj", true);
     sh2->loadMesh("mesh/sphere.obj", true);
-    Vec3Df monkeyPos = Vec3Df(-2, 0, 0);
-    Vec3Df cubePos = Vec3Df(2, 0, 0);
+    Vec3Df monkeyPos(-2, 0, 0);
+    Vec3Df cubePos(2, 0, 0);
     monkey = new Object(monkeyPos, *sh1);
 	cube = new Object(cubePos, *sh2);
 
@@ -255,7 +255,7 @@ void startRayTracing(int texIndex, bool verbose){
 
 //return the color of your pixel.
 Vec3Df performRayTracing(const Vec3Df & origin, const Vec3Df & dest){
-    Ray ray = Ray(origin, dest);
+    Ray ray(origin, dest);
     return performRayTracing(ray);
 }
 
@@ -391,7 +391,7 @@ Vec3Df performRayTracing(Ray& ray){
         float temp = inDivOut*inDivOut * 1-cosIncident*cosIncident;
         if(temp <= 1){
             Vec3Df t =inDivOut * ray.dir + (inDivOut * cosIncident - sqrt(1-temp))*normal;
-            //Ray transmittedRay = Ray(ray.color, impact, impact + t, ray.bounceCount-1);
+            //Ray transmittedRay(ray.color, impact, impact + t, ray.bounceCount-1);
         } //temp > 1 means no refraction, only (total) reflection.
         */
     }

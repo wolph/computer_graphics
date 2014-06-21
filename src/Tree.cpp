@@ -28,14 +28,16 @@ void AABB::split() {
 
 	// make leaves
 	sub = new AABB*[8];
-	for (int x = 0; x < 2; x++)
-	for (int y = 0; y < 2; y++)
-	for (int z = 0; z < 2; z++) {
-		Vec3Df subpos(pos + Vec3Df(x * radius, y * radius, z * radius));
-		float subradius = radius * 0.5f;
-		
-		sub[z * 4 + y * 2 + x] = new AABB(subpos, subradius);
-	}
+	for (int x = 0; x < 2; x++){
+	    for (int y = 0; y < 2; y++){
+	        for (int z = 0; z < 2; z++){
+		        Vec3Df subpos(pos + Vec3Df(x * radius, y * radius, z * radius));
+		        float subradius = radius * 0.5f;
+
+		        sub[z * 4 + y * 2 + x] = new AABB(subpos, subradius);
+	        }
+        }
+    }
 }
 
 bool AABB::collidePlane(int axis, const Ray& ray) {
@@ -86,7 +88,7 @@ float AABB::collide(const Ray& ray, Triangle** out) {
 
 	// check with leaves
 	for (unsigned int i = 0; i < leaves.size(); i++) {
-		float dist = ray.intersect2(leaves[i]);
+		const float dist = ray.intersect(leaves[i]);
 		if (dist && dist < shortest) {
 			shortest = dist;
 			res = leaves[i];

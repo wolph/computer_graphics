@@ -117,8 +117,6 @@ const unsigned int ids[] = {
 	0xB030, // Hierarchy Position
 };
 
-Scene::Scene() { }
-
 void Model::load(std::string file) {
 	printf("Loading model!\n");
 	FILE* fp = fopen("mesh/temp/traintank.3ds", "rb");
@@ -135,10 +133,10 @@ void Model::load(std::string file) {
 		fread(&len, 1, 4, fp);
 
 		// get chunk
-		int idx = 0;
-		for (int i = 0; i < sizeof(ids) / sizeof(unsigned int); i++)
-			if (id == ids[i])
-				idx = i;
+		//int idx = 0;
+		//for (int i = 0; i < sizeof(ids) / sizeof(unsigned int); i++)
+		//	if (id == ids[i])
+		//		idx = i;
 
 		//if (idx)
 		//	printf("%s\n", idstrs[idx]);
@@ -273,12 +271,6 @@ void Scene::debugDraw() {
 		glEnd();
 }
 
-Object::Object(Vec3Df& pos, Mesh& mesh) : pos(pos), mesh(mesh) {
-	tree.build(mesh);
-
-	vel = Vec3Df(0, 0, 0);
-}
-
 void Object::draw() {
 	glPushMatrix();
 	glTranslatef(pos.p[0], pos.p[1], pos.p[2]);
@@ -287,6 +279,6 @@ void Object::draw() {
 }
 
 float Object::raytrace(Ray& ray, Triangle** tr) {
-	Ray disp = Ray(ray.orig + pos, ray.dest + pos);
+	Ray disp(ray.orig + pos, ray.dest + pos);
 	return tree.collide(disp, tr);
 }

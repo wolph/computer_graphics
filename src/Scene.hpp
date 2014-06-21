@@ -23,10 +23,11 @@ class Object {
 public:
 	Tree tree;
 	Mesh& mesh;
-//public:
 	Vec3Df pos;
 	Vec3Df vel;
-	Object(Vec3Df& pos, Mesh& mesh);
+	inline Object(Vec3Df& pos, Mesh& mesh) : mesh(mesh), pos(pos), vel(0, 0, 0) {
+	    tree.build(mesh);
+    }
 	void draw();
 	float raytrace(Ray& ray, Triangle** tr);
 };
@@ -36,7 +37,7 @@ private:
 	std::vector<Vec3Df> lights;
 	std::vector<Object*> objects;
 public:
-	Scene();
+	inline Scene(){};
 	void draw();
 	void debugDraw();
 	void update();
