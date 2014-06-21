@@ -68,11 +68,87 @@ bool AABB::collidePlane(int axis, const Ray& ray) {
 	return false;
 }
 
+bool AABB::collidePlane(int axis, const Vec3Df& orig, const Vec3Df& dir) {
+	// check axis plane
+	float v1 = pos.p[axis];
+	if (dir.p[axis] < 0)
+		v1 += 2 * radius;
+
+	// factor
+	float a = (v1 - orig.p[axis]) / dir.p[axis];
+
+	// behind the plane
+	if (a < 0)
+		return false;
+
+	// other axis
+	int axis2 = (axis + 1) % 3;
+	int axis3 = (axis + 2) % 3;
+
+	// other axis values
+	float v2 = a * dir.p[axis2] + orig.p[axis2];
+	float v3 = a * dir.p[axis3] + orig.p[axis3];
+
+	// check 2D aabb
+	if (pos.p[axis2] < v2 && v2 < pos.p[axis2] + 2 * radius)
+	if (pos.p[axis3] < v3 && v3 < pos.p[axis3] + 2 * radius)
+		return true;
+	return false;
+}
+
 bool AABB::hit(const Ray& ray) {
 	for (int i = 0; i < 3; i++)
 		if (collidePlane(i, ray))
 			return true;
 	return false;
+}
+
+bool AABB::hit(const Vec3Df& orig, const Vec3Df& dir) {
+	for (int i = 0; i < 3; i++)
+	if (collidePlane(i, orig, dir))
+		return true;
+	return false;
+}
+
+inline float intersect(const Vec3Df& orig, const Vec3Df& dir, const Triangle* const triangle) {
+	const Vertex* vertices = triangle->vertices;
+	const Vec3Df& v0 = vertices[0].p;
+	const Vec3Df& v1 = vertices[1].p;
+	const Vec3Df& v2 = vertices[2].p;
+
+	Vec3Df e1 = v1;
+	e1 -= v0;
+	Vec3Df e2 = v2;
+	e2 -= v0;
+
+	const Vec3Df P = cross(dir, e2);
+	const float det = dot(e1, P);
+
+	if (det < 0.000000001 && det > -0.000000001)
+		return 0;
+
+	float inv_det = 1.0f;
+	inv_det /= det;
+
+	Vec3Df T = orig;
+	T -= vertices[0].p;
+
+	float u = dot(T, P);
+	u *= inv_det;
+	if (u < 0.0f || u > 1.0f)
+		return 0;
+
+	const Vec3Df Q = cross(T, e1);
+
+	float v = dot(dir, Q);
+	v *= inv_det;
+	if (v < 0.0f || u + v > 1.0f)
+		return 0;
+
+	float t = dot(e2, Q);
+	t *= inv_det;
+
+	return t;
 }
 
 float AABB::collide(const Ray& ray, Triangle** out) {
@@ -101,6 +177,44 @@ float AABB::collide(const Ray& ray, Triangle** out) {
 		for (int i = 0; i < 8; i++) {
 			Triangle* res2;
 			float dist = sub[i]->collide(ray, &res2);
+			if (dist < shortest) {
+				res = res2;
+				shortest = dist;
+			}
+		}
+	}
+
+	// hit
+	*out = res;
+	return shortest;
+}
+
+float AABB::collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** out) {
+	// check hit with this cube
+	if (!hit(orig, dir)) {
+		*out = 0;
+		return 1e10f;
+	}
+
+	// current closest triangle
+	float shortest = 1e10f;
+	Triangle* res = 0;
+
+	// check with leaves
+	for (unsigned int i = 0; i < leaves.size(); i++) {
+		const float dist = intersect(orig, dir, leaves[i]);
+		if (dist && dist < shortest) {
+			shortest = dist;
+			res = leaves[i];
+		}
+	}
+
+	// check with subnodes
+	// TODO: skip irrelevant subnodes
+	if (sub) {
+		for (int i = 0; i < 8; i++) {
+			Triangle* res2;
+			float dist = sub[i]->collide(orig, dir, &res2);
 			if (dist < shortest) {
 				res = res2;
 				shortest = dist;
@@ -170,4 +284,8 @@ void Tree::add(Triangle& tr) {
 
 float Tree::collide(const Ray& ray, Triangle** out) {
 	return root->collide(ray, out);
+}
+
+float Tree::collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** out) {
+	return root->collide(orig, dir, out);
 }

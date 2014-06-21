@@ -70,15 +70,13 @@ int init(int argc, char ** argv);
 //you can use this function to transform a click to an origin and destination
 //the last two values will be changed. There is no need to define this function.
 //it is defined elsewhere
-void produceRay(int x_I, int y_I, Vec3Df & origin, Vec3Df & dest);
 void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest);
 
 void startRayTracing(int texIndex, bool verbose);
 
 //your main function to rewrite
+Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir);
 Vec3Df performRayTracing(Ray& ray);
-//a function to debug --- you can draw in OpenGL here
-void yourDebugDraw();
 
 //want keyboard interaction? Here it is...
 void yourKeyboardPress(char t, int x, int y);
