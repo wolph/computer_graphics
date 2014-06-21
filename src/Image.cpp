@@ -24,26 +24,6 @@ inline unsigned int htonl_(unsigned int n){
 }
 #endif
 
-Image::Image(int width, int height) :
-        _width(width), _height(height){
-    _image.resize(3 * _width * _height);
-}
-
-Image::~Image(){
-}
-
-void Image::setPixel(int i, int j, float r, float g, float b){
-    _image[3 * (_width * j + i)] = r;
-    _image[3 * (_width * j + i) + 1] = g;
-    _image[3 * (_width * j + i) + 2] = b;
-}
-
-void Image::setPixel(int i, int j, Vec3Df rgb){
-    _image[3 * (_width * j + i)] = rgb[0];
-    _image[3 * (_width * j + i) + 1] = rgb[1];
-    _image[3 * (_width * j + i) + 2] = rgb[2];
-}
-
 bool Image::writeImage(const char * filename2){
 	std::string str = std::string(filename2) + std::string(".") + std::string(image_exts[IMAGE_FORMAT]);
 	const char* filename = str.c_str();

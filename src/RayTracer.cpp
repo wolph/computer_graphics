@@ -9,11 +9,11 @@
 extern unsigned int textures[2];
 extern Scene MyScene;
 Object* monkey;
-Object* sphere;
-Object* cube;
 int alternateX, alternateY;
 
 ThreadPool pool(THREADS);
+Image preview_image(PREVIEW_RES_X, PREVIEW_RES_Y);
+Image output_image(RAYTRACE_RES_X, RAYTRACE_RES_Y);
 
 float hardwood[720 * 720 * 3];
 
@@ -24,7 +24,7 @@ bool g_debug = false;
 
 //use this function for any preprocessing of the mesh.
 int init(int argc, char **argv){
-	string mesh;
+    string mesh;
     // skip program name argv[0] if present
     argc -= (argc > 0);
     argv += (argc > 0);
@@ -46,42 +46,38 @@ int init(int argc, char **argv){
         return 2;
     }
 
-    mesh = "0";
-    if(options[MESH]){
-        const char* arg = options[MESH].last()->arg;
-        if(arg != 0){
-            mesh = arg;
-        }
+    if(options[SCENE]){
+        // dostuff
     }
 
-    if(options[RAYTRACEX]){
-        const char* arg = options[RAYTRACEX].last()->arg;
+    if(options[RAYTRACE_X]){
+        const char* arg = options[RAYTRACE_X].last()->arg;
         if(arg != 0){
             alternateX = std::stoi(arg);
         }
     }
 
-    if(options[RAYTRACEY]){
-        const char* arg = options[RAYTRACEY].last()->arg;
+    if(options[RAYTRACE_Y]){
+        const char* arg = options[RAYTRACE_Y].last()->arg;
         if(arg != 0){
             alternateY = std::stoi(arg);
         }
     }
 
-	MyScene.load("mesh/scene.txt");
+    MyScene.load("mesh/scene.txt");
 
-	// load texture
-	FILE* fp = fopen("mesh/hardwood.bmp", "rb");
-	unsigned char* buf = new unsigned char[720 * 720 * 3];
-	fseek(fp, 54, SEEK_SET);
-	fread(buf, 1, 720 * 720 * 3, fp);
-	for (int i = 0; i < 720 * 720; i++) {
-		hardwood[i * 3 + 0] = buf[i * 3 + 2] / 255.0f;
-		hardwood[i * 3 + 1] = buf[i * 3 + 1] / 255.0f;
-		hardwood[i * 3 + 2] = buf[i * 3 + 0] / 255.0f;
-	}
-	delete[] buf;
-	fclose(fp);
+    // load texture
+    FILE* fp = fopen("mesh/hardwood.bmp", "rb");
+    unsigned char* buf = new unsigned char[720 * 720 * 3];
+    fseek(fp, 54, SEEK_SET);
+    fread(buf, 1, 720 * 720 * 3, fp);
+    for (int i = 0; i < 720 * 720; i++) {
+        hardwood[i * 3 + 0] = buf[i * 3 + 2] / 255.0f;
+        hardwood[i * 3 + 1] = buf[i * 3 + 1] / 255.0f;
+        hardwood[i * 3 + 2] = buf[i * 3 + 0] / 255.0f;
+    }
+    delete[] buf;
+    fclose(fp);
 
     if(options[RAYTRACE]){
         startRayTracing(activeTexIndex, true);
@@ -148,7 +144,6 @@ int raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
                             + (1 - yscale)
                                     * (xscale * dest01 + (1 - xscale) * dest11);
 
-					//total += performRayTracing(Ray(origin, dest))
 					total += performRayTracing(origin, dest);
                 }
             }
@@ -168,11 +163,11 @@ void startRayTracing(int texIndex, bool verbose){
     // update scene
     MyScene.update();
 
+    Image& result = isRealtimeRaytracing ? preview_image : output_image;
     int w = isRealtimeRaytracing ? PREVIEW_RES_X : RAYTRACE_RES_X;
     int h = isRealtimeRaytracing ? PREVIEW_RES_Y : RAYTRACE_RES_Y;
     w = alternateX ? alternateX : w;
     h = alternateY ? alternateY : h;
-    Image result(w, h);
 
     if(verbose)
         printf("Raytracing image with resolution of %d by %d\n", w, h);
@@ -267,26 +262,26 @@ inline Vec3Df background(Ray& ray){
         if(height < 0)
             return Vec3Df(0, 0.3f, 0);
 
-		if (g_checkerboard) {
-			// checkerboard
-			bool white = true;
-			if (x > floor(x) + 0.5f)
-				white = !white;
-			if (y > floor(y) + 0.1f)
-				white = !white;
+        if (g_checkerboard) {
+            // checkerboard
+            bool white = true;
+            if (x > floor(x) + 0.5f)
+                white = !white;
+            if (y > floor(y) + 0.1f)
+                white = !white;
 
-			if (white)
-				return Vec3Df(0.1f, 0.1f, 0.1f);
-			else
-				return Vec3Df(0.9f, 0.9f, 0.9f);
-		}
-		else {
-			int xidx = (int)(x * 720 * 0.25) % 720;
-			int yidx = (int)(y * 720 * 0.25) % 720;
-			if (xidx < 0) xidx += 720;
-			if (yidx < 0) yidx += 720;
-			return *(Vec3Df*)&hardwood[(yidx * 720 + xidx) * 3];
-		}
+            if (white)
+                return Vec3Df(0.1f, 0.1f, 0.1f);
+            else
+                return Vec3Df(0.9f, 0.9f, 0.9f);
+        }
+        else {
+            int xidx = (int)(x * 720 * 0.25) % 720;
+            int yidx = (int)(y * 720 * 0.25) % 720;
+            if (xidx < 0) xidx += 720;
+            if (yidx < 0) yidx += 720;
+            return *(Vec3Df*)&hardwood[(yidx * 720 + xidx) * 3];
+        }
     } else
         return Vec3Df(0, 0.6f, 0.99f);
 }
@@ -381,8 +376,9 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 Vec3Df performRayTracing(Ray& ray){
     // calculate nearest triangle
     Triangle* triangle2;
-	Object* obj;
-    float dist = MyScene.raytrace(ray.orig, ray.dir, &triangle2, &obj);
+
+    Object* obj;
+    float dist = MyScene.raytrace(ray, &triangle2, &obj);
 
     Vec3Df light(17, 8, 20);
     Vec3Df lightColor(0.2f, 0.3f, 1.0f);
@@ -399,11 +395,11 @@ Vec3Df performRayTracing(Ray& ray){
     if (g_phong) {
         // calc areas
         float a1 = surface(triangle2->vertices[1].p, impact + obj->pos,
-			triangle2->vertices[2].p);
-		float a2 = surface(triangle2->vertices[0].p, impact + obj->pos,
-			triangle2->vertices[2].p);
-		float a3 = surface(triangle2->vertices[0].p, impact + obj->pos,
-			triangle2->vertices[1].p);
+            triangle2->vertices[2].p);
+        float a2 = surface(triangle2->vertices[0].p, impact + obj->pos,
+            triangle2->vertices[2].p);
+        float a3 = surface(triangle2->vertices[0].p, impact + obj->pos,
+            triangle2->vertices[1].p);
         float total = a1 + a2 + a3;
 
         // factors
@@ -450,11 +446,12 @@ Vec3Df performRayTracing(Ray& ray){
         */
    // }
 
-	for (unsigned int i = 0; i < MyLightPositions.size(); i++){
-		Vec3Df lightPos = MyLightPositions[i];
-		Vec3Df lightColor = performRayTracing(Ray(impact, lightPos));
-		color += lightColor;
-	}
+    for (unsigned int i = 0; i < MyLightPositions.size(); i++){
+        Vec3Df lightPos = MyLightPositions[i];
+        Ray r(impact, lightPos);
+        Vec3Df lightColor = performRayTracing(r);
+        color += lightColor;
+    }
 
     // return color
     for(int i = 0;i < 3;i++){
@@ -492,8 +489,8 @@ void drawCube(AABB* cube){
 }
 
 void yourDebugDraw(){
-	if (!isRealtimeRaytracing && !isDrawingTexture)
-		MyScene.debugDraw();
+    if (!isRealtimeRaytracing && !isDrawingTexture)
+        MyScene.debugDraw();
 }
 
 void yourKeyboardPress(char t, int x, int y){

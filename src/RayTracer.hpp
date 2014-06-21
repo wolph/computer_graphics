@@ -44,7 +44,7 @@ struct Arg: public option::Arg
 };
 
 enum optionIndex{
-    UNKNOWN, HELP, RAYTRACE, MESH, RAYTRACEX, RAYTRACEY
+    UNKNOWN, HELP, RAYTRACE, SCENE, RAYTRACE_X, RAYTRACE_Y
 };
 const option::Descriptor usage[] = {
         {UNKNOWN, 0, "", "", Arg::Unknown,
@@ -53,11 +53,11 @@ const option::Descriptor usage[] = {
             "--help, -h \tPrint usage and exit."},
         {RAYTRACE, 0, "r", "raytrace", Arg::None,
             "--raytrace, -r \tRay trace and exit."},
-        {MESH, 0, "m", "mesh", Arg::Optional,
-            "--mesh, -m \tMesh to load"},
- 		{RAYTRACEX, 0, "x", "raytraceX", Arg::Optional,
+        {SCENE, 0, "s", "scene", Arg::Optional,
+            "--scene, -s \tScene to load"},
+ 		{RAYTRACE_X, 0, "x", "raytraceX", Arg::Optional,
 				"--raytraceX, -x \tChoose raytracer resolution X."},
-		{RAYTRACEY, 0, "y", "raytraceY", Arg::Optional,
+		{RAYTRACE_Y, 0, "y", "raytraceY", Arg::Optional,
 				"--raytraceY, -y \tChoose raytracer resolution Y." },
         //{UNKNOWN, 0, "" ,  "", Arg::None, "\nExamples:\n" This example doesn't do anything...
         //        "computer_graphics --trace\n"},
