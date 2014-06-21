@@ -33,15 +33,14 @@ class Image;
 
 class Image{
 public:
-    unsigned int _width;
-    unsigned int _height;
+    const unsigned int _width;
+    const unsigned int _height;
     std::vector<float> _image;
 
-    Image(int width, int height);
-    virtual ~Image();
+    inline Image(const int width, const int height) :
+        _width(width), _height(height), _image(3 * width * height, 0){}
+    inline virtual ~Image(){};
 
-    void setPixel(int i, int j, const Vec3Df rgb);
-    void setPixel(int i, int j, const float r, const float g, const float b);
     bool writeImage(const char * filename);
 };
 
