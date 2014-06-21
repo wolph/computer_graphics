@@ -297,8 +297,10 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 	Vec3Df lightColor(0.2f, 0.3f, 1.0f);
 
 	// background
-	if (!triangle2)
-		return background(Ray(orig, dir));
+	if (!triangle2){
+        Ray r(orig, dir);
+		return background(r);
+    }
 
 	const Vec3Df impact = orig + dir * dist;
 	const Vec3Df tolight = normal(light - impact);
