@@ -13,7 +13,6 @@ class Ray;
 
 #include "Vec3D.hpp"
 #include "Mesh.hpp"
-#include "Intersection.hpp"
 
 inline const Vec3Df normal(const Vec3Df& in){
     Vec3Df res(in);

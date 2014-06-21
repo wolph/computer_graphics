@@ -6,13 +6,10 @@
 #include <math.h>
 
 //temporary variables
-Vec3Df testRayOrigin;
-Vec3Df testRayDestination;
-std::string mesh;
 extern unsigned int textures[2];
-extern Tree MyTree;
 extern Scene MyScene;
 Object* monkey;
+Object* sphere;
 Object* cube;
 int alternateX, alternateY;
 
@@ -26,6 +23,7 @@ bool g_checkerboard = false;
 
 //use this function for any preprocessing of the mesh.
 int init(int argc, char **argv){
+	string mesh;
     // skip program name argv[0] if present
     argc -= (argc > 0);
     argv += (argc > 0);
@@ -69,30 +67,7 @@ int init(int argc, char **argv){
         }
     }
 
-    if(mesh == "0")
-        mesh = "cube";
-    else if(mesh == "1")
-        mesh = "simple_monkey";
-    else if(mesh == "2")
-        mesh = "monkey";
-    else if(mesh == "3")
-        mesh = "dodgeColorTest";
-    else if(mesh == "4")
-        mesh = "sphere";
-
-    mesh = std::string("mesh/").append(mesh).append(".obj");
-
-    Mesh* sh1 = new Mesh;
-    Mesh* sh2 = new Mesh;
-    sh1->loadMesh("mesh/monkey.obj", true);
-    sh2->loadMesh("mesh/sphere.obj", true);
-    Vec3Df monkeyPos(-2, 0, 0);
-    Vec3Df cubePos(2, 0, 0);
-    monkey = new Object(monkeyPos, *sh1);
-	cube = new Object(cubePos, *sh2);
-
-    MyScene.add(monkey);
-    MyScene.add(cube);
+	MyScene.load("mesh/scene.txt");
 
 	// load texture
 	FILE* fp = fopen("mesh/hardwood.bmp", "rb");
@@ -395,6 +370,13 @@ Vec3Df performRayTracing(Ray& ray){
         } //temp > 1 means no refraction, only (total) reflection.
         */
     }
+
+	for (unsigned int i = 0; i < MyLightPositions.size(); i++){
+		Vec3Df lightPos = MyLightPositions[i];
+		Vec3Df lightColor = performRayTracing(impact, lightPos);
+		color += lightColor;
+	}
+
     // return color
     for(int i = 0;i < 3;i++){
         if(color.p[i] > 1)
