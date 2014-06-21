@@ -184,14 +184,13 @@ void startRayTracing(int texIndex, bool verbose){
     // multithread
     std::queue<std::future<int>> results;
     for(int i = 0; i<w; i++){
-        pool.enqueue(raytracePart, &result, w, h, i, 0, i + 1, h);
-//        results.push(pool.enqueue(raytracePart, &result, w, h, i, 0, i + 1, h));
+        results.push(pool.enqueue(raytracePart, &result, w, h, i, 0, i + 1, h));
     }
 
-//    while(!results.empty()){
-//        results.front().wait();
-//        results.pop();
-//    }
+    while(!results.empty()){
+        results.front().wait();
+        results.pop();
+    }
 
     // calculate elapsed time
     end = clock();
