@@ -9,6 +9,7 @@
 extern unsigned int textures[2];
 extern Scene MyScene;
 Object* monkey;
+Object* sphere;
 Object* cube;
 int alternateX, alternateY;
 
@@ -369,6 +370,13 @@ Vec3Df performRayTracing(Ray& ray){
         } //temp > 1 means no refraction, only (total) reflection.
         */
     }
+
+	for (unsigned int i = 0; i < MyLightPositions.size(); i++){
+		Vec3Df lightPos = MyLightPositions[i];
+		Vec3Df lightColor = performRayTracing(impact, lightPos);
+		color += lightColor;
+	}
+
     // return color
     for(int i = 0;i < 3;i++){
         if(color.p[i] > 1)

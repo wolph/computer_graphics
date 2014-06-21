@@ -24,7 +24,7 @@
 #ifdef PREVIEW_RES
 #define PREVIEW_RES_X PREVIEW_RES
 #else
-#define PREVIEW_RES_X 64
+#define PREVIEW_RES_X 128
 #endif
 #endif
 
@@ -32,7 +32,7 @@
 #ifdef PREVIEW_RES
 #define PREVIEW_RES_Y PREVIEW_RES
 #else
-#define PREVIEW_RES_Y 64
+#define PREVIEW_RES_Y 128
 #endif
 #endif
 
