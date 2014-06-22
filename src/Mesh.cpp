@@ -54,9 +54,9 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
     triangles.clear();
     texcoords.clear();
 
-    std::vector<int> vhandles;
-    std::vector<int> texhandles;
-    std::vector<std::vector<int>> tempTriangles;
+    std::vector<unsigned int> vhandles;
+    std::vector<unsigned int> texhandles;
+    std::vector<std::vector<unsigned int>> tempTriangles;
 
     if(randomizeTriangulation)
         /* Randomization should use an actual _RANDOM_ thing */
@@ -313,18 +313,18 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
                     const int t1 = (k + i + 1) % vhandles.size();
                     const int t2 = (k + i + 2) % vhandles.size();
 
-                    tempTriangles.push_back(std::vector<int> {vhandles[v0],
+                    tempTriangles.push_back(std::vector<unsigned int> {vhandles[v0],
                             vhandles[v1], vhandles[v2], texhandles[t0],
-                            texhandles[t1], texhandles[t2]});
-                    triangleMaterials.push_back(
-                            (materialIndex.find(matname))->second);
+                            texhandles[t1], texhandles[t2],
+                            materialIndex.find(matname)->second});
+                    triangleMaterials.push_back((materialIndex.find(matname))->second);
                 }
             }else if(vhandles.size() == 3){
                 triangleMaterials.push_back(
                         (materialIndex.find(matname))->second);
-                tempTriangles.push_back(std::vector<int> {vhandles[0],
+                tempTriangles.push_back(std::vector<unsigned int> {vhandles[0],
                         vhandles[1], vhandles[2], texhandles[0], texhandles[1],
-                        texhandles[2]});
+                        texhandles[2], materialIndex.find(matname)->second});
 
             }else{
                 printf(
@@ -340,7 +340,7 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
 
 	for (auto& triangle : tempTriangles) {
 		Triangle tr = Triangle(vertices[triangle[0]], vertices[triangle[1]],
-			vertices[triangle[2]]);
+			vertices[triangle[2]], materials[triangle[6]]);
 
 		vertices[triangle[0]].n += tr.normal;
 		vertices[triangle[1]].n += tr.normal;
@@ -355,10 +355,10 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
 		if (!texcoords.empty())
 			triangles.push_back(Triangle(vertices[triangle[0]], vertices[triangle[1]],
                         vertices[triangle[2]], texcoords[triangle[3]],
-						texcoords[triangle[4]], texcoords[triangle[5]], materials[triangles.size()]));
+						texcoords[triangle[4]], texcoords[triangle[5]], materials[triangle[6]]));
 		else
 			triangles.push_back(Triangle(vertices[triangle[0]], vertices[triangle[1]],
-						vertices[triangle[2]]));
+						vertices[triangle[2]], materials[triangle[6]]));
     }
 
     fclose(in);
