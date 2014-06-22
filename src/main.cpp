@@ -294,7 +294,8 @@ void keyboard(unsigned char key, int x, int y){
             isRealtimeRaytracing = 0;
             break;
         case 'L':
-            MyScene.addLightPoint(getCameraPosition());
+            MyCameraPosition = getCameraPosition();
+            MyScene.addLightPoint(MyCameraPosition);
             break;
         case 'l':
 			MyScene.lights[0] = getCameraPosition();
