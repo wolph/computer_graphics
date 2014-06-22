@@ -4,7 +4,6 @@
 */
 #pragma once
 #include "Mesh.hpp"
-#include "Ray.hpp"
 #define MAX_DEPTH 10
 
 struct AABB {
@@ -22,13 +21,10 @@ struct AABB {
 	AABB(Vec3Df& pos, float radius);
 	~AABB();
 
-	bool hit(const Ray& ray);
 	bool hit(const Vec3Df& orig, const Vec3Df& dir);
 	void split();
 	int follow(const Vec3Df& v);
-	float collide(const Ray& ray, Triangle** out);
 	float collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr);
-	bool collidePlane(int axis, const Ray& ray);
 	bool collidePlane(int axis, const Vec3Df& orig, const Vec3Df& dir);
 };
 
@@ -41,6 +37,5 @@ public:
 
 	void build(Mesh& mesh);
 	void add(Triangle& tr);
-	float collide(const Ray& ray, Triangle** out);
 	float collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr);
 };

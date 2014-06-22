@@ -11,7 +11,6 @@
 
 #include "constants.hpp"
 #include "Mesh.hpp"
-#include "Ray.hpp"
 #include "Image.hpp"
 #include "OptionParser.hpp"
 #include "Threading.hpp"
@@ -75,7 +74,6 @@ void startRayTracing(int texIndex, bool verbose);
 
 //your main function to rewrite
 Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir);
-Vec3Df performRayTracing(Ray& ray);
 
 //want keyboard interaction? Here it is...
 void yourKeyboardPress(char t, int x, int y);

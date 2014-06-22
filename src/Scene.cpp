@@ -194,22 +194,6 @@ void Scene::update() {
 		obj->pos += obj->vel;
 }
 
-float Scene::raytrace(const Ray& ray, Triangle** tr, Object** obj) {
-	float close = 1e10;
-	*tr = 0;
-	*obj = 0;
-	for (unsigned int i = 0; i < objects.size(); i++) {
-		Triangle* temp;
-		float dist = objects[i]->raytrace(ray, &temp);
-		if (dist < close) {
-			close = dist;
-			*tr = temp;
-			*obj = objects[i];
-		}
-	}
-	return close;
-}
-
 float Scene::raytrace(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr, Object** obj) {
 	float close = 1e10f;
 	*tr = 0;
@@ -266,10 +250,10 @@ void Object::draw() {
 	glPopMatrix();
 }
 
-float Object::raytrace(const Ray& ray, Triangle** tr) {
-	Ray disp(ray.orig + pos, ray.dest + pos);
-	return tree.collide(disp, tr);
-}
+//float Object::raytrace(const Ray& ray, Triangle** tr) {
+//	Ray disp(ray.orig + pos, ray.dest + pos);
+//	return tree.collide(disp, tr);
+//}
 
 float Object::raytrace(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr) {
 	return tree.collide(orig + pos, dir, tr);

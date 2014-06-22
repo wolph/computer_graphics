@@ -278,12 +278,12 @@ float surface(const Vec3Df& a, const Vec3Df& b, const Vec3Df& c){
     return surface(f);
 }
 
-inline Vec3Df background(Ray& ray){
-    if(ray.dir.p[2] < 0){
-        float height = ray.orig.p[2] + 1;
-        float a = -height / ray.dir.p[2];
-        float x = ray.orig.p[0] + a * ray.dir.p[0];
-        float y = ray.orig.p[1] + a * ray.dir.p[1];
+inline Vec3Df background(Vec3Df orig, Vec3Df dir){
+    if(dir.p[2] < 0){
+        float height = orig.p[2] + 1;
+        float a = -height / dir.p[2];
+        float x = orig.p[0] + a * dir.p[0];
+        float y = orig.p[1] + a * dir.p[1];
         if(height < 0)
             return Vec3Df(0, 0.3f, 0);
 
@@ -322,8 +322,7 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 	if (!triangle2){
         return Vec3Df(0, 0, 0);
 
-        Ray r(orig, dir);
-		return background(r);
+		return background(orig, dir);
     }
 
 	const Material& mat = triangle2->material;

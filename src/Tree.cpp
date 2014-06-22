@@ -40,34 +40,6 @@ void AABB::split() {
     }
 }
 
-bool AABB::collidePlane(int axis, const Ray& ray) {
-	// check axis plane
-	float v1 = pos.p[axis];
-	if (ray.dir.p[axis] < 0)
-		v1 += 2 * radius;
-
-	// factor
-	float a = (v1 - ray.orig.p[axis]) / ray.dir.p[axis];
-
-	// behind the plane
-	if (a < 0)
-		return false;
-
-	// other axis
-	int axis2 = (axis + 1) % 3;
-	int axis3 = (axis + 2) % 3;
-
-	// other axis values
-	float v2 = a * ray.dir.p[axis2] + ray.orig.p[axis2];
-	float v3 = a * ray.dir.p[axis3] + ray.orig.p[axis3];
-
-	// check 2D aabb
-	if (pos.p[axis2] < v2 && v2 < pos.p[axis2] + 2 * radius)
-		if (pos.p[axis3] < v3 && v3 < pos.p[axis3] + 2 * radius)
-			return true;
-	return false;
-}
-
 bool AABB::collidePlane(int axis, const Vec3Df& orig, const Vec3Df& dir) {
 	// check axis plane
 	float v1 = pos.p[axis];
@@ -93,13 +65,6 @@ bool AABB::collidePlane(int axis, const Vec3Df& orig, const Vec3Df& dir) {
 	if (pos.p[axis2] < v2 && v2 < pos.p[axis2] + 2 * radius)
 	if (pos.p[axis3] < v3 && v3 < pos.p[axis3] + 2 * radius)
 		return true;
-	return false;
-}
-
-bool AABB::hit(const Ray& ray) {
-	for (int i = 0; i < 3; i++)
-		if (collidePlane(i, ray))
-			return true;
 	return false;
 }
 
@@ -149,44 +114,6 @@ inline float intersect(const Vec3Df& orig, const Vec3Df& dir, const Triangle* co
 	t *= inv_det;
 
 	return t;
-}
-
-float AABB::collide(const Ray& ray, Triangle** out) {
-	// check hit with this cube
-	if (!hit(ray)) {
-		*out = 0;
-		return 1e10f;
-	}
-
-	// current closest triangle
-	float shortest = 1e10f;
-	Triangle* res = 0;
-
-	// check with leaves
-	for (unsigned int i = 0; i < leaves.size(); i++) {
-		const float dist = ray.intersect(leaves[i]);
-		if (dist && dist < shortest) {
-			shortest = dist;
-			res = leaves[i];
-		}
-	}
-
-	// check with subnodes
-	// TODO: skip irrelevant subnodes
-	if (sub) {
-		for (int i = 0; i < 8; i++) {
-			Triangle* res2;
-			float dist = sub[i]->collide(ray, &res2);
-			if (dist < shortest) {
-				res = res2;
-				shortest = dist;
-			}
-		}
-	}
-
-	// hit
-	*out = res;
-	return shortest;
 }
 
 float AABB::collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** out) {
@@ -280,10 +207,6 @@ void Tree::add(Triangle& tr) {
 	}
 
 	current->leaves.push_back(&tr);
-}
-
-float Tree::collide(const Ray& ray, Triangle** out) {
-	return root->collide(ray, out);
 }
 
 float Tree::collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** out) {

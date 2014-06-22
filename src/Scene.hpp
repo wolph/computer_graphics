@@ -29,7 +29,6 @@ public:
 	    tree.build(mesh);
     }
 	void draw();
-	float raytrace(const Ray& ray, Triangle** tr);
 	float raytrace(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr);
 };
 
@@ -46,6 +45,5 @@ public:
 	void update();
 	void add(Object* object);
 	void addLightPoint(Vec3Df& lightPos);
-	float raytrace(const Ray& ray, Triangle** tr, Object** obj);
 	float raytrace(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr, Object** obj);
 };
