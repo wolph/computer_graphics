@@ -300,6 +300,13 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
             if(vhandles.size() != texhandles.size())
                 texhandles.resize(vhandles.size(), 0);
 
+			unsigned int mat = 0;
+
+			if (!materialIndex.count(matname))
+				printf("Material %s not found!\n", matname.c_str());
+			else
+				mat = materialIndex.find(matname)->second;
+
             if(vhandles.size() > 3){
                 //model is not triangulated, so let us do this on the fly...
                 //to have a more uniform mesh, we add randomization
@@ -316,15 +323,14 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
                     tempTriangles.push_back(std::vector<unsigned int> {vhandles[v0],
                             vhandles[v1], vhandles[v2], texhandles[t0],
                             texhandles[t1], texhandles[t2],
-                            materialIndex.find(matname)->second});
-                    triangleMaterials.push_back((materialIndex.find(matname))->second);
+                            mat});
+                    triangleMaterials.push_back(mat);
                 }
             }else if(vhandles.size() == 3){
-                triangleMaterials.push_back(
-                        (materialIndex.find(matname))->second);
+                triangleMaterials.push_back(mat);
                 tempTriangles.push_back(std::vector<unsigned int> {vhandles[0],
                         vhandles[1], vhandles[2], texhandles[0], texhandles[1],
-                        texhandles[2], materialIndex.find(matname)->second});
+                        texhandles[2], mat});
 
             }else{
                 printf(
