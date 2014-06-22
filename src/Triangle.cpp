@@ -11,7 +11,7 @@ Triangle::Triangle(){
     vertices[0] = vertices[1] = vertices[2] = Vertex();
 }
 
-Triangle::Triangle(const Triangle & triangle){
+Triangle::Triangle(const Triangle & triangle) : material(triangle.material){
     vertices[0] = triangle.vertices[0];
     vertices[1] = triangle.vertices[1];
     vertices[2] = triangle.vertices[2];
@@ -21,12 +21,10 @@ Triangle::Triangle(const Triangle & triangle){
 	textures[2] = triangle.textures[2];
 
 	calculateNormal();
-
-	material = triangle.material;
 }
 
 Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2,
-        const Texture & t0, const Texture & t1, const Texture & t2, const Material & m){
+                   const Texture & t0, const Texture & t1, const Texture & t2, const Material & m) : material(m){
     if(&v0 != 0)
         vertices[0] = v0;
     if(&v1 != 0)
@@ -42,12 +40,9 @@ Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2,
 		textures[2] = t2;
 
 	calculateNormal();
-
-	if (&m != 0)
-		material = m;
 }
 
-Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2){
+Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2, const Material& m) : material(m){
     if(&v0 != 0)
         vertices[0] = v0;
     if(&v1 != 0)
@@ -61,21 +56,6 @@ Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2){
 Triangle::~Triangle(){
 }
 
-Triangle & Triangle::operator=(const Triangle & triangle){
-    vertices[0] = triangle.vertices[0];
-    vertices[1] = triangle.vertices[1];
-    vertices[2] = triangle.vertices[2];
-
-    textures[0] = triangle.textures[0];
-    textures[1] = triangle.textures[1];
-    textures[2] = triangle.textures[2];
-
-	calculateNormal();
-
-	material = triangle.material;
-
-    return (*this);
-}
 
 void Triangle::calculateNormal(){
 	normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p,
