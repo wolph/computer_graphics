@@ -22,8 +22,19 @@ bool g_phong = true;
 bool g_checkerboard = false;
 bool g_debug = false;
 
+Vec3Df origin00, dest00;
+Vec3Df origin01, dest01;
+Vec3Df origin10, dest10;
+Vec3Df origin11, dest11;
+
 //use this function for any preprocessing of the mesh.
 int init(int argc, char **argv){
+    printf("Preview %dx%d@%d msaa using %d threads\n", PREVIEW_RES_X,
+           PREVIEW_RES_Y, PREVIEW_MSAA, THREADS);
+    printf("Raytrace %dx%d@%d msaa using %d threads\n", RAYTRACE_RES_X,
+           RAYTRACE_RES_Y, MSAA, THREADS);
+    printf("Window %dx%d\n", WINDOW_RES_X, WINDOW_RES_Y);
+
     string mesh;
     // skip program name argv[0] if present
     argc -= (argc > 0);
@@ -88,7 +99,7 @@ int init(int argc, char **argv){
 }
 
 //transformer le x, y en position 3D
-void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest){
+void produceRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
     int viewport[4];
     double modelview[16];
     double projection[16];
@@ -104,22 +115,19 @@ void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest){
     double x, y, z;
 
     gluUnProject(x_I, y_new, 0, modelview, projection, viewport, &x, &y, &z);
-    origin->p[0] = float(x);
-    origin->p[1] = float(y);
-    origin->p[2] = float(z);
+    origin->p[0] = x;
+    origin->p[1] = y;
+    origin->p[2] = z;
     gluUnProject(x_I, y_new, 1, modelview, projection, viewport, &x, &y, &z);
-    dest->p[0] = float(x);
-    dest->p[1] = float(y);
-    dest->p[2] = float(z);
+    dest->p[0] = x;
+    dest->p[1] = y;
+    dest->p[2] = z;
 }
-
-Vec3Df origin00, dest00;
-Vec3Df origin01, dest01;
-Vec3Df origin10, dest10;
-Vec3Df origin11, dest11;
 
 int raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
     Vec3Df origin, dest;
+    std::vector<float>& image = result->_image;
+
     const unsigned int msaa = isRealtimeRaytracing ? PREVIEW_MSAA : MSAA;
     for(float y = yy;y < hh;y++){
         for(float x = xx;x < ww;x++){
@@ -149,11 +157,12 @@ int raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
             }
 
             // calculate average color
-            total /= msaa * msaa;
+            total /= msaa;
+            total /= msaa;
             // result->_image
-            result->_image[(y * result->_width + x) * 3 + 0] = total[0];
-            result->_image[(y * result->_width + x) * 3 + 1] = total[1];
-            result->_image[(y * result->_width + x) * 3 + 2] = total[2];
+            image[(y * w + x) * 3] = total.p[0];
+            image[(y * w + x) * 3 + 1] = total.p[1];
+            image[(y * w + x) * 3 + 2] = total.p[2];
         }
     }
     return yy;
@@ -184,7 +193,9 @@ void startRayTracing(int texIndex, bool verbose){
     // multithread
     std::queue<std::future<int>> results;
     for(int i = 0; i<w; i++){
+#ifndef ECLIPSE
         results.push(pool.enqueue(raytracePart, &result, w, h, i, 0, i + 1, h));
+#endif
     }
 
     while(!results.empty()){
@@ -203,9 +214,16 @@ void startRayTracing(int texIndex, bool verbose){
                 millis, millis / fmax(THREADS, 1));
 
     // write to texture
-    glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_FLOAT,
-            &result._image[0]);
+    glTexImage2D(
+        GL_TEXTURE_2D,      // target
+        0,                  // level
+        GL_RGB,             // internalFormat
+        w,                  // width
+        h,                  // height
+        0,                  // border
+        GL_RGB,             // format
+        GL_FLOAT,           // type
+        &result._image[0]); // data
 
     // calculate elapsed time
     end = clock();
