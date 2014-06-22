@@ -21,7 +21,7 @@ public:
 
 class Object {
 public:
-	Tree tree;
+    Tree tree;
 	Mesh& mesh;
 	Vec3Df pos;
 	Vec3Df vel;
@@ -37,6 +37,7 @@ class Scene {
 public:
 	std::vector<Vec3Df> lights;
 	std::vector<Object*> objects;
+	unsigned int selectedObject = 0;
 
 	inline Scene(){};
 	void load(string path);

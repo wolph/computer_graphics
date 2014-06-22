@@ -8,11 +8,12 @@
 #ifndef RAY_H
 #define RAY_H
 
-/* fixed recursive includes */
+/* fixed recursive includes by forward declaration */
 class Ray;
 
 #include "Vec3D.hpp"
-#include "Mesh.hpp"
+#include "Vertex.hpp"
+#include "Triangle.hpp"
 
 inline const Vec3Df normal(const Vec3Df& in){
     Vec3Df res(in);

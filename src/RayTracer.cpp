@@ -369,8 +369,6 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 	Vec3Df lightColor(1, 1, 0.5);
 
 	for (Vec3Df& light : MyScene.lights) {
-		Triangle* tr2;
-		Object* obj2;
 		Vec3Df tolight = light - impact;
 		tolight.normalize();
 

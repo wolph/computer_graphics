@@ -14,23 +14,13 @@
 #include <map>
 #include <string.h>
 #include <vector>
+#include <string>
 
 /************************************************************
  * Class de maillage basique
  ************************************************************/
 class Mesh{
 public:
-    Mesh(){
-    }
-    inline Mesh(const std::vector<Vertex> & v, const std::vector<Triangle> & t) :
-            vertices(v), triangles(t){
-    }
-    bool loadMesh(const char * filename, bool randomizeTriangulation);
-    bool loadMtl(const char * filename,
-            std::map<std::string, unsigned int> & materialIndex);
-    void draw();
-    void drawSmooth();
-
     //this is relevant for you:
     //Vertices are the vertex positions, textures, and normals of the mesh.
     std::vector<Vertex> vertices;
@@ -50,6 +40,21 @@ public:
     //using the material index, you can then recover the material from this vector
     //the class material is defined just above
     std::vector<Material> materials;
+
+    const std::string name;
+
+    inline Mesh(){};
+    inline Mesh(const std::string name, const std::string filename): name(name){
+        loadMesh(filename, true);
+    }
+
+    const void draw();
+    const void drawSmooth();
+
+private:
+    bool loadMesh(std::string filename, bool randomizeTriangulation);
+    bool loadMtl(const char * filename,
+            std::map<std::string, unsigned int> & materialIndex);
 };
 
 #endif // MESH_H

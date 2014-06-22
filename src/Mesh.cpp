@@ -6,7 +6,7 @@ const unsigned int LINE_LEN = 256;
 /************************************************************
  * draw
  ************************************************************/
-void Mesh::drawSmooth(){
+const void Mesh::drawSmooth(){
 
     glBegin(GL_TRIANGLES);
 
@@ -27,7 +27,7 @@ void Mesh::drawSmooth(){
     glEnd();
 }
 
-void Mesh::draw(){
+const void Mesh::draw(){
     glBegin(GL_TRIANGLES);
 
     for(unsigned int i = 0;i < triangles.size();++i){
@@ -49,7 +49,7 @@ void Mesh::draw(){
     glEnd();
 }
 
-bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
+bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
     vertices.clear();
     triangles.clear();
     texcoords.clear();
@@ -99,7 +99,7 @@ bool Mesh::loadMesh(const char * filename, bool randomizeTriangulation){
     memset(&s, 0, LINE_LEN);
 
     FILE * in;
-    in = fopen(filename, "r");
+    in = fopen(filename.c_str(), "r");
 
     while(in && !feof(in) && fgets(s, LINE_LEN, in)){
         // comment

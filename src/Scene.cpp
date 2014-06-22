@@ -172,9 +172,7 @@ void Scene::load(string path) {
 			addLightPoint(lightPoint);
 		}
 		else {
-			Mesh* mesh = new Mesh;
-			string path = "mesh/" + name + ".obj";
-			mesh->loadMesh(path.c_str(), true);
+			Mesh* mesh = new Mesh(name, "mesh/" + name + ".obj");
 			Vec3Df pos(x, y, z);
 			add(new Object(pos, *mesh));
 		}
