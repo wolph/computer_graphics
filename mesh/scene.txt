@@ -1,3 +1,4 @@
 monkey 0 0 0
 sphere 4 0 0
 light 0 0 10
+floor 0 0 0
