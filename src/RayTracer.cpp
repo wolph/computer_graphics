@@ -319,8 +319,6 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 
 	// background
 	if (!triangle2){
-        return Vec3Df(0, 0, 0);
-
 		return background(orig, dir);
     }
 
