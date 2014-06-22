@@ -32,7 +32,9 @@ void keyup(unsigned char key, int x, int y);
 
 clock_t lastFrameTime = clock();
 clock_t lastFPSRenderTime = clock();
-char screenFPS[20];
+clock_t diffs[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+unsigned int diffIndex = 0;
+char infoString[100];
 void drawFPS();
 
 

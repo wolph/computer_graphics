@@ -36,7 +36,7 @@ class Scene {
 public:
 	std::vector<Vec3Df> lights;
 	std::vector<Object*> objects;
-	unsigned int selectedObject = 0;
+    Object* object;
 
 	inline Scene(){};
 	void load(string path);
@@ -46,4 +46,16 @@ public:
 	void add(Object* object);
 	void addLightPoint(Vec3Df& lightPos);
 	float raytrace(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr, Object** obj);
+
+    Object* nextObject(){
+        objectIndex = (objectIndex + 1) % objects.size();
+        return object = objects[objectIndex];
+    }
+
+    Object* prevObject(){
+        objectIndex = (unsigned int)(objectIndex ? objectIndex : objects.size()) - 1;
+        return object = objects[objectIndex];
+    }
+private:
+    unsigned int objectIndex;
 };

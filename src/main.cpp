@@ -134,9 +134,9 @@ int main(int argc, char** argv){
 
     // cablage des callback
     glutReshapeFunc(reshape);
-    // glutSetKeyRepeat(true);
+    glutSetKeyRepeat(true);
     glutKeyboardFunc(keyboard);
-    // glutKeyboardUpFunc(keyup);
+    glutKeyboardUpFunc(keyup);
     glutDisplayFunc(display);
     glutMouseFunc(tbMouseFunc);    // traqueboule utilise la souris
     glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
@@ -155,21 +155,30 @@ int main(int argc, char** argv){
 }
 
 // draw fps
-void drawFPS(){
+void drawInfo(){
     clock_t diff = clock() - lastFrameTime;
     lastFrameTime = clock();
 
     const int clock = CLOCKS_PER_SEC * (isRealtimeRaytracing ? THREADS : 1);
 
-    if((0. + lastFrameTime - lastFPSRenderTime) / clock > .1){
+    if((0. + lastFrameTime - lastFPSRenderTime) / clock > .03){
+        diffIndex = (diffIndex + 1) % 10;
+        diffs[diffIndex] = diff;
+
+        MyScene.update();
         lastFPSRenderTime = lastFrameTime;
-        float fps = (1. / diff) * clock;
-        sprintf(screenFPS, "%.1f fps", fps);
+
+        clock_t diff = 0;
+        for(int i=0; i<20; i++)diff += diffs[i];
+
+        float fps = (1. / (diff / 20.)) * clock;
+        sprintf(infoString, "%5.1f fps - Current object: %s", fps,
+                MyScene.object->mesh.name.c_str());
     }
 
     int i = 0;
-    while(screenFPS[i] != '\0'){
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, screenFPS[i++]);
+    while(infoString[i] != '\0'){
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, infoString[i++]);
     }
 }
 
@@ -180,7 +189,8 @@ void display(void) {
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     // Effacer tout
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // la couleur et le z
-    drawFPS();
+
+    drawInfo();
 
     glLoadIdentity();  // repere camera
 
@@ -273,16 +283,11 @@ void reshape(int w, int h){
 
 // prise en compte du clavier
 void keyboard(unsigned char key, int x, int y){
+    cout << "down " << key << endl;
     switch(key){
-        case '1':
-            g_phong = !g_phong;
-            break;
-        case '2':
-            g_checkerboard = !g_checkerboard;
-            break;
-		case '3':
-			g_debug = !g_debug;
-			break;
+        case '1': g_phong = !g_phong; break;
+        case '2': g_checkerboard = !g_checkerboard; break;
+		case '3': g_debug = !g_debug;	break;
 		case '4': g_ambient = !g_ambient; break;
 		case '5': g_diffuse = !g_diffuse; break;
 		case '6': g_specular = !g_specular; break;
@@ -290,6 +295,7 @@ void keyboard(unsigned char key, int x, int y){
 		case '8': g_refract = !g_refract; break;
 		case '9': g_occlusion = !g_occlusion; break;
         case 't':
+            cout << "Deprecated, 'b' toggles raytracing" << endl;
             isDrawingTexture = 0;
             isRealtimeRaytracing = 0;
             break;
@@ -306,19 +312,28 @@ void keyboard(unsigned char key, int x, int y){
             isRealtimeRaytracing = 0;
             break;
         case 'b':
-            cout << "Using " << THREADS << " threads and resolution of "
-                    << PREVIEW_RES_X << "x" << PREVIEW_RES_Y << endl;
-            isRealtimeRaytracing = 1;
-            isDrawingTexture = 0;
+            if(isRealtimeRaytracing){
+                isDrawingTexture = 0;
+                isRealtimeRaytracing = 0;
+            }else{
+                cout << "Using " << THREADS << " threads and resolution of "
+                << PREVIEW_RES_X << "x" << PREVIEW_RES_Y << endl;
+                isRealtimeRaytracing = 1;
+                isDrawingTexture = 0;
+            }
             break;
         case 27:     // touche ESC
             exit(0);
+        default:
+            if(!yourKeyboardPress(key, x, y)){
+                printf("Unknown key %c\n", key);
+            }
+            break;
     }
-
-    yourKeyboardPress(key, x, y);
 }
 
 void keyup(unsigned char key, int x, int y) {
+    cout << "up " << key << endl;
     yourKeyboardRelease(key, x, y);
 }
 

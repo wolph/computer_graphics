@@ -177,7 +177,6 @@ int raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
 
 void startRayTracing(int texIndex, bool verbose){
     // update scene
-    MyScene.update();
 
     Image& result = isRealtimeRaytracing ? preview_image : output_image;
     int w = isRealtimeRaytracing ? PREVIEW_RES_X : RAYTRACE_RES_X;
@@ -440,24 +439,61 @@ void yourDebugDraw(){
         MyScene.debugDraw();
 }
 
-void yourKeyboardPress(char t, int x, int y){
-    if(t == 'w')
-        monkey->vel.p[0] = 0.03f;
-    if(t == 's')
-        monkey->vel.p[0] = -0.03f;
-    if(t == 'a')
-        monkey->vel.p[1] = 0.03f;
-    if(t == 'd')
-        monkey->vel.p[1] = -0.03f;
+#define MOVE_VELOCITY 0.05f
+
+bool yourKeyboardPress(char key, int x, int y){
+    switch (key){
+        case 'a':
+            MyScene.object->vel.p[0] = -MOVE_VELOCITY;
+            break;
+        case 'd':
+            MyScene.object->vel.p[0] = MOVE_VELOCITY;
+            break;
+        case 'q':
+            MyScene.object->vel.p[1] = -MOVE_VELOCITY;
+            break;
+        case 'e':
+            MyScene.object->vel.p[1] = MOVE_VELOCITY;
+            break;
+        case 'w':
+            MyScene.object->vel.p[2] = -MOVE_VELOCITY;
+            break;
+        case 's':
+            MyScene.object->vel.p[2] = MOVE_VELOCITY;
+            break;
+        case '+':
+        case '=':
+            MyScene.nextObject();
+            break;
+        case '-':
+        case '_':
+            MyScene.prevObject();
+            break;
+        default:
+            return false;
+            break;
+    }
+    return true;
 }
 
-void yourKeyboardRelease(char t, int x, int y){
-    if(t == 'w')
-        monkey->vel.p[0] = 0;
-    if(t == 's')
-        monkey->vel.p[0] = 0;
-    if(t == 'a')
-        monkey->vel.p[1] = 0;
-    if(t == 'd')
-        monkey->vel.p[1] = 0;
+bool yourKeyboardRelease(char t, int x, int y){
+    printf("released %c\n", t);
+    switch (t){
+        case 'a':
+        case 'd':
+            MyScene.object->vel.p[0] = 0;
+            break;
+        case 'q':
+        case 'e':
+            MyScene.object->vel.p[1] = 0;
+            break;
+        case 'w':
+        case 's':
+            MyScene.object->vel.p[2] = 0;
+            break;
+        default:
+            return false;
+            break;
+    }
+    return true;
 }
