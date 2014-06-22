@@ -26,6 +26,13 @@ extern bool g_phong;
 extern bool g_checkerboard;
 extern bool g_debug;
 
+extern bool g_ambient;
+extern bool g_diffuse;
+extern bool g_specular;
+extern bool g_reflect;
+extern bool g_refract;
+extern bool g_occlusion;
+
 bool needRebuild = false; // if the raytrace needs to be built
 
 /**
@@ -276,15 +283,21 @@ void keyboard(unsigned char key, int x, int y){
 		case '3':
 			g_debug = !g_debug;
 			break;
+		case '4': g_ambient = !g_ambient; break;
+		case '5': g_diffuse = !g_diffuse; break;
+		case '6': g_specular = !g_specular; break;
+		case '7': g_reflect = !g_reflect; break;
+		case '8': g_refract = !g_refract; break;
+		case '9': g_occlusion = !g_occlusion; break;
         case 't':
             isDrawingTexture = 0;
             isRealtimeRaytracing = 0;
             break;
         case 'L':
-            MyLightPositions.push_back(getCameraPosition());
+            MyScene.addLightPoint(getCameraPosition());
             break;
         case 'l':
-            MyLightPositions[MyLightPositions.size() - 1] = getCameraPosition();
+			MyScene.lights[0] = getCameraPosition();
             break;
         case 'r':
             needRebuild = true;

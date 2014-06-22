@@ -167,11 +167,17 @@ void Scene::load(string path) {
 
 	scene >> name >> x >> y >> z;
 	while(scene) {
-		Mesh* mesh = new Mesh;
-		string path = "mesh/" + name + ".obj";
-		mesh->loadMesh(path.c_str(), true);
-		Vec3Df pos(x, y, z);
-		add(new Object(pos, *mesh));
+		if (name == "light") {
+			Vec3Df lightPoint(x, y, z);
+			addLightPoint(lightPoint);
+		}
+		else {
+			Mesh* mesh = new Mesh;
+			string path = "mesh/" + name + ".obj";
+			mesh->loadMesh(path.c_str(), true);
+			Vec3Df pos(x, y, z);
+			add(new Object(pos, *mesh));
+		}
 		scene >> name >> x >> y >> z;
 	}
 }
@@ -207,7 +213,7 @@ float Scene::raytrace(const Ray& ray, Triangle** tr, Object** obj) {
 }
 
 float Scene::raytrace(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr, Object** obj) {
-	float close = 1e10;
+	float close = 1e10f;
 	*tr = 0;
 	*obj = 0;
 	for (unsigned int i = 0; i < objects.size(); i++) {

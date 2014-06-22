@@ -34,10 +34,10 @@ public:
 };
 
 class Scene {
-private:
+public:
 	std::vector<Vec3Df> lights;
 	std::vector<Object*> objects;
-public:
+
 	inline Scene(){};
 	void load(string path);
 	void draw();

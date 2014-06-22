@@ -66,7 +66,7 @@ private:
     int illum_;
     bool illum_is_set_; //illumination model
     float Tr_;
-    bool Tr_is_set_; // transperency
+    bool Tr_is_set_; // transparency
     std::string name_;
     std::string textureName_;
 };

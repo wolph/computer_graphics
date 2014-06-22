@@ -22,6 +22,13 @@ bool g_phong = true;
 bool g_checkerboard = false;
 bool g_debug = false;
 
+bool g_ambient = true;
+bool g_diffuse = true;
+bool g_specular = true;
+bool g_reflect = true;
+bool g_refract = false;
+bool g_occlusion = false;
+
 Vec3Df origin00, dest00;
 Vec3Df origin01, dest01;
 Vec3Df origin10, dest10;
@@ -308,10 +315,8 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 	// calculate nearest triangle
 	Triangle* triangle2;
 	Object* obj;
+	Vec3Df color;
 	float dist = MyScene.raytrace(orig, dir, &triangle2, &obj);
-
-	Vec3Df light(17, 8, 20);
-	Vec3Df lightColor(0.2f, 0.3f, 1.0f);
 
 	// background
 	if (!triangle2){
@@ -319,9 +324,10 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 		return background(r);
     }
 
+	const Material& mat = triangle2->material;
 	const Vec3Df impact = orig + dir * dist;
-	const Vec3Df tolight = normal(light - impact);
-	const Vec3Df tocam = orig - impact;
+	Vec3Df tocam = orig - impact;
+	tocam.normalize();
 	Vec3Df normal = triangle2->normal;
 
 	if (g_phong) {
@@ -344,26 +350,6 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 			+ f3 * triangle2->vertices[2].n;
 	}
 
-	// ambient lighting
-	Vec3Df color;
-
-	// diffuse
-	float angle = dot(normal, tolight) * 2;
-	if (angle > 0)
-		color += 0.3f * angle * lightColor;
-
-	// specular
-	float angle2 = dot(tocam, tolight) * 0.5f;
-	if (angle2 > 0)
-		color += 0.3f * angle2 * lightColor;
-
-	//dont want infinite reflected rays
-	//if(ray.bounceCount){
-	// reflection
-	const Vec3Df r = dir - 2 * dot(dir, normal)*normal;
-	//Ray reflectedRay(ray.color, impact + r * 0.01f, impact + r, ray.bounceCount - 1);
-	color += performRayTracing(impact, r) * 0.5f;
-
 	// refraction
 	/* Can't use this unless we switch away from .mtl files. Need density index for materials.
 	float inIndex = 1;
@@ -378,11 +364,42 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 	*/
 	// }
 
-	for (unsigned int i = 0; i < MyLightPositions.size(); i++){
-		Vec3Df lightPos = MyLightPositions[i];
-		Vec3Df lightColor = performRayTracing(impact, lightPos);
-		color += lightColor;
+	Vec3Df lightColor(1, 1, 0.5);
+
+	for (Vec3Df& light : MyScene.lights) {
+		Triangle* tr2;
+		Object* obj2;
+		Vec3Df tolight = light - impact;
+		tolight.normalize();
+
+		// ambient
+		//if (g_ambient)
+		//color += lightColor * mat.Ka() * 0.1f;
+
+		// diffuse
+		if (g_diffuse) {
+			float angle = dot(normal, tolight) * 2;
+			color += lightColor * angle * mat.Kd() * 0.25f;
+		}
+
+		// specular
+		if (g_specular) {
+			Vec3Df half = (tocam + tolight) * 0.5f;
+			float spec = pow(dot(half, normal), mat.Ns());
+			color += lightColor * spec * mat.Ks() * mat.Ni();
+		}
+
+		// reflect
+		if (g_reflect) {
+			const Vec3Df r = dir - 2 * dot(dir, normal)*normal;
+			color += performRayTracing(impact, r) * 0.25f;
+		}
+
+		// refract
+
+		// occlusion
 	}
+	color /= MyScene.lights.size();
 
 	// return color
 	for (int i = 0; i < 3; i++){
@@ -391,95 +408,6 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 	}
 
 	return color;
-}
-
-Vec3Df performRayTracing(Ray& ray){
-    // calculate nearest triangle
-    Triangle* triangle2;
-
-    Object* obj;
-    float dist = MyScene.raytrace(ray, &triangle2, &obj);
-
-    Vec3Df light(17, 8, 20);
-    Vec3Df lightColor(0.2f, 0.3f, 1.0f);
-
-    // background
-	if (!triangle2)
-		return background(ray);
-
-    const Vec3Df impact = ray.orig + ray.dir * dist;
-    const Vec3Df tolight = normal(light - impact);
-    const Vec3Df tocam = ray.orig - impact;
-    Vec3Df normal = triangle2->normal;
-
-    if (g_phong) {
-        // calc areas
-        float a1 = surface(triangle2->vertices[1].p, impact + obj->pos,
-            triangle2->vertices[2].p);
-        float a2 = surface(triangle2->vertices[0].p, impact + obj->pos,
-            triangle2->vertices[2].p);
-        float a3 = surface(triangle2->vertices[0].p, impact + obj->pos,
-            triangle2->vertices[1].p);
-        float total = a1 + a2 + a3;
-
-        // factors
-        float f1 = a1 / total;
-        float f2 = a2 / total;
-        float f3 = a3 / total;
-
-        // calc normal
-        normal = f1 * triangle2->vertices[0].n + f2 * triangle2->vertices[1].n
-                + f3 * triangle2->vertices[2].n;
-    }
-
-    // ambient lighting
-    Vec3Df color;
-
-    // diffuse
-    float angle = dot(normal, tolight) * 2;
-    if(angle > 0)
-        color += 0.3f * angle * lightColor;
-
-    // specular
-    float angle2 = dot(tocam, tolight) * 0.5f;
-    if(angle2 > 0)
-        color += 0.3f * angle2 * lightColor;
-
-    //dont want infinite reflected rays
-    //if(ray.bounceCount){
-        // reflection
-        Vec3Df r = ray.dir - 2 * dot(ray.dir, normal)*normal;
-        Ray reflectedRay(ray.color, impact + r * 0.01f, impact + r, ray.bounceCount-1);
-        color += performRayTracing(reflectedRay) * 0.5f;
-
-        // refraction
-        /* Can't use this unless we switch away from .mtl files. Need density index for materials.
-        float inIndex = 1;
-        float outIndex = 1;
-        float inDivOut = inIndex/outIndex;
-        float cosIncident = dot(ray.dir, normal);
-        float temp = inDivOut*inDivOut * 1-cosIncident*cosIncident;
-        if(temp <= 1){
-            Vec3Df t =inDivOut * ray.dir + (inDivOut * cosIncident - sqrt(1-temp))*normal;
-            //Ray transmittedRay(ray.color, impact, impact + t, ray.bounceCount-1);
-        } //temp > 1 means no refraction, only (total) reflection.
-        */
-   // }
-
-    for (unsigned int i = 0; i < MyLightPositions.size(); i++){
-        Vec3Df lightPos = MyLightPositions[i];
-        Ray r(impact, lightPos);
-        Vec3Df lightColor = performRayTracing(r);
-        color += lightColor;
-    }
-
-    // return color
-    for(int i = 0;i < 3;i++){
-        if(color.p[i] > 1)
-            color.p[i] = 1;
-    }
-
-    return color;
 }
 
 void drawCube(AABB* cube){
