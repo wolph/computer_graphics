@@ -28,75 +28,75 @@ bool Image::writeImage(const char * filename2){
 	std::string str = std::string(filename2) + std::string(".") + std::string(image_exts[IMAGE_FORMAT]);
 	const char* filename = str.c_str();
 
-    FILE* file;
-    file = fopen(filename, "wb");
-    if(!file){
-        printf("dump file problem... file\n");
-        return false;
-    }
+	FILE* file;
+	file = fopen(filename, "wb");
+	if(!file){
+		printf("dump file problem... file\n");
+		return false;
+	}
 
 #if IMAGE_FORMAT == PNG
-    png_structp png_ptr = NULL;
-    png_infop info_ptr = NULL;
-    size_t x, y, z;
-    png_voidp* row_pointers = NULL;
+	png_structp png_ptr = NULL;
+	png_infop info_ptr = NULL;
+	size_t x, y, z;
+	png_voidp* row_pointers = NULL;
 
-    png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    if(png_ptr == NULL){
-        png_destroy_write_struct(&png_ptr, &info_ptr);
-    }
+	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if(png_ptr == NULL){
+		png_destroy_write_struct(&png_ptr, &info_ptr);
+	}
 
-    info_ptr = png_create_info_struct(png_ptr);
-    if(info_ptr == NULL){
-        png_destroy_write_struct(&png_ptr, &info_ptr);
-    }
+	info_ptr = png_create_info_struct(png_ptr);
+	if(info_ptr == NULL){
+		png_destroy_write_struct(&png_ptr, &info_ptr);
+	}
 
-    /* Set up error handling. */
+	/* Set up error handling. */
 
-    if(setjmp(png_jmpbuf(png_ptr))){
-        png_destroy_write_struct(&png_ptr, &info_ptr);
-    }
+	if(setjmp(png_jmpbuf(png_ptr))){
+		png_destroy_write_struct(&png_ptr, &info_ptr);
+	}
 
-    /* Set image attributes. */
+	/* Set image attributes. */
 
-    png_set_IHDR(png_ptr, info_ptr, _width, _height, COLOR_DEPTH,
-            PNG_COLOR_TYPE_RGB,
-            PNG_INTERLACE_NONE,
-            PNG_COMPRESSION_TYPE_DEFAULT,
-            PNG_FILTER_TYPE_DEFAULT);
+	png_set_IHDR(png_ptr, info_ptr, _width, _height, COLOR_DEPTH,
+			PNG_COLOR_TYPE_RGB,
+			PNG_INTERLACE_NONE,
+			PNG_COMPRESSION_TYPE_DEFAULT,
+			PNG_FILTER_TYPE_DEFAULT);
 
-    /* Initialize rows of PNG. */
+	/* Initialize rows of PNG. */
 
-    row_pointers = (png_voidp*)png_malloc(png_ptr,
-            _height * sizeof(png_byte *));
-    int i = 0;
-    for(y = 0;y < _height;++y){
-        png_byte *row = (png_byte*)png_malloc(png_ptr,
-                sizeof(uint8_t) * _width * PIXEL_SIZE);
+	row_pointers = (png_voidp*)png_malloc(png_ptr,
+			_height * sizeof(png_byte *));
+	int i = 0;
+	for(y = 0;y < _height;++y){
+		png_byte *row = (png_byte*)png_malloc(png_ptr,
+				sizeof(uint8_t) * _width * PIXEL_SIZE);
 
 #ifdef OSX
-        row_pointers[_height - y - 1] = row;
+		row_pointers[_height - y - 1] = row;
 #else
-        row_pointers[y] = row;
+		row_pointers[y] = row;
 #endif
-        for(x = 0;x < _width;++x){
-            for(z = 0;z < PIXEL_SIZE;z++)
-            *row++ = _image[i++] * 255.0f;
-        }
-    }
+		for(x = 0;x < _width;++x){
+			for(z = 0;z < PIXEL_SIZE;z++)
+			*row++ = _image[i++] * 255.0f;
+		}
+	}
 
-    /* Write the image data to "fp". */
-    png_init_io(png_ptr, file);
-    png_set_rows(png_ptr, info_ptr, (png_bytepp)row_pointers);
-    png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+	/* Write the image data to "fp". */
+	png_init_io(png_ptr, file);
+	png_set_rows(png_ptr, info_ptr, (png_bytepp)row_pointers);
+	png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
 
-    /* The routine has successfully written the file, so we set
-     "status" to a value which indicates success. */
+	/* The routine has successfully written the file, so we set
+	 "status" to a value which indicates success. */
 
-    for(y = 0;y < _height;y++){
-        png_free(png_ptr, row_pointers[y]);
-    }
-    png_free(png_ptr, row_pointers);
+	for(y = 0;y < _height;y++){
+		png_free(png_ptr, row_pointers[y]);
+	}
+	png_free(png_ptr, row_pointers);
 
 #elif IMAGE_FORMAT == BMP
 
@@ -144,23 +144,23 @@ bool Image::writeImage(const char * filename2){
 	delete[] buf;
 
 #elif IMAGE_FORMAT == PPM
-    fprintf(file, "P6\n%i %i\n255\n", _width, _height);
+	fprintf(file, "P6\n%i %i\n255\n", _width, _height);
 
-    std::vector<unsigned char> imageC(_image.size());
+	std::vector<unsigned char> imageC(_image.size());
 
-    for(unsigned int i = 0;i < _image.size();++i)
-        imageC[i] = (unsigned char)(_image[i] * 255.0f);
+	for(unsigned int i = 0;i < _image.size();++i)
+		imageC[i] = (unsigned char)(_image[i] * 255.0f);
 
-    int t = fwrite(&(imageC[0]), _width * _height * PIXEL_SIZE, 1, file);
-    if(t != 1){
-        printf("Dump file problem... fwrite\n");
-        return false;
-    }
+	int t = fwrite(&(imageC[0]), _width * _height * PIXEL_SIZE, 1, file);
+	if(t != 1){
+		printf("Dump file problem... fwrite\n");
+		return false;
+	}
 #else
 	printf("Invalid image format!\n");
 #endif
 
-    fclose(file);
-    printf("Wrote raytrace output to %s\n", filename);
-    return true;
+	fclose(file);
+	printf("Wrote raytrace output to %s\n", filename);
+	return true;
 }

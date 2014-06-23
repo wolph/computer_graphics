@@ -33,15 +33,15 @@ class Image;
 
 class Image{
 public:
-    const unsigned int _width;
-    const unsigned int _height;
-    std::vector<float> _image;
+	const unsigned int _width;
+	const unsigned int _height;
+	std::vector<float> _image;
 
-    inline Image(const int width, const int height) :
-        _width(width), _height(height), _image(3 * width * height, 0){}
-    inline virtual ~Image(){};
+	inline Image(const int width, const int height) :
+		_width(width), _height(height), _image(3 * width * height, 0){}
+	inline virtual ~Image(){};
 
-    bool writeImage(const char * filename);
+	bool writeImage(const char * filename);
 };
 
 #endif /* IMAGE_H_ */

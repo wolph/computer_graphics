@@ -181,9 +181,9 @@ void Scene::load(string path) {
 }
 
 void Scene::add(Object* object) {
-    objectIndex = (unsigned int)objects.size();
+	objectIndex = (unsigned int)objects.size();
 	objects.push_back(object);
-    this->object = objects[objectIndex];
+	this->object = objects[objectIndex];
 }
 
 void Scene::draw() {
