@@ -116,6 +116,10 @@ inline float intersect(const Vec3Df& orig, const Vec3Df& dir, const Triangle* co
 	return t;
 }
 
+inline float intersectSphere(const Vec3Df& orig, const Vec3Df& dir, const Vec3Df& center, float radius){
+
+}
+
 float AABB::collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** out) {
 	// check hit with this cube
 	if (!hit(orig, dir)) {
