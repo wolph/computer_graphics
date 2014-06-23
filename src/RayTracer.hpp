@@ -29,36 +29,36 @@ struct Arg: public option::Arg
 {
   static void printError(const char* msg1, const option::Option& opt, const char* msg2)
   {
-	fprintf(stderr, "%s", msg1);
-	fwrite(opt.name, opt.namelen, 1, stderr);
-	fprintf(stderr, "%s", msg2);
+    fprintf(stderr, "%s", msg1);
+    fwrite(opt.name, opt.namelen, 1, stderr);
+    fprintf(stderr, "%s", msg2);
   }
 
   static option::ArgStatus Unknown(const option::Option& option, bool msg)
   {
-	if (msg) printError("Unknown option '", option, "'\n");
-	return option::ARG_ILLEGAL;
+    if (msg) printError("Unknown option '", option, "'\n");
+    return option::ARG_ILLEGAL;
   }
 };
 
 enum optionIndex{
-	UNKNOWN, HELP, RAYTRACE, SCENE, RAYTRACE_X, RAYTRACE_Y
+    UNKNOWN, HELP, RAYTRACE, SCENE, RAYTRACE_X, RAYTRACE_Y
 };
 const option::Descriptor usage[] = {
-		{UNKNOWN, 0, "", "", Arg::Unknown,
-			"USAGE: computer_graphics [options]\n\nOptions:"},
-		{HELP, 0, "h", "help", Arg::None,
-			"--help, -h \tPrint usage and exit."},
-		{RAYTRACE, 0, "r", "raytrace", Arg::None,
-			"--raytrace, -r \tRay trace and exit."},
-		{SCENE, 0, "s", "scene", Arg::Optional,
-			"--scene, -s \tScene to load"},
-		{RAYTRACE_X, 0, "x", "raytraceX", Arg::Optional,
+        {UNKNOWN, 0, "", "", Arg::Unknown,
+            "USAGE: computer_graphics [options]\n\nOptions:"},
+        {HELP, 0, "h", "help", Arg::None,
+            "--help, -h \tPrint usage and exit."},
+        {RAYTRACE, 0, "r", "raytrace", Arg::None,
+            "--raytrace, -r \tRay trace and exit."},
+        {SCENE, 0, "s", "scene", Arg::Optional,
+            "--scene, -s \tScene to load"},
+ 		{RAYTRACE_X, 0, "x", "raytraceX", Arg::Optional,
 				"--raytraceX, -x \tChoose raytracer resolution X."},
 		{RAYTRACE_Y, 0, "y", "raytraceY", Arg::Optional,
 				"--raytraceY, -y \tChoose raytracer resolution Y." },
-		//{UNKNOWN, 0, "" ,  "", Arg::None, "\nExamples:\n" This example doesn't do anything...
-		//        "computer_graphics --trace\n"},
+        //{UNKNOWN, 0, "" ,  "", Arg::None, "\nExamples:\n" This example doesn't do anything...
+        //        "computer_graphics --trace\n"},
 		{ 0, 0, 0, 0, 0, 0 }
 };
 
