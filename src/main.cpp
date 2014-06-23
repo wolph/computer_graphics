@@ -159,7 +159,7 @@ void drawInfo(){
     clock_t diff = clock() - lastFrameTime;
     lastFrameTime = clock();
 
-    const int clock = CLOCKS_PER_SEC * (isRealtimeRaytracing ? THREADS : 1);
+	const int clock = CLOCKS_PER_SEC; // only on mac! *(isRealtimeRaytracing ? THREADS : 1);
 
     if((0. + lastFrameTime - lastFPSRenderTime) / clock > .03){
         diffIndex = (diffIndex + 1) % 10;
@@ -223,7 +223,7 @@ void display(void) {
                 expected *= RAYTRACE_RES_Y / PREVIEW_RES_Y;
                 expected *= MSAA / PREVIEW_MSAA;
                 expected *= MSAA / PREVIEW_MSAA;
-                expected /= THREADS;
+               //  expected /= THREADS; only for mac!
                 if (expected < 1000)
                     printf("will take %d milliseconds\n", (int)expected);
                 else if (expected < 1000 * 60)
