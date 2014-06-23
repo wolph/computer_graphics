@@ -15,6 +15,11 @@
 #include "OptionParser.hpp"
 #include "Threading.hpp"
 
+/* Strangely enough, 1 is the Z axis, the locations are XZY */
+#define X 0
+#define Z 1
+#define Y 2
+
 extern unsigned int texture;
 
 extern std::vector<Vec3Df> MyLightPositions;

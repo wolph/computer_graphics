@@ -278,11 +278,12 @@ float surface(const Vec3Df& a, const Vec3Df& b, const Vec3Df& c){
 }
 
 inline Vec3Df background(Vec3Df orig, Vec3Df dir){
-    if(dir.p[2] < 0){
-        float height = orig.p[2] + 1;
-        float a = -height / dir.p[2];
-        float x = orig.p[0] + a * dir.p[0];
-        float y = orig.p[1] + a * dir.p[1];
+    /* Strangely enough, 1 is the Z axis, the locations are XZY */
+    if(dir.p[Z] < 0){
+        float height = orig.p[Z] + 1;
+        float a = -height / dir.p[Z];
+        float x = orig.p[X] + a * dir.p[X];
+        float y = orig.p[Y] + a * dir.p[Y];
         if(height < 0)
             return Vec3Df(0, 0.3f, 0);
 
@@ -323,19 +324,30 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
     }
 
 	const Material& mat = triangle2->material;
-	const Vec3Df impact = orig + dir * dist;
+	const Vec3Df impact = dir * dist + orig;
 	Vec3Df tocam = orig - impact;
 	tocam.normalize();
 	Vec3Df normal = triangle2->normal;
 
 	if (g_phong) {
+	    Vec3Df impact_pos = impact;
+	    impact_pos += obj->pos;
 		// calc areas
-		float a1 = surface(triangle2->vertices[1].p, impact + obj->pos,
-			triangle2->vertices[2].p);
-		float a2 = surface(triangle2->vertices[0].p, impact + obj->pos,
-			triangle2->vertices[2].p);
-		float a3 = surface(triangle2->vertices[0].p, impact + obj->pos,
-			triangle2->vertices[1].p);
+		float a1 = surface(
+		    triangle2->vertices[Z].p,
+		    impact_pos,
+			triangle2->vertices[Y].p
+		);
+		float a2 = surface(
+		    triangle2->vertices[X].p,
+		    impact_pos,
+			triangle2->vertices[Y].p
+		);
+		float a3 = surface(
+		    triangle2->vertices[X].p,
+		    impact_pos,
+			triangle2->vertices[Z].p
+		);
 		float total = a1 + a2 + a3;
 
 		// factors
@@ -492,10 +504,10 @@ bool yourKeyboardPress(char key, int x, int y){
         case 'e':
             MyScene.object->vel.p[1] = MOVE_VELOCITY;
             break;
-        case 'w':
+        case 's':
             MyScene.object->vel.p[2] = -MOVE_VELOCITY;
             break;
-        case 's':
+        case 'w':
             MyScene.object->vel.p[2] = MOVE_VELOCITY;
             break;
 
@@ -522,14 +534,17 @@ bool yourKeyboardRelease(char t, int x, int y){
         case 'a':
         case 'd':
             MyScene.object->vel.p[0] = 0;
+            cout << "New position: " << MyScene.object->pos << endl;
             break;
         case 'q':
         case 'e':
             MyScene.object->vel.p[1] = 0;
+            cout << "New position: " << MyScene.object->pos << endl;
             break;
         case 'w':
         case 's':
             MyScene.object->vel.p[2] = 0;
+            cout << "New position: " << MyScene.object->pos << endl;
             break;
         default:
             return false;
