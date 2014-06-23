@@ -125,7 +125,7 @@ inline float intersectSphere(const Vec3Df& orig, const Vec3Df& dir, const Vec3Df
 		float d2 = b - a;
 
 	    float distance = (d1 > d2) ? d2: d1;
-	    return (orig + (dir * distance));
+	    return distance;
 }
 
 float AABB::collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** out) {
