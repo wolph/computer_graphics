@@ -252,11 +252,6 @@ void Object::draw() {
 	glPopMatrix();
 }
 
-//float Object::raytrace(const Ray& ray, Triangle** tr) {
-//	Ray disp(ray.orig + pos, ray.dest + pos);
-//	return tree.collide(disp, tr);
-//}
-
 float Object::raytrace(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr) {
-	return tree.collide(orig + pos, dir, tr);
+	return tree.collide(orig - pos, dir, tr);
 }
