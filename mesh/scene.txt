@@ -1,4 +1,2 @@
-floor 0 0 0
 light 0 5 10
-sphere 4 2 0
-monkey 0 2 0
+simple_monkey 0 0 0

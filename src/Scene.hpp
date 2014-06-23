@@ -19,7 +19,11 @@ public:
 	void load(std::string file);
 };
 
+static const char* nil = 0;
+
 class Object {
+protected:
+	inline Object() : mesh((Mesh&) *nil) {}
 public:
     Tree tree;
 	Mesh& mesh;
@@ -28,8 +32,19 @@ public:
 	inline Object(Vec3Df& pos, Mesh& mesh) : mesh(mesh), pos(pos), vel(0, 0, 0) {
 	    tree.build(mesh);
     }
+	virtual void draw();
+	virtual float raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat);
+};
+
+class Sphere : public Object {
+	float radius;
+	Vec3Df center;
+public:
+	inline Sphere(Vec3Df& center, float radius) : center(center) {
+		this->radius = radius;
+	}
 	void draw();
-	float raytrace(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr);
+	float raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat);
 };
 
 class Scene {
@@ -45,7 +60,7 @@ public:
 	void update();
 	void add(Object* object);
 	void addLightPoint(Vec3Df& lightPos);
-	float raytrace(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr, Object** obj);
+	bool raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Object** obj);
 
     Object* nextObject(){
         objectIndex = (objectIndex + 1) % objects.size();

@@ -1,6 +1,8 @@
 #include "Scene.hpp"
 #include <cstdio>
 #include <fstream>
+#include "Material.hpp"
+#include "Vec3D.hpp"
 
 enum {
 	MAIN = 0x4D4D, // Main Chunk
@@ -171,6 +173,13 @@ void Scene::load(string path) {
 			Vec3Df lightPoint(x, y, z);
 			addLightPoint(lightPoint);
 		}
+		else if (name == "sphere") {
+			Vec3Df pos(x, y, z);
+			float r;
+			scene >> r;
+			Sphere* sphere = new Sphere(pos, r);
+			add(sphere);
+		}
 		else {
 			Mesh* mesh = new Mesh(name, "mesh/" + name + ".obj");
 			Vec3Df pos(x, y, z);
@@ -196,20 +205,30 @@ void Scene::update() {
 		obj->pos += obj->vel;
 }
 
-float Scene::raytrace(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr, Object** obj) {
+Material defaultMat;
+
+bool Scene::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Object** obj) {
 	float close = 1e10f;
-	*tr = 0;
+	*normal = Vec3Df(0, 0, 1);
+	*mat = &defaultMat;
 	*obj = 0;
+
 	for (unsigned int i = 0; i < objects.size(); i++) {
-		Triangle* temp;
-		float dist = objects[i]->raytrace(orig, dir, &temp);
+		Vec3Df tempNormal;
+		Vec3Df tempImpact;
+		Material* tempMat;
+		float dist = objects[i]->raytrace(orig, dir, &tempImpact, &tempNormal, &tempMat);
 		if (dist < close) {
-			close = dist;
-			*tr = temp;
+			*normal = tempNormal;
+			*impact = tempImpact;
+			*mat = tempMat;
 			*obj = objects[i];
+			close = dist;
 		}
 	}
-	return close;
+	if (close == 1e10f)
+		return false;
+	return true;
 }
 
 void Scene::addLightPoint(Vec3Df& lightPos) {
@@ -252,11 +271,99 @@ void Object::draw() {
 	glPopMatrix();
 }
 
+void Sphere::draw() {
+	glPushMatrix();
+	glTranslatef(center.p[0], center.p[1], center.p[2]);
+	glutSolidSphere(radius, 20, 20);
+	glPopMatrix();
+}
+
 //float Object::raytrace(const Ray& ray, Triangle** tr) {
 //	Ray disp(ray.orig + pos, ray.dest + pos);
 //	return tree.collide(disp, tr);
 //}
 
-float Object::raytrace(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr) {
-	return tree.collide(orig + pos, dir, tr);
+// surface of triangle
+// heron formula
+float surface(float* t){
+
+	// side lengths
+	float a = sqrt(
+		(t[0] - t[3]) * (t[0] - t[3]) + (t[1] - t[4]) * (t[1] - t[4])
+		+ (t[2] - t[5]) * (t[2] - t[5]));
+	float b = sqrt(
+		(t[0] - t[6]) * (t[0] - t[6]) + (t[1] - t[7]) * (t[1] - t[7])
+		+ (t[2] - t[8]) * (t[2] - t[8]));
+	float c = sqrt(
+		(t[3] - t[6]) * (t[3] - t[6]) + (t[4] - t[7]) * (t[4] - t[7])
+		+ (t[5] - t[8]) * (t[5] - t[8]));
+
+	// om
+	float s = 0.5f * (a + b + c);
+
+	// area
+	float area = sqrt(s * (s - a) * (s - b) * (s - c));
+	return area;
+}
+
+// incredibly beautiful convenience function
+float surface(const Vec3Df& a, const Vec3Df& b, const Vec3Df& c){
+	float f[9];
+	*((Vec3Df*)&f[0]) = a;
+	*((Vec3Df*)&f[3]) = b;
+	*((Vec3Df*)&f[6]) = c;
+	return surface(f);
+}
+
+float Object::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat) {
+	Triangle* tr;
+	float dist = tree.collide(orig + pos, dir, &tr);
+	*impact = orig + dist * dir;
+
+	if (!tr)
+		return 1e10f;
+
+	// calc areas
+	float a1 = surface(tr->vertices[1].p, *impact + pos,
+		tr->vertices[2].p);
+	float a2 = surface(tr->vertices[0].p, *impact + pos,
+		tr->vertices[2].p);
+	float a3 = surface(tr->vertices[0].p, *impact + pos,
+		tr->vertices[1].p);
+	float total = a1 + a2 + a3;
+
+	// factors
+	float f1 = a1 / total;
+	float f2 = a2 / total;
+	float f3 = a3 / total;
+
+	// calc normal
+	*normal = f1 * tr->vertices[0].n + f2 * tr->vertices[1].n
+		+ f3 * tr->vertices[2].n;
+
+	*mat = (Material*) &tr->material;
+	return dist;
+}
+
+
+inline float intersectSphere(const Vec3Df& orig, const Vec3Df& dir, const Vec3Df& center, float r) {
+	float check = pow(Vec3Df::dotProduct(dir, (orig - center)), 2) - (orig - center).getSquaredLength() + r*r;
+	if (check < 0)
+		return 1e10f;
+	float a = sqrt(check);
+	float b = -(Vec3Df::dotProduct(dir, (orig - center)));
+	float d1 = b + a;
+	float d2 = b - a;
+
+	float distance = (d1 > d2) ? d2 : d1;
+	return distance;
+}
+
+float Sphere::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat) {
+	float dist = intersectSphere(orig, dir, center, radius);
+	*impact = orig + dist * dir;
+	*mat = &defaultMat;
+	*normal = *impact - center;
+	normal->normalize();
+	return dist;
 }

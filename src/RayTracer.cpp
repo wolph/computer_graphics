@@ -245,38 +245,6 @@ void startRayTracing(int texIndex, bool verbose){
 
 #define VEWY_HIGH 10e6f
 
-// surface of triangle
-// heron formula
-float surface(float* t){
-
-    // side lengths
-    float a = sqrt(
-            (t[0] - t[3]) * (t[0] - t[3]) + (t[1] - t[4]) * (t[1] - t[4])
-                    + (t[2] - t[5]) * (t[2] - t[5]));
-    float b = sqrt(
-            (t[0] - t[6]) * (t[0] - t[6]) + (t[1] - t[7]) * (t[1] - t[7])
-                    + (t[2] - t[8]) * (t[2] - t[8]));
-    float c = sqrt(
-            (t[3] - t[6]) * (t[3] - t[6]) + (t[4] - t[7]) * (t[4] - t[7])
-                    + (t[5] - t[8]) * (t[5] - t[8]));
-
-    // om
-    float s = 0.5f * (a + b + c);
-
-    // area
-    float area = sqrt(s * (s - a) * (s - b) * (s - c));
-    return area;
-}
-
-// incredibly beautiful convenience function
-float surface(const Vec3Df& a, const Vec3Df& b, const Vec3Df& c){
-    float f[9];
-    *((Vec3Df*)&f[0]) = a;
-    *((Vec3Df*)&f[3]) = b;
-    *((Vec3Df*)&f[6]) = c;
-    return surface(f);
-}
-
 inline Vec3Df background(Vec3Df orig, Vec3Df dir){
     if(dir.p[2] < 0){
         float height = orig.p[2] + 1;
@@ -312,40 +280,24 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 
 Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 	// calculate nearest triangle
-	Triangle* triangle2;
 	Object* obj;
 	Vec3Df color;
-	float dist = MyScene.raytrace(orig, dir, &triangle2, &obj);
+
+	Vec3Df impact;
+	Vec3Df normal;
+	Material* mat2;
+	float dist = MyScene.raytrace(orig, dir, &impact, &normal, &mat2, &obj);
+	Material& mat = *mat2;
 
 	// background
-	if (!triangle2){
+	if (!obj) {
 		return background(orig, dir);
     }
 
-	const Material& mat = triangle2->material;
-	const Vec3Df impact = orig + dir * dist;
 	Vec3Df tocam = orig - impact;
 	tocam.normalize();
-	Vec3Df normal = triangle2->normal;
 
 	if (g_phong) {
-		// calc areas
-		float a1 = surface(triangle2->vertices[1].p, impact + obj->pos,
-			triangle2->vertices[2].p);
-		float a2 = surface(triangle2->vertices[0].p, impact + obj->pos,
-			triangle2->vertices[2].p);
-		float a3 = surface(triangle2->vertices[0].p, impact + obj->pos,
-			triangle2->vertices[1].p);
-		float total = a1 + a2 + a3;
-
-		// factors
-		float f1 = a1 / total;
-		float f2 = a2 / total;
-		float f3 = a3 / total;
-
-		// calc normal
-		normal = f1 * triangle2->vertices[0].n + f2 * triangle2->vertices[1].n
-			+ f3 * triangle2->vertices[2].n;
 	}
 
 	// refraction
