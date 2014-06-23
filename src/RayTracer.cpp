@@ -441,6 +441,45 @@ void yourDebugDraw(){
 
 bool yourKeyboardPress(char key, int x, int y){
     switch (key){
+        /* Toggles */
+        case '1': 
+            g_phong = !g_phong;
+            printf("Set phong to %d\n", g_phong);
+            break;
+        case '2': 
+            g_checkerboard = !g_checkerboard;
+            printf("Set checkerboard to %d\n", g_checkerboard);
+            break;
+		case '3': 
+            g_debug = !g_debug;
+            printf("Set debug to %d\n", g_debug);
+            break;
+		case '4': 
+            g_ambient = !g_ambient;
+            printf("Set ambient to %d\n", g_ambient);
+            break;
+		case '5': 
+            g_diffuse = !g_diffuse;
+            printf("Set diffuse to %d\n", g_diffuse);
+            break;
+		case '6': 
+            g_specular = !g_specular;
+            printf("Set specular to %d\n", g_specular);
+            break;
+		case '7': 
+            g_reflect = !g_reflect;
+            printf("Set reflect to %d\n", g_reflect);
+            break;
+		case '8': 
+            g_refract = !g_refract;
+            printf("Set refract to %d\n", g_refract);
+            break;
+		case '9': 
+            g_occlusion = !g_occlusion;
+            printf("Set occlusion to %d\n", g_occlusion);
+            break;
+
+        /* Movement */
         case 'a':
             MyScene.object->vel.p[0] = -MOVE_VELOCITY;
             break;
@@ -459,6 +498,8 @@ bool yourKeyboardPress(char key, int x, int y){
         case 's':
             MyScene.object->vel.p[2] = MOVE_VELOCITY;
             break;
+
+        /* Object selection */
         case '+':
         case '=':
             MyScene.nextObject();
@@ -467,6 +508,7 @@ bool yourKeyboardPress(char key, int x, int y){
         case '_':
             MyScene.prevObject();
             break;
+
         default:
             return false;
             break;

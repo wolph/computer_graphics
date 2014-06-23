@@ -21,17 +21,7 @@ unsigned int isRealtimeRaytracing = 0;
 Tree MyTree;
 Scene MyScene;
 
-// options
-extern bool g_phong;
-extern bool g_checkerboard;
 extern bool g_debug;
-
-extern bool g_ambient;
-extern bool g_diffuse;
-extern bool g_specular;
-extern bool g_reflect;
-extern bool g_refract;
-extern bool g_occlusion;
 
 bool needRebuild = false; // if the raytrace needs to be built
 
@@ -283,17 +273,7 @@ void reshape(int w, int h){
 
 // prise en compte du clavier
 void keyboard(unsigned char key, int x, int y){
-    cout << "down " << key << endl;
     switch(key){
-        case '1': g_phong = !g_phong; break;
-        case '2': g_checkerboard = !g_checkerboard; break;
-		case '3': g_debug = !g_debug;	break;
-		case '4': g_ambient = !g_ambient; break;
-		case '5': g_diffuse = !g_diffuse; break;
-		case '6': g_specular = !g_specular; break;
-		case '7': g_reflect = !g_reflect; break;
-		case '8': g_refract = !g_refract; break;
-		case '9': g_occlusion = !g_occlusion; break;
         case 't':
             cout << "Deprecated, 'b' toggles raytracing" << endl;
             isDrawingTexture = 0;
@@ -333,7 +313,6 @@ void keyboard(unsigned char key, int x, int y){
 }
 
 void keyup(unsigned char key, int x, int y) {
-    cout << "up " << key << endl;
     yourKeyboardRelease(key, x, y);
 }
 
