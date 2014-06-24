@@ -393,22 +393,22 @@ void yourDebugDraw(){
 bool yourKeyboardPress(char key, int x, int y){
     switch (key){
         case 'a':
-            MyScene.object->vel.p[0] = -MOVE_VELOCITY;
+            MyScene.object->vel.p[X] = -MOVE_VELOCITY;
             break;
         case 'd':
-            MyScene.object->vel.p[0] = MOVE_VELOCITY;
+            MyScene.object->vel.p[X] = MOVE_VELOCITY;
             break;
         case 'q':
-            MyScene.object->vel.p[1] = -MOVE_VELOCITY;
+            MyScene.object->vel.p[Z] = -MOVE_VELOCITY;
             break;
         case 'e':
-            MyScene.object->vel.p[1] = MOVE_VELOCITY;
+            MyScene.object->vel.p[Z] = MOVE_VELOCITY;
             break;
         case 'w':
-            MyScene.object->vel.p[2] = -MOVE_VELOCITY;
+            MyScene.object->vel.p[Y] = MOVE_VELOCITY;
             break;
         case 's':
-            MyScene.object->vel.p[2] = MOVE_VELOCITY;
+            MyScene.object->vel.p[Y] = -MOVE_VELOCITY;
             break;
         case '+':
         case '=':
@@ -429,15 +429,15 @@ bool yourKeyboardRelease(char t, int x, int y){
     switch (t){
         case 'a':
         case 'd':
-            MyScene.object->vel.p[0] = 0;
+            MyScene.object->vel.p[X] = 0;
             break;
         case 'q':
         case 'e':
-            MyScene.object->vel.p[1] = 0;
+            MyScene.object->vel.p[Z] = 0;
             break;
         case 'w':
         case 's':
-            MyScene.object->vel.p[2] = 0;
+            MyScene.object->vel.p[Y] = 0;
             break;
         default:
             return false;
