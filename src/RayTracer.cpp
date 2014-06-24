@@ -546,15 +546,15 @@ bool yourKeyboardRelease(char t, int x, int y){
     switch(t){
         case 'a':
         case 'd':
-            MyScene.object->vel.p[X] = 0;
+			MyScene.cam.side = 0;
             break;
         case 'q':
-        case 'e':
-            MyScene.object->vel.p[Z] = 0;
+		case 'e':
+			MyScene.cam.alt = 0;
             break;
         case 'w':
-        case 's':
-            MyScene.object->vel.p[Y] = 0;
+		case 's':
+			MyScene.cam.forward = 0;
             break;
         default:
             return false;
