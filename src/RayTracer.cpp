@@ -327,14 +327,14 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 		// diffuse
 		if (g_diffuse) {
 			float angle = dot(normal, tolight) * 2;
-			color += lightColor * angle * mat.Kd() * 0.25f;
+			color += lightColor * angle * mat.Kd * 0.25f;
 		}
 
 		// specular
 		if (g_specular) {
 			Vec3Df half = (tocam + tolight) * 0.5f;
-			float spec = pow(dot(half, normal), mat.Ns());
-			color += lightColor * spec * mat.Ks() * mat.Ni();
+			float spec = pow(dot(half, normal), mat.Ns);
+			color += lightColor * spec * mat.Ks * mat.Ni;
 		}
 
 		// reflect
