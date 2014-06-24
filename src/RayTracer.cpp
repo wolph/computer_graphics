@@ -265,39 +265,57 @@ void startRayTracing(int texIndex, bool verbose){
         result.writeImage("result");
 }
 
+#define VEWY_HIGH 10e6f
+
 inline Vec3Df background(Vec3Df orig, Vec3Df dir){
+
     if(dir.p[Y] < -6){
-        float height = orig.p[Y] - 6;
+        float height = orig.p[Y] + 1;
         float a = -height / dir.p[Y];
         float x = orig.p[X] + a * dir.p[X];
         float z = orig.p[Z] + a * dir.p[Z];
-        if(height < -6)
-            return Vec3Df(0, 0.3f, 0);
 
-        if(g_checkerboard){
+		unsigned int shadows = 0;
+		for (Vec3Df& light : MyScene.lights) {
+			Vec3Df impact = Vec3Df(x, -6, z);
+			Vec3Df tolight = light - impact;
+			tolight.normalize();
+
+			Vec3Df tempImpact, tempNormal;
+			Material* tempMat;
+			Object* tempObj;
+			if (!MyScene.raytrace(impact, tolight, &tempImpact, &tempNormal, &tempMat, &tempObj))
+				shadows++;
+		}
+		float ratio = (float)shadows / (float)MyScene.lights.size();
+
+        if(height < 0)
+            return Vec3Df(0, 0.3f, 0) * ratio;
+
+        if (g_checkerboard) {
             // checkerboard
             bool white = true;
-            if(x > floor(x) + 0.5f)
+            if (x > floor(x) + 0.5f)
                 white = !white;
-            if(z > floor(z) + 0.1f)
+            if (z > floor(z) + 0.1f)
                 white = !white;
 
-            if(white)
-                return Vec3Df(0.1f, 0.1f, 0.1f);
+            if (white)
+                return Vec3Df(0.1f, 0.1f, 0.1f) * ratio;
             else
-                return Vec3Df(0.9f, 0.9f, 0.9f);
-        }else{
+				return Vec3Df(0.9f, 0.9f, 0.9f) * ratio;
+        }
+        else {
             int xidx = (int)(x * 720 * 0.25) % 720;
             int zidx = (int)(z * 720 * 0.25) % 720;
-            if(xidx < 0)
-                xidx += 720;
-            if(zidx < 0)
-                zidx += 720;
-            return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3];
+            if (xidx < 0) xidx += 720;
+            if (zidx < 0) zidx += 720;
+			return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio;
         }
-    }else
-        return Vec3Df(0, 0.6f, 0.99f);
+    } else
+		return Vec3Df(0, 0.6f, 0.99f);
 }
+
 
 Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir){
     // calculate nearest triangle
@@ -333,6 +351,8 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir){
     // }
     Vec3Df lightColor(1, 1, 1);
 
+	unsigned int shadows = 0;
+
     for(Vec3Df& light : MyScene.lights){
         Vec3Df tolight = light - impact;
         tolight.normalize();
@@ -340,6 +360,13 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir){
         // ambient
         if(mat.ambient)
             color += mat.Kd * 0.1f;
+
+		// shadow
+		Vec3Df tempImpact, tempNormal;
+		Material* tempMat;
+		Object* tempObj;
+		if (MyScene.raytrace(impact, tolight, &tempImpact, &tempNormal, &tempMat, &tempObj))
+			shadows++;
 
         // diffuse
         if(mat.color){
@@ -362,7 +389,10 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir){
 
         // refract
         // occlusion
+
+		// shadow
     }
+	color *= ((float) shadows / (float) MyScene.lights.size());
 
     // return color
     for(int i = 0;i < 3;i++){
