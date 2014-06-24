@@ -21,12 +21,12 @@ float hardwood[720 * 720 * 3];
 bool g_shadow = false;
 bool g_checkerboard = false;
 bool g_debug = true;
-bool g_ambient = true;
+bool g_ambient = false;
 bool g_diffuse = true;
-bool g_specular = true;
+bool g_specular = false;
 bool g_reflect = true;
-bool g_refract = false;
-bool g_occlusion = false;
+bool g_refract = true;
+bool g_occlusion = true;
 
 bool threadsStarted = false;
 
