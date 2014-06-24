@@ -275,47 +275,48 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
         float x = orig.p[X] + a * dir.p[X];
         float z = orig.p[Z] + a * dir.p[Z];
 
-		unsigned int shadows = 0;
-		for (Vec3Df& light : MyScene.lights) {
-			Vec3Df impact = Vec3Df(x, -6, z);
-			Vec3Df tolight = light - impact;
-			tolight.normalize();
+        unsigned int shadows = 0;
+        for(Vec3Df& light : MyScene.lights){
+            Vec3Df impact = Vec3Df(x, -6, z);
+            Vec3Df tolight = light - impact;
+            tolight.normalize();
 
-			Vec3Df tempImpact, tempNormal;
-			Material* tempMat;
-			Object* tempObj;
-			if (!MyScene.raytrace(impact, tolight, &tempImpact, &tempNormal, &tempMat, &tempObj))
-				shadows++;
-		}
-		float ratio = (float)shadows / (float)MyScene.lights.size();
+            Vec3Df tempImpact, tempNormal;
+            Material* tempMat;
+            Object* tempObj;
+            if(!MyScene.raytrace(impact, tolight, &tempImpact, &tempNormal,
+                    &tempMat, &tempObj))
+                shadows++;
+        }
+        float ratio = (float)shadows / (float)MyScene.lights.size();
 
         if(height < 0)
             return Vec3Df(0, 0.3f, 0) * ratio;
 
-        if (g_checkerboard) {
+        if(g_checkerboard){
             // checkerboard
             bool white = true;
-            if (x > floor(x) + 0.5f)
+            if(x > floor(x) + 0.5f)
                 white = !white;
-            if (z > floor(z) + 0.1f)
+            if(z > floor(z) + 0.1f)
                 white = !white;
 
-            if (white)
+            if(white)
                 return Vec3Df(0.1f, 0.1f, 0.1f) * ratio;
             else
-				return Vec3Df(0.9f, 0.9f, 0.9f) * ratio;
-        }
-        else {
+                return Vec3Df(0.9f, 0.9f, 0.9f) * ratio;
+        }else{
             int xidx = (int)(x * 720 * 0.25) % 720;
             int zidx = (int)(z * 720 * 0.25) % 720;
-            if (xidx < 0) xidx += 720;
-            if (zidx < 0) zidx += 720;
-			return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio;
+            if(xidx < 0)
+                xidx += 720;
+            if(zidx < 0)
+                zidx += 720;
+            return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio;
         }
-    } else
-		return Vec3Df(0, 0.6f, 0.99f);
+    }else
+        return Vec3Df(0, 0.6f, 0.99f);
 }
-
 
 Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir){
     // calculate nearest triangle
@@ -337,21 +338,22 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir){
     tocam.normalize();
 
     // refraction
-    /* Can't use this unless we switch away from .mtl files. Need density index for materials.
-     float inIndex = 1;
-     float outIndex = 1;
-     float inDivOut = inIndex/outIndex;
-     float cosIncident = dot(ray.dir, normal);
-     float temp = inDivOut*inDivOut * 1-cosIncident*cosIncident;
-     if(temp <= 1){
-     Vec3Df t =inDivOut * ray.dir + (inDivOut * cosIncident - sqrt(1-temp))*normal;
-     //Ray transmittedRay(ray.color, impact, impact + t, ray.bounceCount-1);
-     } //temp > 1 means no refraction, only (total) reflection.
-     */
-    // }
+    /* Can't use this unless we switch away from .mtl files. Need density
+     index for materials. */
+    float inIndex = 1;
+    float outIndex = 1;
+    float inDivOut = inIndex / outIndex;
+    float cosIncident = dot(dir, normal);
+    float temp = inDivOut * inDivOut * 1 - cosIncident * cosIncident;
+    if(temp <= 1){
+        Vec3Df t = inDivOut * dir
+                + (inDivOut * cosIncident - sqrt(1 - temp)) * normal;
+        //Ray transmittedRay(ray.color, impact, impact + t, ray.bounceCount-1);
+    } //temp > 1 means no refraction, only (total) reflection.
+      // }
     Vec3Df lightColor(1, 1, 1);
 
-	unsigned int shadows = 0;
+    unsigned int shadows = 0;
 
     for(Vec3Df& light : MyScene.lights){
         Vec3Df tolight = light - impact;
@@ -361,12 +363,13 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir){
         if(g_ambient && mat.ambient)
             color += mat.Kd * 0.1f;
 
-		// shadow
-		Vec3Df tempImpact, tempNormal;
-		Material* tempMat;
-		Object* tempObj;
-		if (MyScene.raytrace(impact, tolight, &tempImpact, &tempNormal, &tempMat, &tempObj))
-			shadows++;
+        // shadow
+        Vec3Df tempImpact, tempNormal;
+        Material* tempMat;
+        Object* tempObj;
+        if(MyScene.raytrace(impact, tolight, &tempImpact, &tempNormal, &tempMat,
+                &tempObj))
+            shadows++;
 
         // diffuse
         if(g_diffuse && mat.color){
@@ -382,17 +385,17 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir){
         }
 
         // reflect
-        if (g_reflect && mat.reflection) {
-         const Vec3Df r = dir - 2 * dot(dir, normal)*normal;
-         color += performRayTracing(impact, r) * 0.25f;
+        if(g_reflect && mat.reflection){
+            const Vec3Df r = dir - 2 * dot(dir, normal)*normal;
+            color += performRayTracing(impact, r) * 0.25f;
         }
 
         // refract
         // occlusion
 
-		// shadow
+        // shadow
     }
-	color *= ((float) shadows / (float) MyScene.lights.size());
+    color *= ((float)shadows / (float)MyScene.lights.size());
 
     // return color
     for(int i = 0;i < 3;i++){
@@ -476,7 +479,7 @@ bool yourKeyboardPress(char key, int x, int y){
             printf("Set occlusion to %d\n", g_occlusion);
             break;
 
-        /* Movement */
+            /* Movement */
         case 'a':
             MyScene.object->vel.p[X] = -MOVE_VELOCITY;
             break;
@@ -496,7 +499,7 @@ bool yourKeyboardPress(char key, int x, int y){
             MyScene.object->vel.p[Y] = -MOVE_VELOCITY;
             break;
 
-        /* Object selection */
+            /* Object selection */
         case '+':
         case '=':
             MyScene.nextObject();
