@@ -72,7 +72,7 @@
 #endif
 
 #ifndef MAX_TRACE_DEPTH
-#define MAX_TRACE_DEPTH 5
+#define MAX_TRACE_DEPTH 20
 #endif
 
 #endif /* CONSTANTS_HPP_ */

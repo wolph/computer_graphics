@@ -18,13 +18,13 @@ Image output_image(RAYTRACE_RES_X, RAYTRACE_RES_Y);
 float hardwood[720 * 720 * 3];
 
 // runtime options
-bool g_phong = true;
+bool g_shadow = false;
 bool g_checkerboard = false;
-bool g_debug = false;
-bool g_ambient = false;
-bool g_diffuse = false;
-bool g_specular = false;
-bool g_reflect = false;
+bool g_debug = true;
+bool g_ambient = true;
+bool g_diffuse = true;
+bool g_specular = true;
+bool g_reflect = true;
 bool g_refract = false;
 bool g_occlusion = false;
 
@@ -382,8 +382,9 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
         tolight.normalize();
 
         // ambient
-        if(g_ambient && mat.ambient)
+        if(g_ambient && mat.ambient){
             color += mat.Kd * 0.1f;
+        }
 
         // shadow
         Vec3Df tempImpact, tempNormal;
@@ -395,6 +396,7 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
 
         // diffuse
         if(g_diffuse && mat.color){
+
             float angle = dot(normal, tolight) * 2;
             color += lightColor * angle * mat.Kd;
         }
@@ -417,7 +419,10 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
 
         // shadow
     }
-    color *= ((float)shadows / (float)MyScene.lights.size());
+
+    if(g_shadow){
+        color *= ((float)shadows / (float)MyScene.lights.size());
+    }
 
     // return color
     for(int i = 0;i < 3;i++){
@@ -465,8 +470,8 @@ bool yourKeyboardPress(char key, int x, int y){
     switch(key){
         /* Toggles */
         case '1':
-            g_phong = !g_phong;
-            printf("Set phong to %d\n", g_phong);
+            g_shadow = !g_shadow;
+            printf("Set shadow to %d\n", g_shadow);
             break;
         case '2':
             g_checkerboard = !g_checkerboard;
