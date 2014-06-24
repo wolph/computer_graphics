@@ -267,7 +267,6 @@ void reshape(int w, int h){
 
 // prise en compte du clavier
 void keyboard(unsigned char key, int x, int y){
-    cout << "down " << key << endl;
     switch(key){
         case 't':
             cout << "Deprecated, 'b' toggles raytracing" << endl;
@@ -311,7 +310,6 @@ void keyboard(unsigned char key, int x, int y){
 }
 
 void keyup(unsigned char key, int x, int y){
-    cout << "up " << key << endl;
     yourKeyboardRelease(key, x, y);
 }
 
