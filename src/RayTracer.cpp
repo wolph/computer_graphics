@@ -129,13 +129,14 @@ void periodicDraw(Image* image, unsigned int w, unsigned int h){
 }
 
 int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
-        const unsigned int xx, const unsigned int yy){
+        const unsigned int xa, const unsigned int ya, const unsigned int xb,
+        const unsigned int yb){
     Vec3Df origin, dest;
     std::vector<float>& image = result->_image;
 
     const unsigned int msaa = isRealtimeRaytracing ? PREVIEW_MSAA : MSAA;
-    for(float y = yy;y < yy + PREVIEW_PART_SIZE;y++){
-        for(float x = xx;x < xx + PREVIEW_PART_SIZE;x++){
+    for(float y = ya; y < yb; y++){
+        for(float x = xa; x < xb; x++){
             //svp, decidez vous memes quels parametres vous allez passer à la fonction
             //c'est le stront a la plafond, c'est drôle
             //e.g., maillage, triangles, sphères etc.
@@ -170,21 +171,22 @@ int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
             image[(y * w + x) * 3 + 2] = total.p[2];
         }
     }
-    return yy;
+    return yb;
 }
 
-void threadedTrace(Image* result, const unsigned int w, const unsigned int h){
+void threadedTrace(Image* result, const unsigned int w, const unsigned int h, bool realtime){
+    Timer timer;
     // multithread
-    while(isRealtimeRaytracing && pool.running()){
+    while((isRealtimeRaytracing || !realtime) && pool.running()){
+        cout << "done rendering!" << endl;
         std::queue<std::future<int>> results;
         for(unsigned int i = 0;i < w && isRealtimeRaytracing;i +=
         PREVIEW_PART_SIZE){
             for(unsigned int j = 0;j < h && isRealtimeRaytracing;j +=
             PREVIEW_PART_SIZE){
                 results.push(
-                        pool.enqueue(threadedTracePart, result, (unsigned int)w,
-                                (unsigned int)h, (unsigned int)i,
-                                (unsigned int)j));
+                        pool.enqueue(threadedTracePart, result, w, h, i, j,
+                                     i+PREVIEW_PART_SIZE, j+PREVIEW_PART_SIZE));
             }
         }
 
@@ -192,6 +194,8 @@ void threadedTrace(Image* result, const unsigned int w, const unsigned int h){
             results.front().wait();
             results.pop();
         }
+        printf("Rendering took %.3f seconds\n", timer.next().count());
+        if(!realtime)break;
     }
     threadsStarted = false;
 }
@@ -222,8 +226,8 @@ void startRayTracing(int texIndex, bool verbose){
     // update scene
     Image& result = isRealtimeRaytracing ? preview_image : output_image;
 
-    int w = isRealtimeRaytracing ? PREVIEW_RES_X : RAYTRACE_RES_X;
-    int h = isRealtimeRaytracing ? PREVIEW_RES_Y : RAYTRACE_RES_Y;
+    unsigned int w = isRealtimeRaytracing ? PREVIEW_RES_X : RAYTRACE_RES_X;
+    unsigned int h = isRealtimeRaytracing ? PREVIEW_RES_Y : RAYTRACE_RES_Y;
     w = alternateX ? alternateX : w;
     h = alternateY ? alternateY : h;
 
@@ -235,8 +239,29 @@ void startRayTracing(int texIndex, bool verbose){
     createRay(WINDOW_RES_X - 1, 0, &origin10, &dest10);
     createRay(WINDOW_RES_X - 1, WINDOW_RES_Y - 1, &origin11, &dest11);
 
-    if(!threadsStarted){
-        new std::thread(threadedTrace, &result, w, h);
+    if(!isRealtimeRaytracing){
+        Timer timer(1, 0.2);
+        std::queue<std::future<int>> results;
+        for(unsigned int i = 0;i < w;i++){
+            results.push(pool.enqueue(threadedTracePart, &result,
+                                      w, h, i, 0, i+1, h));
+        }
+
+        unsigned int total = results.size();
+        unsigned int i = 0;
+        while(!results.empty()){
+            results.front().wait();
+            results.pop();
+
+            i++;
+            if(timer.needsDisplay()){
+                printf("Rendered %d/%d: %.1f%%\n", i, total, 100. * i / total);
+                timer.updateLastDisplay();
+            }
+        }
+        printf("Rendering took %.3f seconds\n", timer.next().count());
+    }else if(!threadsStarted){
+        new std::thread(threadedTrace, &result, w, h, isRealtimeRaytracing);
         threadsStarted = true;
     }
 
@@ -250,17 +275,12 @@ void startRayTracing(int texIndex, bool verbose){
             GL_RGB,             // format
             GL_FLOAT,           // type
             &result._image[0]); // data
-    std::this_thread::sleep_for(std::chrono::milliseconds(25));
 
-    // Perform timing
-    Timer timer(1);
-
-    if(verbose)
-        // calculate elapsed time
-        printf("Rendering took %.3f seconds\n", timer.next().count());
-
-    if(verbose)
+    if(isRealtimeRaytracing){
+        std::this_thread::sleep_for(std::chrono::milliseconds(25));
+    }else{
         result.writeImage("result");
+    }
 }
 
 #define VEWY_HIGH 10e6f
