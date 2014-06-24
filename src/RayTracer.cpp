@@ -203,14 +203,13 @@ void threadedTrace(Image* result, const unsigned int w, const unsigned int h, bo
 //transformer le x, y en position 3D
 void createRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
     int viewport[4];
-    double modelview[16];
-    double projection[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelview); //recuperer matrices
+	double projection[16];
     glGetDoublev(GL_PROJECTION_MATRIX, projection); //recuperer matrices
     glGetIntegerv(GL_VIEWPORT, viewport); //viewport
     int y_new = viewport[3] - y_I;
 
     double x, y, z;
+	double* modelview = MyScene.cam.viewmat;
 
     gluUnProject(x_I, y_new, 0, modelview, projection, viewport, &x, &y, &z);
     origin->p[0] = x;
@@ -503,24 +502,24 @@ bool yourKeyboardPress(char key, int x, int y){
             break;
 
             /* Movement */
-        case 'a':
-            MyScene.object->vel.p[X] = -MOVE_VELOCITY;
-            break;
-        case 'd':
-            MyScene.object->vel.p[X] = MOVE_VELOCITY;
-            break;
-        case 'q':
-            MyScene.object->vel.p[Z] = -MOVE_VELOCITY;
-            break;
-        case 'e':
-            MyScene.object->vel.p[Z] = MOVE_VELOCITY;
-            break;
-        case 'w':
-            MyScene.object->vel.p[Y] = MOVE_VELOCITY;
-            break;
-        case 's':
-            MyScene.object->vel.p[Y] = -MOVE_VELOCITY;
-            break;
+		case 'a':
+			MyScene.cam.side = 1;
+			break;
+		case 'd':
+			MyScene.cam.side = -1;
+			break;
+		case 'q':
+			MyScene.cam.alt = 1;
+			break;
+		case 'e':
+			MyScene.cam.alt = -1;
+			break;
+		case 'w':
+			MyScene.cam.forward = 1;
+			break;
+		case 's':
+			MyScene.cam.forward = -1;
+			break;
 
             /* Object selection */
         case '+':
