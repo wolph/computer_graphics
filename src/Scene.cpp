@@ -317,7 +317,7 @@ float surface(const Vec3Df& a, const Vec3Df& b, const Vec3Df& c){
 
 float Object::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat) {
 	Triangle* tr;
-	float dist = tree.collide(orig + pos, dir, &tr);
+	float dist = tree.collide(orig - pos, dir, &tr);
 	*impact = orig + dist * dir;
 
 	if (!tr)
@@ -366,4 +366,17 @@ float Sphere::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Ve
 	*normal = *impact - center;
 	normal->normalize();
 	return dist;
+}
+
+Object* Scene::nextObject(){
+    while(true){
+        objectIndex = (objectIndex + 1) % objects.size();
+        if(!objects[objectIndex]->mesh == NULL)break;
+    }
+    return object = objects[objectIndex];
+}
+
+Object* Scene::prevObject(){
+    objectIndex = (unsigned int)(objectIndex ? objectIndex : objects.size()) - 1;
+    return object = objects[objectIndex];
 }

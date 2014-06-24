@@ -165,8 +165,8 @@ void drawInfo(){
         for(int i=0; i<20; i++)diff += diffs[i];
 
         float fps = (1. / (diff / 20.)) * clock;
-		sprintf(infoString, "%5.1f fps");// -Current object : %s", fps,
-                //MyScene.object->mesh.name.c_str());
+		sprintf(infoString, "%7.1f fps - Current object : %s", fps,
+                MyScene.object->mesh.name.c_str());
     }
 
     int i = 0;
