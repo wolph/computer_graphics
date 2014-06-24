@@ -43,15 +43,13 @@ struct Arg: public option::Arg
 };
 
 enum optionIndex{
-    UNKNOWN, HELP, RAYTRACE, SCENE, RAYTRACE_X, RAYTRACE_Y
+    UNKNOWN, HELP, SCENE, RAYTRACE_X, RAYTRACE_Y
 };
 const option::Descriptor usage[] = {
         {UNKNOWN, 0, "", "", Arg::Unknown,
             "USAGE: computer_graphics [options]\n\nOptions:"},
         {HELP, 0, "h", "help", Arg::None,
             "--help, -h \tPrint usage and exit."},
-        {RAYTRACE, 0, "r", "raytrace", Arg::None,
-            "--raytrace, -r \tRay trace and exit."},
         {SCENE, 0, "s", "scene", Arg::Optional,
             "--scene, -s \tScene to load"},
  		{RAYTRACE_X, 0, "x", "raytraceX", Arg::Optional,

@@ -101,10 +101,8 @@ int init(int argc, char **argv){
     delete[] buf;
     fclose(fp);
 
-    if(options[RAYTRACE]){
-        startRayTracing(activeTexIndex, true);
-        return 255;
-    }
+    isRealtimeRaytracing = 1;
+    isDrawingTexture = 0;
 
     return 0;
 }
