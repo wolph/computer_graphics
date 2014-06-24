@@ -21,11 +21,10 @@ float hardwood[720 * 720 * 3];
 bool g_phong = true;
 bool g_checkerboard = false;
 bool g_debug = false;
-
-bool g_ambient = true;
-bool g_diffuse = true;
-bool g_specular = true;
-bool g_reflect = true;
+bool g_ambient = false;
+bool g_diffuse = false;
+bool g_specular = false;
+bool g_reflect = false;
 bool g_refract = false;
 bool g_occlusion = false;
 
@@ -175,10 +174,9 @@ int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
 }
 
 void threadedTrace(Image* result, const unsigned int w, const unsigned int h, bool realtime){
-    Timer timer;
+    Timer timer(10, 1);
     // multithread
     while((isRealtimeRaytracing || !realtime) && pool.running()){
-        cout << "done rendering!" << endl;
         std::queue<std::future<int>> results;
         for(unsigned int i = 0;i < w && isRealtimeRaytracing;i +=
         PREVIEW_PART_SIZE){
@@ -194,8 +192,10 @@ void threadedTrace(Image* result, const unsigned int w, const unsigned int h, bo
             results.front().wait();
             results.pop();
         }
-        printf("Rendering took %.3f seconds\n", timer.next().count());
-        if(!realtime)break;
+        if(timer.needsDisplay()){
+            printf("Rendering took %.3f seconds\n", timer.avg());
+            timer.updateLastDisplay();
+        }
     }
     threadsStarted = false;
 }
