@@ -193,8 +193,7 @@ void startRayTracing(int texIndex, bool verbose){
     produceRay(WINDOW_RES_X - 1, WINDOW_RES_Y - 1, &origin11, &dest11);
 
     // Perform timing
-    time_t start, end, ticks;
-    start = clock();
+    Timer timer(1);
 
     // multithread
     std::queue<std::future<int>> results;
@@ -209,15 +208,9 @@ void startRayTracing(int texIndex, bool verbose){
         results.pop();
     }
 
-    // calculate elapsed time
-    end = clock();
-    ticks = end - start;
-    start = end;
-    float millis = ticks * 1000. / CLOCKS_PER_SEC;
-
     if(verbose)
-        printf("Rendering took %.0f ms wall time seconds and %.0f ms cpu time\n",
-                millis, millis * fmax(THREADS, 1));
+        // calculate elapsed time
+        printf("Rendering took %.3f seconds\n", timer.next().count());
 
     // write to texture
     glTexImage2D(
@@ -230,14 +223,6 @@ void startRayTracing(int texIndex, bool verbose){
         GL_RGB,             // format
         GL_FLOAT,           // type
         &result._image[0]); // data
-
-    // calculate elapsed time
-    end = clock();
-    ticks = end - start;
-    millis = ticks * 1000 / CLOCKS_PER_SEC;
-
-    if(verbose)
-        printf("Uploading to GPU took %.0f ms\n", millis);
 
     if(verbose)
         result.writeImage("result");

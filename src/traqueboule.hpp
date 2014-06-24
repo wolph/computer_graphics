@@ -150,7 +150,7 @@ void tbRotate(double angle, double x, double y, double z){
     glLoadIdentity();
     glRotatef(angle, x, y, z);
     glMultMatrixd(tb_matrix);
-    glGetDoublev( GL_MODELVIEW_MATRIX, tb_matrix);
+    glGetDoublev(GL_MODELVIEW_MATRIX, tb_matrix);
 
     tb_matrix[12] = tx;
     tb_matrix[13] = ty;

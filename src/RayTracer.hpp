@@ -14,6 +14,7 @@
 #include "Image.hpp"
 #include "OptionParser.hpp"
 #include "Threading.hpp"
+#include "Timer.hpp"
 
 extern unsigned int texture;
 
