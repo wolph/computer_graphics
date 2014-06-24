@@ -154,6 +154,7 @@ void drawInfo(){
         fpsTimer.updateLastDisplay();
         sprintf(infoString, "%7.1f fps - Current object : %s", fps,
                 MyScene.object->getName().c_str());
+        MyScene.update();
     }
 
     int i = 0;

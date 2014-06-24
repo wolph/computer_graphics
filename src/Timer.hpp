@@ -17,7 +17,7 @@ private:
 
 public:
     inline Timer(const unsigned int maxItems = 10, const float displayInterval =
-            0.03) :
+            0.01) :
             measurements(maxItems), displayInterval(displayInterval),
                     last(high_resolution_clock::now()){
     }
