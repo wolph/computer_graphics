@@ -44,7 +44,7 @@ void drawTexture(int texIndex){
     glEnd();
 }
 
-void animate() {
+void animate(){
     MyCameraPosition = getCameraPosition();
     glutPostRedisplay();
 }
@@ -156,7 +156,7 @@ void drawInfo(){
 
 // display
 clock_t ticks;
-void display(void) {
+void display(void){
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     // Effacer tout
@@ -167,12 +167,8 @@ void display(void) {
     glLoadIdentity();  // repere camera
 
     if(isDrawingTexture || isRealtimeRaytracing){
-        const static GLdouble viewport[] = {
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-           -2,-2,-4, 1
-        };
+        const static GLdouble viewport[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,
+                -2, -2, -4, 1};
 
         glMultMatrixd(viewport);
         drawTexture(activeTexIndex);
@@ -182,50 +178,61 @@ void display(void) {
         viewTransform();
 
         // swap buffers; draw on back buffer
-        if (isRealtimeRaytracing){
+        if(isRealtimeRaytracing){
             clock_t start = clock();
             startRayTracing(!activeTexIndex, false);
             ticks = clock() - start;
             activeTexIndex = !activeTexIndex;
-        } else {
-            if (needRebuild == true){
+        }else{
+            if(needRebuild == true){
                 int millis = (int)(ticks * 1000. / CLOCKS_PER_SEC);
                 long long expected = millis;
                 expected *= RAYTRACE_RES_X / PREVIEW_RES_X;
                 expected *= RAYTRACE_RES_Y / PREVIEW_RES_Y;
                 expected *= MSAA / PREVIEW_MSAA;
                 expected *= MSAA / PREVIEW_MSAA;
-               //  expected /= THREADS; only for mac!
-                if (expected < 1000)
+                //  expected /= THREADS; only for mac!
+                if(expected < 1000)
                     printf("will take %d milliseconds\n", (int)expected);
-                else if (expected < 1000 * 60)
+                else if(expected < 1000 * 60)
                     printf("will take %d seconds\n", (int)(expected / 1000));
-                else if (expected < 1000 * 60 * 60)
-                    printf("will take %d minutes\n", (int)(expected / 1000 / 60));
-                else if (expected < 1000 * 60 * 60 * 24) {
+                else if(expected < 1000 * 60 * 60)
+                    printf("will take %d minutes\n",
+                            (int)(expected / 1000 / 60));
+                else if(expected < 1000 * 60 * 60 * 24){
                     printf("RENDERING WILL TAKE LONG!\n");
-                    printf("will take %d hour\n", (int)(expected / 1000 / 60 / 60));
-                } else if (expected < (long long)1000 * 60 * 60 * 24 * 365) {
+                    printf("will take %d hour\n",
+                            (int)(expected / 1000 / 60 / 60));
+                }else if(expected < (long long)1000 * 60 * 60 * 24 * 365){
                     printf("RENDERING WILL TAKE VERY LONG!\n");
-                    printf("will take %d days\n", (int)(expected / 1000 / 60 / 60 / 24));
-                }
-                else if (expected < (long long)1000 * 60 * 60 * 24 * 365 * 1000) {
+                    printf("will take %d days\n",
+                            (int)(expected / 1000 / 60 / 60 / 24));
+                }else if(expected
+                        < (long long)1000 * 60 * 60 * 24 * 365 * 1000){
                     printf("RENDERING will take years!\n");
-                    printf("will take %d year\n", (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000));
-                }
-                else if (expected < (long long)1000 * 60 * 60 * 24 * 365 * 1000 * 1000) {
+                    printf("will take %d year\n",
+                            (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000));
+                }else if(expected
+                        < (long long)1000 * 60 * 60 * 24 * 365 * 1000 * 1000){
                     printf("RENDERING will take thousands of years!\n");
-                    printf("will take %d millenia\n", (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 1000));
-                }
-                else if (expected < (long long)1000 * 60 * 60 * 24 * 365 * 1000 * 1000) {
+                    printf("will take %d millenia\n",
+                            (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000
+                                    / 1000));
+                }else if(expected
+                        < (long long)1000 * 60 * 60 * 24 * 365 * 1000 * 1000){
                     printf("RENDERING will take millions of years!\n");
-                    printf("will take %d million years\n", (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 1000));
-                }
-                else if (expected < (float)1000 * 60 * 60 * 24 * 365 * 1000 * 1000 * 1000) {
-                    printf("If the dinosaurs were alive when you started rendering, it would be ready now.\n");
-                    printf("will take %d billion years\n", (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 100));
-                }
-                else {
+                    printf("will take %d million years\n",
+                            (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000
+                                    / 1000));
+                }else if(expected
+                        < (float)1000 * 60 * 60 * 24 * 365 * 1000 * 1000
+                                * 1000){
+                    printf(
+                            "If the dinosaurs were alive when you started rendering, it would be ready now.\n");
+                    printf("will take %d billion years\n",
+                            (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000
+                                    / 100));
+                }else{
                     printf("THIS IS MADNESS!\n");
                     printf("will take %s seconds\n", "<overflow error>");
                 }
@@ -233,11 +240,16 @@ void display(void) {
                 needRebuild = false;
             }
         }
+<<<<<<< HEAD
     } else {
         viewTransform(); // origine et orientation de la scene
+=======
+    }else{
+        tbVisuTransform(); // origine et orientation de la scene
+>>>>>>> e3118cd8dcd14aa6e2cac87407c6127d2ba7cbe7
         MyScene.draw();
-		if (g_debug)
-			MyScene.debugDraw();
+        if(g_debug)
+            MyScene.debugDraw();
     }
 
     glutSwapBuffers();
@@ -266,7 +278,7 @@ void keyboard(unsigned char key, int x, int y){
             MyScene.addLightPoint(MyCameraPosition);
             break;
         case 'l':
-			MyScene.lights[0] = getCameraPosition();
+            MyScene.lights[0] = getCameraPosition();
             break;
         case 'r':
             needRebuild = true;
@@ -279,12 +291,13 @@ void keyboard(unsigned char key, int x, int y){
                 isRealtimeRaytracing = 0;
             }else{
                 cout << "Using " << THREADS << " threads and resolution of "
-                << PREVIEW_RES_X << "x" << PREVIEW_RES_Y << endl;
+                        << PREVIEW_RES_X << "x" << PREVIEW_RES_Y << endl;
                 isRealtimeRaytracing = 1;
                 isDrawingTexture = 0;
             }
             break;
         case 27:     // touche ESC
+            isRealtimeRaytracing = false;
             exit(0);
         default:
             if(!yourKeyboardPress(key, x, y)){
@@ -294,7 +307,11 @@ void keyboard(unsigned char key, int x, int y){
     }
 }
 
+<<<<<<< HEAD
 void keyup(unsigned char key, int x, int y) {
+=======
+void keyup(unsigned char key, int x, int y){
+>>>>>>> e3118cd8dcd14aa6e2cac87407c6127d2ba7cbe7
     yourKeyboardRelease(key, x, y);
 }
 

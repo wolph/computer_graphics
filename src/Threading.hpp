@@ -27,7 +27,8 @@ public:
     auto enqueue(F&& f, Args&&... args)
     -> std::future<typename std::result_of<F(Args...)>::type>;
     ~ThreadPool();
-
+    inline bool running(){return !stop_;};
+    inline void stop(){stop_ = true;};
 private:
     // need to keep track of threads so we can join them
     std::vector<std::thread> workers;
@@ -37,20 +38,20 @@ private:
     // synchronization 
     std::mutex queue_mutex;
     std::condition_variable condition;
-    bool stop;
+    bool stop_;
 };
 
 // the constructor just launches some amount of workers
 inline ThreadPool::ThreadPool(size_t threads) :
-stop(false){
+stop_(false){
     for(size_t i = 0;i < threads;++i)
         workers.emplace_back([this]{
          for(;;){
              std::unique_lock<std::mutex> lock(this->queue_mutex);
-             while(!this->stop && this->tasks.empty()){
+             while(!this->stop_ && this->tasks.empty()){
                  this->condition.wait(lock);
              }
-             if(this->stop && this->tasks.empty()){
+             if(this->stop_ && this->tasks.empty()){
                  return;
              }
              std::function<void()> task(this->tasks.front());
@@ -66,9 +67,11 @@ template<class F, class ... Args>
 auto ThreadPool::enqueue(F&& f, Args&&... args)
 -> std::future<typename std::result_of<F(Args...)>::type>{
     typedef typename std::result_of<F(Args...)>::type return_type;
+    // TODO: fix this horrible hack to stop segfaults when exiting
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     // don't allow enqueueing after stopping the pool
-    if(stop)
+    if(stop_)
         throw std::runtime_error("enqueue on stopped ThreadPool");
 
     auto task = std::make_shared < std::packaged_task<return_type()>
@@ -87,7 +90,7 @@ auto ThreadPool::enqueue(F&& f, Args&&... args)
 inline ThreadPool::~ThreadPool(){
     {
         std::unique_lock < std::mutex > lock(queue_mutex);
-        stop = true;
+        stop_ = true;
     }
     condition.notify_all();
     for(size_t i = 0;i < workers.size();++i)
