@@ -69,7 +69,7 @@ int init(int argc, char ** argv);
 //you can use this function to transform a click to an origin and destination
 //the last two values will be changed. There is no need to define this function.
 //it is defined elsewhere
-void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest);
+void createRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest);
 
 void startRayTracing(int texIndex, bool verbose);
 

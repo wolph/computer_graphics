@@ -199,7 +199,7 @@ void threadedTrace(Image* result, const unsigned int w, const unsigned int h){
 }
 
 //transformer le x, y en position 3D
-void produceRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
+void createRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
     int viewport[4];
     double modelview[16];
     double projection[16];
@@ -232,10 +232,10 @@ void startRayTracing(int texIndex, bool verbose){
     if(verbose)
         printf("Raytracing image with resolution of %d by %d\n", w, h);
 
-    produceRay(0, 0, &origin00, &dest00);
-    produceRay(0, WINDOW_RES_X - 1, &origin01, &dest01);
-    produceRay(WINDOW_RES_X - 1, 0, &origin10, &dest10);
-    produceRay(WINDOW_RES_X - 1, WINDOW_RES_Y - 1, &origin11, &dest11);
+    createRay(0, 0, &origin00, &dest00);
+    createRay(0, WINDOW_RES_X - 1, &origin01, &dest01);
+    createRay(WINDOW_RES_X - 1, 0, &origin10, &dest10);
+    createRay(WINDOW_RES_X - 1, WINDOW_RES_Y - 1, &origin11, &dest11);
 
     if(!threadsStarted){
         new std::thread(threadedTrace, &result, w, h);
