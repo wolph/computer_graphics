@@ -358,7 +358,7 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir){
         tolight.normalize();
 
         // ambient
-        if(mat.ambient)
+        if(g_ambient && mat.ambient)
             color += mat.Kd * 0.1f;
 
 		// shadow
@@ -369,23 +369,23 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir){
 			shadows++;
 
         // diffuse
-        if(mat.color){
+        if(g_diffuse && mat.color){
             float angle = dot(normal, tolight) * 2;
             color += lightColor * angle * mat.Kd;
         }
 
         // specular
-        if(mat.highlight){
+        if(g_specular && mat.highlight){
             Vec3Df half = (tocam + tolight) * 0.5f;
             float spec = pow(dot(half, normal), 1.5f);
-            //color += lightColor * spec * mat.Ks * 0.5f;
+            color += lightColor * spec * mat.Ks * 0.5f;
         }
 
         // reflect
-        /*if (mat.reflection) {
+        if (g_reflect && mat.reflection) {
          const Vec3Df r = dir - 2 * dot(dir, normal)*normal;
          color += performRayTracing(impact, r) * 0.25f;
-         }*/
+        }
 
         // refract
         // occlusion
@@ -438,6 +438,45 @@ void yourDebugDraw(){
 
 bool yourKeyboardPress(char key, int x, int y){
     switch(key){
+        /* Toggles */
+        case '1':
+            g_phong = !g_phong;
+            printf("Set phong to %d\n", g_phong);
+            break;
+        case '2':
+            g_checkerboard = !g_checkerboard;
+            printf("Set checkerboard to %d\n", g_checkerboard);
+            break;
+        case '3':
+            g_debug = !g_debug;
+            printf("Set debug to %d\n", g_debug);
+            break;
+        case '4':
+            g_ambient = !g_ambient;
+            printf("Set ambient to %d\n", g_ambient);
+            break;
+        case '5':
+            g_diffuse = !g_diffuse;
+            printf("Set diffuse to %d\n", g_diffuse);
+            break;
+        case '6':
+            g_specular = !g_specular;
+            printf("Set specular to %d\n", g_specular);
+            break;
+        case '7':
+            g_reflect = !g_reflect;
+            printf("Set reflect to %d\n", g_reflect);
+            break;
+        case '8':
+            g_refract = !g_refract;
+            printf("Set refract to %d\n", g_refract);
+            break;
+        case '9':
+            g_occlusion = !g_occlusion;
+            printf("Set occlusion to %d\n", g_occlusion);
+            break;
+
+        /* Movement */
         case 'a':
             MyScene.object->vel.p[X] = -MOVE_VELOCITY;
             break;
@@ -456,6 +495,8 @@ bool yourKeyboardPress(char key, int x, int y){
         case 's':
             MyScene.object->vel.p[Y] = -MOVE_VELOCITY;
             break;
+
+        /* Object selection */
         case '+':
         case '=':
             MyScene.nextObject();
