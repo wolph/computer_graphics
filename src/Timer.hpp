@@ -38,7 +38,7 @@ public:
 
     double avg(){
         double total = 0.;
-        double count;
+        double count = 0.;
         for(auto measurement: measurements){
             if(measurement.count() > 0){
                 total += measurement.count();
