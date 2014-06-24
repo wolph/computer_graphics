@@ -232,7 +232,7 @@ bool Scene::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3
 }
 
 void Scene::addLightPoint(Vec3Df& lightPos) {
-	lights.push_back(lightPos);
+	this->lights.push_back(lightPos);
 }
 
 void drawNormal(const Vec3Df& avg, const Vec3Df& n){
