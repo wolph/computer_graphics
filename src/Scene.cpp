@@ -347,7 +347,23 @@ float Object::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Ve
 
 
 inline float intersectSphere(const Vec3Df& orig, const Vec3Df& dir, const Vec3Df& center, float r) {
-	float check = pow(Vec3Df::dotProduct(dir, (orig - center)), 2) - (orig - center).getSquaredLength() + r*r;
+	
+	float a = dot(dir, dir), b = 2 * dot(dir, orig),c = dot(orig, orig) - (r * r);
+	// ABC formula
+	float discr = b * b - 4 * a * c;
+	if (discr < 0)
+		return 1e10f;
+
+	float discrSqrt = sqrtf(discr);
+	float q = ((b < 0) ? (-b - discrSqrt) : (-b + discrSqrt)) / 2.0;
+	
+	float t0 = q / a;
+	float t1 = c / q;
+
+	return (t0 < t1) ? t1 : t0;
+
+	
+	/*float check = pow(Vec3Df::dotProduct(dir, (orig - center)), 2) - (orig - center).getSquaredLength() + (r*r);
 	if (check < 0)
 		return 1e10f;
 	float a = sqrt(check);
@@ -356,7 +372,7 @@ inline float intersectSphere(const Vec3Df& orig, const Vec3Df& dir, const Vec3Df
 	float d2 = b - a;
 
 	float distance = (d1 > d2) ? d2 : d1;
-	return distance;
+	return distance;*/
 }
 
 float Sphere::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat) {
