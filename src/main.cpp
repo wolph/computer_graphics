@@ -152,14 +152,14 @@ void drawInfo(){
     if(fpsTimer.needsDisplay()){
         float fps = 1. / fpsTimer.avg();
         fpsTimer.updateLastDisplay();
-        sprintf(infoString, "%7.1f fps - Current object : %s", fps,
+        sprintf(infoString, "%06.1f fps - Current object : %s", fps,
                 MyScene.object->getName().c_str());
         MyScene.update();
     }
 
     int i = 0;
     while(infoString[i] != '\0'){
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, infoString[i++]);
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, infoString[i++]);
     }
 }
 
