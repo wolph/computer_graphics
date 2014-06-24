@@ -14,18 +14,18 @@ public:
     inline Vertex(){
     }
     inline Vertex(const Vec3Df & p) :
-            p(p){
+            position(p){
     }
     inline Vertex(const Vec3Df & p, const Vec3Df & n) :
-            p(p), n(n){
+            position(p), normal(n){
     }
     inline Vertex(const Vertex & v) :
-            p(v.p), n(v.n){
+            position(v.position), normal(v.normal){
     }
     inline virtual ~Vertex(){
     }
-    Vec3Df p;
-    Vec3Df n;
+    Vec3Df position;
+    Vec3Df normal;
 };
 
 #endif // VERTEX_H

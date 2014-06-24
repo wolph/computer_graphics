@@ -81,9 +81,9 @@ bool AABB::hit(const Vec3Df& orig, const Vec3Df& dir) {
 
 inline float intersect(const Vec3Df& orig, const Vec3Df& dir, const Triangle* const triangle) {
 	const Vertex* vertices = triangle->vertices;
-	const Vec3Df& v0 = vertices[0].p;
-	const Vec3Df& v1 = vertices[1].p;
-	const Vec3Df& v2 = vertices[2].p;
+	const Vec3Df& v0 = vertices[0].position;
+	const Vec3Df& v1 = vertices[1].position;
+	const Vec3Df& v2 = vertices[2].position;
 
 	Vec3Df e1 = v1;
 	e1 -= v0;
@@ -100,7 +100,7 @@ inline float intersect(const Vec3Df& orig, const Vec3Df& dir, const Triangle* co
 	inv_det /= det;
 
 	Vec3Df T = orig;
-	T -= vertices[0].p;
+	T -= vertices[0].position;
 
 	float u = dot(T, P);
 	u *= inv_det;
@@ -165,7 +165,7 @@ void Tree::calcSize(Mesh& mesh) {
 	for (unsigned int i = 0; i < mesh.triangles.size(); i++) { // triangle
 		for (int v = 0; v < 3; v++) { // vertex
 			for (int d = 0; d < 3; d++) { // dimension
-				const float dim = mesh.triangles[i].vertices[v].p.p[d];
+				const float dim = mesh.triangles[i].vertices[v].position.p[d];
 				if (dim < p1.p[d])
 					p1.p[d] = dim;
 				if (dim > p2.p[d])
@@ -198,9 +198,9 @@ void Tree::add(Triangle& tr) {
 
 	int depth = 0;
 	while (depth < MAX_DEPTH) {
-		a0 = current->follow(tr.vertices[0].p);
-		a1 = current->follow(tr.vertices[1].p);
-		a2 = current->follow(tr.vertices[2].p);
+		a0 = current->follow(tr.vertices[0].position);
+		a1 = current->follow(tr.vertices[1].position);
+		a2 = current->follow(tr.vertices[2].position);
 
 		if (a0 != a1 || a1 != a2)
 			break;

@@ -249,13 +249,13 @@ void drawNormals(Object* obj) {
 	for (unsigned int i = 0; i < obj->mesh.triangles.size(); i++){
 		Vec3Df avg;
 		for (int t = 0; t < 3; t++)
-			avg += obj->mesh.triangles[i].vertices[t].p * 0.333f;
+			avg += obj->mesh.triangles[i].vertices[t].position * 0.333f;
 
 		drawNormal(avg + obj->pos, obj->mesh.triangles[i].normal);
 	}
 
 	for (unsigned int i = 0; i < obj->mesh.vertices.size(); i++)
-		drawNormal(obj->mesh.vertices[i].p + obj->pos, obj->mesh.vertices[i].n);
+		drawNormal(obj->mesh.vertices[i].position + obj->pos, obj->mesh.vertices[i].normal);
 }
 
 void Scene::debugDraw() {
@@ -328,12 +328,12 @@ float Object::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Ve
 		return 1e10f;
 
 	// calc areas
-	float a1 = surface(tr->vertices[1].p, *impact + pos,
-		tr->vertices[2].p);
-	float a2 = surface(tr->vertices[0].p, *impact + pos,
-		tr->vertices[2].p);
-	float a3 = surface(tr->vertices[0].p, *impact + pos,
-		tr->vertices[1].p);
+	float a1 = surface(tr->vertices[1].position, *impact + pos,
+		tr->vertices[2].position);
+	float a2 = surface(tr->vertices[0].position, *impact + pos,
+		tr->vertices[2].position);
+	float a3 = surface(tr->vertices[0].position, *impact + pos,
+		tr->vertices[1].position);
 	float total = a1 + a2 + a3;
 
 	// factors
@@ -342,8 +342,8 @@ float Object::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Ve
 	float f3 = a3 / total;
 
 	// calc normal
-	*normal = f1 * tr->vertices[0].n + f2 * tr->vertices[1].n
-		+ f3 * tr->vertices[2].n;
+	*normal = f1 * tr->vertices[0].normal + f2 * tr->vertices[1].normal
+		+ f3 * tr->vertices[2].normal;
 
 	*mat = (Material*) &tr->material;
 	return dist;

@@ -15,12 +15,12 @@ const void Mesh::drawSmooth(){
 
         glColor3fv(col.pointer());
         for(int v = 0;v < 3;v++){
-            glNormal3f(triangles[i].vertices[v].n[0],
-                    triangles[i].vertices[v].n[1],
-                    triangles[i].vertices[v].n[2]);
-            glVertex3f(triangles[i].vertices[v].p[0],
-                    triangles[i].vertices[v].p[1],
-                    triangles[i].vertices[v].p[2]);
+            glNormal3f(triangles[i].vertices[v].normal[0],
+                    triangles[i].vertices[v].normal[1],
+                    triangles[i].vertices[v].normal[2]);
+            glVertex3f(triangles[i].vertices[v].position[0],
+                    triangles[i].vertices[v].position[1],
+                    triangles[i].vertices[v].position[2]);
         }
 
     }
@@ -34,15 +34,15 @@ const void Mesh::draw(){
         unsigned int triMat = triangleMaterials.at(i);
         Vec3Df col = this->materials.at(triMat).Kd;
         glColor3fv(col.pointer());
-        const Vec3Df edge01 = triangles[i].vertices[1].p - triangles[i].vertices[0].p;
-        const Vec3Df edge02 = triangles[i].vertices[2].p - triangles[i].vertices[0].p;
+        const Vec3Df edge01 = triangles[i].vertices[1].position - triangles[i].vertices[0].position;
+        const Vec3Df edge02 = triangles[i].vertices[2].position - triangles[i].vertices[0].position;
         Vec3Df n = Vec3Df::crossProduct(edge01, edge02);
         n.normalize();
         glNormal3f(n[0], n[1], n[2]);
         for(int v = 0;v < 3;v++){
-            glVertex3f(triangles[i].vertices[v].p[0],
-                    triangles[i].vertices[v].p[1],
-                    triangles[i].vertices[v].p[2]);
+            glVertex3f(triangles[i].vertices[v].position[0],
+                    triangles[i].vertices[v].position[1],
+                    triangles[i].vertices[v].position[2]);
         }
 
     }
@@ -341,19 +341,19 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
 
 	// calculate vertex normals
 	for (Vertex& v : vertices)
-		v.n = Vec3Df(0, 0, 0);
+		v.normal = Vec3Df(0, 0, 0);
 
 	for (auto& triangle : tempTriangles) {
 		Triangle tr = Triangle(vertices[triangle[0]], vertices[triangle[1]],
 			vertices[triangle[2]], materials[triangle[6]]);
 
-		vertices[triangle[0]].n += tr.normal;
-		vertices[triangle[1]].n += tr.normal;
-		vertices[triangle[2]].n += tr.normal;
+		vertices[triangle[0]].normal += tr.normal;
+		vertices[triangle[1]].normal += tr.normal;
+		vertices[triangle[2]].normal += tr.normal;
 	}
 
 	for (auto& v : vertices)
-		v.n.normalize();
+		v.normal.normalize();
 
 	// make triangles
     for(auto& triangle : tempTriangles){
