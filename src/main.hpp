@@ -31,7 +31,7 @@ void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
 void keyup(unsigned char key, int x, int y);
 
-Timer fpsTimer(20);
+Timer fpsTimer(100);
 char infoString[100];
 void drawFPS();
 
