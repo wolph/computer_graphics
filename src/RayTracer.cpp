@@ -246,11 +246,11 @@ void startRayTracing(int texIndex, bool verbose){
 #define VEWY_HIGH 10e6f
 
 inline Vec3Df background(Vec3Df orig, Vec3Df dir){
-    if(dir.p[2] < 0){
-        float height = orig.p[2] + 1;
-        float a = -height / dir.p[2];
-        float x = orig.p[0] + a * dir.p[0];
-        float y = orig.p[1] + a * dir.p[1];
+    if(dir.p[Y] < -2){
+        float height = orig.p[Y] + 1;
+        float a = -height / dir.p[Y];
+        float x = orig.p[X] + a * dir.p[X];
+        float z = orig.p[Z] + a * dir.p[Z];
         if(height < 0)
             return Vec3Df(0, 0.3f, 0);
 
@@ -259,7 +259,7 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
             bool white = true;
             if (x > floor(x) + 0.5f)
                 white = !white;
-            if (y > floor(y) + 0.1f)
+            if (z > floor(z) + 0.1f)
                 white = !white;
 
             if (white)
@@ -269,10 +269,10 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
         }
         else {
             int xidx = (int)(x * 720 * 0.25) % 720;
-            int yidx = (int)(y * 720 * 0.25) % 720;
+            int zidx = (int)(z * 720 * 0.25) % 720;
             if (xidx < 0) xidx += 720;
-            if (yidx < 0) yidx += 720;
-            return *(Vec3Df*)&hardwood[(yidx * 720 + xidx) * 3];
+            if (zidx < 0) zidx += 720;
+            return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3];
         }
     } else
         return Vec3Df(0, 0.6f, 0.99f);
@@ -286,7 +286,7 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 	Vec3Df impact;
 	Vec3Df normal;
 	Material* mat2;
-	float dist = MyScene.raytrace(orig, dir, &impact, &normal, &mat2, &obj);
+	MyScene.raytrace(orig, dir, &impact, &normal, &mat2, &obj);
 	Material& mat = *mat2;
 
 	// background
@@ -426,7 +426,6 @@ bool yourKeyboardPress(char key, int x, int y){
 }
 
 bool yourKeyboardRelease(char t, int x, int y){
-    printf("released %c\n", t);
     switch (t){
         case 'a':
         case 'd':
