@@ -99,7 +99,7 @@ void tbMotionFunc(int x, int y){
 
             nrm = sqrt(dx * dx + dy * dy + dx * dx + dy * dy) * speedfact;
             glLoadIdentity();
-			//glRotatef(nrm, -dy, 0, 0);
+			glRotatef(nrm, -dy, 0, 0);
 			glRotatef(nrm, 0, dx, 0);/*axe perpendiculaire au deplacement*/
             glMultMatrixd(tb_matrix);
             glGetDoublev( GL_MODELVIEW_MATRIX, tb_matrix);
@@ -110,7 +110,7 @@ void tbMotionFunc(int x, int y){
         }else if(tb_translaterXY){
             tb_matrix[12] += dx / 100.0 * speedfact;
             tb_matrix[13] += dy / 100.0 * speedfact;
-        }else if(false&&fabs(dx) > fabs(dy)){ // rotation z
+        }else if(fabs(dx) > fabs(dy)){ // rotation z
             tx = tb_matrix[12];
             tb_matrix[12] = 0;
             ty = tb_matrix[13];
@@ -126,7 +126,7 @@ void tbMotionFunc(int x, int y){
             tb_matrix[12] = tx;
             tb_matrix[13] = ty;
             tb_matrix[14] = tz;
-        }else if(false&&fabs(dy) > fabs(dx)){
+        }else if(fabs(dy) > fabs(dx)){
             tb_matrix[14] -= dy / 100.0 * speedfact;
         }
         tb_ancienX = x;

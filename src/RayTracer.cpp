@@ -297,8 +297,6 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 	Vec3Df tocam = orig - impact;
 	tocam.normalize();
 
-	if (g_phong) {
-	}
 
 	// refraction
 	/* Can't use this unless we switch away from .mtl files. Need density index for materials.
