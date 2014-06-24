@@ -9,13 +9,13 @@ using std::endl;
 const GLdouble identity[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 
 /// Affichage
-void printMatrix(const GLdouble* m){
+inline void printMatrix(const GLdouble* m){
     for(int i = 0;i < 16;++i)
         cout << m[i] << " ";
 }
 
 /// Projection q=Mp
-void project(const GLdouble* m, const GLdouble* p, GLdouble* q){
+inline void project(const GLdouble* m, const GLdouble* p, GLdouble* q){
     for(int i = 0;i < 3;++i){
         q[i] = 0;
         for(int j = 0;j < 4;++j)
@@ -25,7 +25,7 @@ void project(const GLdouble* m, const GLdouble* p, GLdouble* q){
 }
 
 /// Inversion
-void inverse(const double *m, double *p){
+inline void inverse(const double *m, double *p){
     {   // transposition de la rotation
         for(int i = 0;i < 3;++i)
             for(int j = 0;j < 3;++j)

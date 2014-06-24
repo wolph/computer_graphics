@@ -61,20 +61,15 @@ int main(int argc, char** argv){
     glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 
     // position et taille de la fenetre
-    glutInitWindowPosition(200, 100);
+    glutInitWindowPosition(200, 10);
     glutInitWindowSize(WINDOW_RES_X, WINDOW_RES_Y);
     glutCreateWindow(argv[0]);
 
     // Initialisation du point de vue
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    tbInitTransform();     // initialisation du point de vue
-    tbHelp();                      // affiche l'aide sur la traqueboule
+    initViewTransform();
     MyCameraPosition = getCameraPosition();
-    //
-    // Active la lumière
-    // Pour la partie
-    // ECLAIRAGE
 
     glEnable( GL_LIGHTING);
     glEnable( GL_LIGHT0);
@@ -127,8 +122,8 @@ int main(int argc, char** argv){
     glutKeyboardFunc(keyboard);
     glutKeyboardUpFunc(keyup);
     glutDisplayFunc(display);
-    glutMouseFunc(tbMouseFunc);    // traqueboule utilise la souris
-    glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
+    glutMouseFunc(mouseFunc);    // traqueboule utilise la souris
+    glutPassiveMotionFunc(mouseMotionFunc);  // traqueboule utilise la souris
     glutIdleFunc(animate);
 
     int ret = init(argc, argv);
@@ -172,15 +167,19 @@ void display(void){
     glLoadIdentity();  // repere camera
 
     if(isDrawingTexture || isRealtimeRaytracing){
-        const static GLdouble viewport[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,
-                -2, -2, -4, 1};
+        const static GLdouble viewport[] = {
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+           -2,-2,-4, 1
+        };
 
         glMultMatrixd(viewport);
         drawTexture(activeTexIndex);
 
         // reset view
         glLoadIdentity();
-        tbVisuTransform();
+        viewTransform();
 
         // swap buffers; draw on back buffer
         if(isRealtimeRaytracing){
@@ -202,42 +201,31 @@ void display(void){
                 else if(expected < 1000 * 60)
                     printf("will take %d seconds\n", (int)(expected / 1000));
                 else if(expected < 1000 * 60 * 60)
-                    printf("will take %d minutes\n",
-                            (int)(expected / 1000 / 60));
+                    printf("will take %d minutes\n", (int)(expected / 1000 / 60));
                 else if(expected < 1000 * 60 * 60 * 24){
                     printf("RENDERING WILL TAKE LONG!\n");
-                    printf("will take %d hour\n",
-                            (int)(expected / 1000 / 60 / 60));
+                    printf("will take %d hour\n", (int)(expected / 1000 / 60 / 60));
                 }else if(expected < (long long)1000 * 60 * 60 * 24 * 365){
                     printf("RENDERING WILL TAKE VERY LONG!\n");
-                    printf("will take %d days\n",
-                            (int)(expected / 1000 / 60 / 60 / 24));
-                }else if(expected
-                        < (long long)1000 * 60 * 60 * 24 * 365 * 1000){
+                    printf("will take %d days\n", (int)(expected / 1000 / 60 / 60 / 24));
+                }
+                else if (expected < (long long)1000 * 60 * 60 * 24 * 365 * 1000) {
                     printf("RENDERING will take years!\n");
-                    printf("will take %d year\n",
-                            (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000));
-                }else if(expected
-                        < (long long)1000 * 60 * 60 * 24 * 365 * 1000 * 1000){
+                    printf("will take %d year\n", (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000));
+                }
+                else if (expected < (long long)1000 * 60 * 60 * 24 * 365 * 1000 * 1000) {
                     printf("RENDERING will take thousands of years!\n");
-                    printf("will take %d millenia\n",
-                            (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000
-                                    / 1000));
-                }else if(expected
-                        < (long long)1000 * 60 * 60 * 24 * 365 * 1000 * 1000){
+                    printf("will take %d millenia\n", (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 1000));
+                }
+                else if (expected < (long long)1000 * 60 * 60 * 24 * 365 * 1000 * 1000) {
                     printf("RENDERING will take millions of years!\n");
-                    printf("will take %d million years\n",
-                            (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000
-                                    / 1000));
-                }else if(expected
-                        < (float)1000 * 60 * 60 * 24 * 365 * 1000 * 1000
-                                * 1000){
-                    printf(
-                            "If the dinosaurs were alive when you started rendering, it would be ready now.\n");
-                    printf("will take %d billion years\n",
-                            (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000
-                                    / 100));
-                }else{
+                    printf("will take %d million years\n", (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 1000));
+                }
+                else if (expected < (float)1000 * 60 * 60 * 24 * 365 * 1000 * 1000 * 1000) {
+                    printf("If the dinosaurs were alive when you started rendering, it would be ready now.\n");
+                    printf("will take %d billion years\n", (int)(expected / 1000 / 60 / 60 / 24 / 365 / 1000 / 100));
+                }
+                else {
                     printf("THIS IS MADNESS!\n");
                     printf("will take %s seconds\n", "<overflow error>");
                 }
@@ -246,7 +234,7 @@ void display(void){
             }
         }
     }else{
-        tbVisuTransform(); // origine et orientation de la scene
+        viewTransform(); // origine et orientation de la scene
         MyScene.draw();
         if(g_debug)
             MyScene.debugDraw();
@@ -300,7 +288,6 @@ void keyboard(unsigned char key, int x, int y){
             isRealtimeRaytracing = false;
             // TODO: fix this horrible hack to stop segfaults when exiting
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
             exit(0);
         default:
             if(!yourKeyboardPress(key, x, y)){

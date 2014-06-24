@@ -46,8 +46,8 @@ bool AABB::collidePlane(int axis, const Vec3Df& orig, const Vec3Df& dir) {
 
 	// flip
 	bool flip = (dir.p[axis] < 0);
-	if (dir.p[axis] > 0 && orig.p[axis] > v1) flip = !flip;
-	if (dir.p[axis] < 0 && orig.p[axis] < v1 + 2 * radius) flip = !flip;
+	//if (dir.p[axis] > 0 && orig.p[axis] > v1) flip = !flip;
+	//if (dir.p[axis] < 0 && orig.p[axis] < v1 + 2 * radius) flip = !flip;
 	if (flip) v1 += 2 * radius;
 
 	// factor

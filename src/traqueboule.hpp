@@ -13,6 +13,9 @@
 #include "matrix.hpp"
 #include "stdio.h"
 #include "Vec3D.hpp"
+#include "Scene.hpp"
+
+extern Scene MyScene;
 
 static const float speedfact = 0.2f;
 
@@ -20,172 +23,118 @@ static const float speedfact = 0.2f;
 void display();
 
 /** Placement de la scene par rapport a la camera */
-GLdouble tb_matrix[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-GLdouble tb_inverse[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+GLdouble view_matrix[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+GLdouble view_inverse[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 
 /** Gestion de la souris */
-int tb_ancienX, tb_ancienY, tb_tournerXY = 0, tb_translaterXY = 0, tb_bougerZ =
-        0;
+int oldMouseX, oldMouseY, rotatingXY = 0, translateXY = 0, moveZ = 0;
+bool leftButton, rightButton;
+double angleX, angleY;
 
 
-/** Lit dans la matrice courante la position initiale du point de vue */
-void tbInitTransform(){
-    glGetDoublev( GL_MODELVIEW_MATRIX, tb_matrix);
-    inverse(tb_matrix, tb_inverse);
+/** Initialize model view matrix */
+void initViewTransform() {
 }
 
-/** Applique la transformation de point de vue */
-void tbVisuTransform(){
-    glMultMatrixd(tb_matrix);
+/** Tranform view */
+void viewTransform() {
+	MyScene.cam.BuildMatrix();
+    glMultMatrixd(MyScene.cam.viewmat);
 }
 
-/** Affiche l'aide */
-void tbHelp(){
-    printf("Left button: turn in XY,\n");
-    printf("Right button: translate in XY,\n");
-    printf("Middle button: move along Z.\n");
+/** Mouse button click */
+void mouseFunc(int button, int state, int x, int y){ 
+    // press left
+	oldMouseX = x;
+	oldMouseY = y;
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+		leftButton = true;
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
+		leftButton = false;
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
+		rightButton = true;
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP)
+		rightButton = false;
 }
 
-/** Gere les boutons de la souris */
-void tbMouseFunc(int button, int state, int x, int y){
-    /* enfoncer gauche */
-    if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN){
-        tb_tournerXY = 1;
-        tb_ancienX = x;
-        tb_ancienY = y;
-    }
-    /* relacher gauche */
-    else if(button == GLUT_LEFT_BUTTON && state == GLUT_UP){
-        tb_tournerXY = 0;
-    }
-    /* enfoncer milieu */
-    if(button == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN){
-        tb_bougerZ = 1;
-        tb_ancienX = x;
-        tb_ancienY = y;
-    }
-    /* relacher milieu */
-    else if(button == GLUT_MIDDLE_BUTTON && state == GLUT_UP){
-        tb_bougerZ = 0;
-    }
-    /* enfoncer droit */
-    else if(button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN){
-        tb_translaterXY = 1;
-        tb_ancienX = x;
-        tb_ancienY = y;
-    }
-    /* relacher droit */
-    else if(button == GLUT_RIGHT_BUTTON && state == GLUT_UP){
-        tb_translaterXY = 0;
-    }
+/** Mouse moded */
+void mouseMotionFunc(int x, int y){
+	if (abs(x - WINDOW_RES_X/2 + y - WINDOW_RES_Y/2) < 2)
+		return;
+
+	double dx, dy, nrm;
+
+	// move cam around
+	dx = x - WINDOW_RES_X / 2;
+	dy = y - WINDOW_RES_Y / 2;
+
+	nrm = sqrt(dx * dx + dy * dy + dx * dx + dy * dy) * 0.002;// speedfact;
+
+	MyScene.cam.xrot += dx * nrm;
+	MyScene.cam.yrot += dy * nrm;
+
+	if (MyScene.cam.yrot < -90) MyScene.cam.yrot = -90;
+	if (MyScene.cam.yrot > 90) MyScene.cam.yrot = 90;
+
+	glutWarpPointer(WINDOW_RES_X / 2, WINDOW_RES_Y / 2);
+
+	oldMouseX = x;
+	oldMouseY = y;
+
+	glutPostRedisplay();
 }
 
-/** Traite le changement de position de la souris */
-void tbMotionFunc(int x, int y){
-    double dx, dy, nrm, tx, ty, tz;
-
-    if(tb_tournerXY || tb_translaterXY || tb_bougerZ){
-        /* deplacement */
-        dx = x - tb_ancienX;
-		dy = tb_ancienY - y; /* axe vertical dans l'autre sens */
-
-        if(tb_tournerXY){
-            tx = tb_matrix[12];
-            tb_matrix[12] = 0;
-            ty = tb_matrix[13];
-            tb_matrix[13] = 0;
-            tz = tb_matrix[14];
-            tb_matrix[14] = 0;
-
-            nrm = sqrt(dx * dx + dy * dy + dx * dx + dy * dy) * speedfact;
-            glLoadIdentity();
-			glRotatef(nrm, -dy, 0, 0);
-			glRotatef(nrm, 0, dx, 0);/*axe perpendiculaire au deplacement*/
-            glMultMatrixd(tb_matrix);
-            glGetDoublev( GL_MODELVIEW_MATRIX, tb_matrix);
-
-            tb_matrix[12] = tx;
-            tb_matrix[13] = ty;
-            tb_matrix[14] = tz;
-        }else if(tb_translaterXY){
-            tb_matrix[12] += dx / 100.0 * speedfact;
-            tb_matrix[13] += dy / 100.0 * speedfact;
-        }else if(fabs(dx) > fabs(dy)){ // rotation z
-            tx = tb_matrix[12];
-            tb_matrix[12] = 0;
-            ty = tb_matrix[13];
-            tb_matrix[13] = 0;
-            tz = tb_matrix[14];
-            tb_matrix[14] = 0;
-
-            glLoadIdentity();
-            glRotatef(dx, 0, 0, -1);/*axe perpendiculaire a l'ecran*/
-            glMultMatrixd(tb_matrix);
-            glGetDoublev( GL_MODELVIEW_MATRIX, tb_matrix);
-
-            tb_matrix[12] = tx;
-            tb_matrix[13] = ty;
-            tb_matrix[14] = tz;
-        }else if(fabs(dy) > fabs(dx)){
-            tb_matrix[14] -= dy / 100.0 * speedfact;
-        }
-        tb_ancienX = x;
-        tb_ancienY = y;
-        inverse(tb_matrix, tb_inverse);
-        glutPostRedisplay();
-    }
-}
-
-/** Traite le changement de position de la souris */
-void tbRotate(double angle, double x, double y, double z){
+/** Rotate mouse */
+void mouseRotate(double angle, double x, double y, double z){
     double tx, ty, tz;
 
-    tx = tb_matrix[12];
-    tb_matrix[12] = 0;
-    ty = tb_matrix[13];
-    tb_matrix[13] = 0;
-    tz = tb_matrix[14];
-    tb_matrix[14] = 0;
+    tx = view_matrix[12];
+    view_matrix[12] = 0;
+    ty = view_matrix[13];
+    view_matrix[13] = 0;
+    tz = view_matrix[14];
+    view_matrix[14] = 0;
 
     glLoadIdentity();
     glRotatef(angle, x, y, z);
-    glMultMatrixd(tb_matrix);
-    glGetDoublev(GL_MODELVIEW_MATRIX, tb_matrix);
+    glMultMatrixd(view_matrix);
+    glGetDoublev(GL_MODELVIEW_MATRIX, view_matrix);
 
-    tb_matrix[12] = tx;
-    tb_matrix[13] = ty;
-    tb_matrix[14] = tz;
+    view_matrix[12] = tx;
+    view_matrix[13] = ty;
+    view_matrix[14] = tz;
 
-    inverse(tb_matrix, tb_inverse);
+    inverse(view_matrix, view_inverse);
     glutPostRedisplay();
 }
 
 /// Projection dans le repere du monde
-void tbProject(const GLdouble *m, const GLdouble* p, GLdouble* q){
+void mouseProject(const GLdouble *m, const GLdouble* p, GLdouble* q){
     double pp[4];
-    //cout<<"tb, matrix: "; printMatrix(tb_matrix); cout<<endl;
-    //cout<<"tb, inverse: "; printMatrix(tb_inverse); cout<<endl;
+    //cout<<"tb, matrix: "; printMatrix(view_matrix); cout<<endl;
+    //cout<<"tb, inverse: "; printMatrix(view_inverse); cout<<endl;
     project(m, p, pp);
     //cout<<"proj: "<<pp[0]<<", "<<pp[1]<<", "<<pp[2]<<", "<<pp[3]<<endl;
-    project(tb_inverse, pp, q);
+    project(view_inverse, pp, q);
     //cout<<"projRep: "<<q[0]<<", "<<q[1]<<", "<<q[2]<<", "<<q[3]<<endl;
 }
 
-void tbProject(const GLdouble* p, GLdouble* q){
+void mouseProject(const GLdouble* p, GLdouble* q){
     //cout<<"proj: "<<pp[0]<<", "<<pp[1]<<", "<<pp[2]<<", "<<pp[3]<<endl;
-    project(tb_inverse, p, q);
+    project(view_inverse, p, q);
     //cout<<"projRep: "<<q[0]<<", "<<q[1]<<", "<<q[2]<<", "<<q[3]<<endl;
 }
 Vec3Df getCameraPosition(){
     const GLdouble p[] = {0, 0, 0, 1};
     GLdouble LightP[4];
-    tbProject(p, LightP);
+    mouseProject(p, LightP);
     Vec3Df LightPos;
     LightPos[0] = LightP[0];
     LightPos[1] = LightP[1];
     LightPos[2] = LightP[2];
     return LightPos;
 }
+
 Vec3Df getWorldPositionOfPixel(unsigned int px, unsigned int py){
 
     double mv[16];
