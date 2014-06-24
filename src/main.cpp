@@ -61,20 +61,15 @@ int main(int argc, char** argv){
     glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 
     // position et taille de la fenetre
-    glutInitWindowPosition(200, 100);
+    glutInitWindowPosition(200, 10);
     glutInitWindowSize(WINDOW_RES_X, WINDOW_RES_Y);
     glutCreateWindow(argv[0]);
 
     // Initialisation du point de vue
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    tbInitTransform();     // initialisation du point de vue
-    tbHelp();                      // affiche l'aide sur la traqueboule
+    initViewTransform();
     MyCameraPosition = getCameraPosition();
-    //
-    // Active la lumière
-    // Pour la partie
-    // ECLAIRAGE
 
     glEnable( GL_LIGHTING);
     glEnable( GL_LIGHT0);
@@ -127,8 +122,8 @@ int main(int argc, char** argv){
     glutKeyboardFunc(keyboard);
     glutKeyboardUpFunc(keyup);
     glutDisplayFunc(display);
-    glutMouseFunc(tbMouseFunc);    // traqueboule utilise la souris
-    glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
+    glutMouseFunc(mouseFunc);    // traqueboule utilise la souris
+    glutPassiveMotionFunc(mouseMotionFunc);  // traqueboule utilise la souris
     glutIdleFunc(animate);
 
     int ret = init(argc, argv);
@@ -184,7 +179,7 @@ void display(void) {
 
         // reset view
         glLoadIdentity();
-        tbVisuTransform();
+        viewTransform();
 
         // swap buffers; draw on back buffer
         if (isRealtimeRaytracing){
@@ -239,7 +234,7 @@ void display(void) {
             }
         }
     } else {
-        tbVisuTransform(); // origine et orientation de la scene
+        viewTransform(); // origine et orientation de la scene
         MyScene.draw();
 		if (g_debug)
 			MyScene.debugDraw();
@@ -260,7 +255,6 @@ void reshape(int w, int h){
 
 // prise en compte du clavier
 void keyboard(unsigned char key, int x, int y){
-    cout << "down " << key << endl;
     switch(key){
         case 't':
             cout << "Deprecated, 'b' toggles raytracing" << endl;
@@ -301,7 +295,6 @@ void keyboard(unsigned char key, int x, int y){
 }
 
 void keyup(unsigned char key, int x, int y) {
-    cout << "up " << key << endl;
     yourKeyboardRelease(key, x, y);
 }
 

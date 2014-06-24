@@ -1,6 +1,7 @@
 #include "RayTracer.hpp"
 #include "Tree.hpp"
 #include "Scene.hpp"
+#include "Timer.hpp"
 #include <ctime>
 
 #include <math.h>
@@ -107,16 +108,18 @@ int init(int argc, char **argv){
 
 //transformer le x, y en position 3D
 void produceRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
-    int viewport[4];
-    double modelview[16];
-    double projection[16];
+	int viewport[4];
+	double projection[16];
+    /*double modelview[16];
     //point sur near plane
     //double positionN[3];
     //point sur far plane
     //double positionF[3];
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelview); //recuperer matrices
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview); //recuperer matrices*/
     glGetDoublev(GL_PROJECTION_MATRIX, projection); //recuperer matrices
     glGetIntegerv(GL_VIEWPORT, viewport); //viewport
+
+	double* modelview = MyScene.cam.viewmat;
     int y_new = viewport[3] - y_I;
 
     double x, y, z;
@@ -282,21 +285,6 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 	Vec3Df tocam = orig - impact;
 	tocam.normalize();
 
-
-	// refraction
-	/* Can't use this unless we switch away from .mtl files. Need density index for materials.
-	float inIndex = 1;
-	float outIndex = 1;
-	float inDivOut = inIndex/outIndex;
-	float cosIncident = dot(ray.dir, normal);
-	float temp = inDivOut*inDivOut * 1-cosIncident*cosIncident;
-	if(temp <= 1){
-	Vec3Df t =inDivOut * ray.dir + (inDivOut * cosIncident - sqrt(1-temp))*normal;
-	//Ray transmittedRay(ray.color, impact, impact + t, ray.bounceCount-1);
-	} //temp > 1 means no refraction, only (total) reflection.
-	*/
-	// }
-
 	Vec3Df lightColor(1, 1, 1);
 
 	for (Vec3Df& light : MyScene.lights) {
@@ -309,8 +297,8 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 
 		// diffuse
 		if (mat.color) {
-			float angle = dot(normal, tolight) * 2;
-			color += lightColor * angle * mat.Kd;
+			//float angle = dot(normal, tolight) * 2;
+			//color += lightColor * angle * mat.Kd;
 		}
 
 		// specular
@@ -327,6 +315,19 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 		}*/
 
 		// refract
+		if (true) {
+			float inIndex = 1;
+			float outIndex = 1;
+			float inDivOut = inIndex / outIndex;
+			float cosIncident = dot(dir, normal);
+			float temp = inDivOut*inDivOut * 1 - cosIncident*cosIncident;
+			if (temp <= 1){
+				Vec3Df t = inDivOut * dir + (inDivOut * cosIncident - sqrt(1 - temp))*normal;
+				//color = color * 0.5f + performRayTracing(impact + t * 0.1f, t) * 0.5f;
+				color = color * 0.5f + performRayTracing(impact, t) * 0.5f;
+				//float theta2 = sin(sini)
+			} //temp > 1 means no refraction, only (total) reflection.
+		}
 
 		// occlusion
 	}
@@ -375,24 +376,27 @@ void yourDebugDraw(){
 
 bool yourKeyboardPress(char key, int x, int y){
     switch (key){
-        case 'a':
-            MyScene.object->vel.p[X] = -MOVE_VELOCITY;
+		case 'a':
+			MyScene.cam.side = 1;
             break;
-        case 'd':
-            MyScene.object->vel.p[X] = MOVE_VELOCITY;
+		case 'd':
+			MyScene.cam.side = -1;
             break;
-        case 'q':
-            MyScene.object->vel.p[Z] = -MOVE_VELOCITY;
-            break;
-        case 'e':
-            MyScene.object->vel.p[Z] = MOVE_VELOCITY;
-            break;
+
         case 'w':
-            MyScene.object->vel.p[Y] = MOVE_VELOCITY;
+			MyScene.cam.forward = 1;
             break;
-        case 's':
-            MyScene.object->vel.p[Y] = -MOVE_VELOCITY;
-            break;
+		case 's':
+			MyScene.cam.forward = -1;
+			break;
+
+		case 'q':
+			MyScene.cam.alt = 1;
+			break;
+		case 'e':
+			MyScene.cam.alt = -1;
+			break;
+
         case '+':
         case '=':
             MyScene.nextObject();
@@ -411,17 +415,17 @@ bool yourKeyboardPress(char key, int x, int y){
 bool yourKeyboardRelease(char t, int x, int y){
     switch (t){
         case 'a':
-        case 'd':
-            MyScene.object->vel.p[X] = 0;
-            break;
-        case 'q':
-        case 'e':
-            MyScene.object->vel.p[Z] = 0;
-            break;
-        case 'w':
-        case 's':
-            MyScene.object->vel.p[Y] = 0;
-            break;
+		case 'd':
+			MyScene.cam.side = 0;
+			break;
+		case 'w':
+		case 's':
+			MyScene.cam.forward = 0;
+			break;
+		case 'q':
+		case 'e':
+			MyScene.cam.alt = 0;
+			break;
         default:
             return false;
             break;

@@ -1,8 +1,12 @@
 /**
 * Contains a scene with light sources and meshes
 */
+#ifndef SCENE_HPP
+#define SCENE_HPP
+
 #include "Vec3D.hpp"
 #include "Mesh.hpp"
+#include "Camera.hpp"
 #include "Tree.hpp"
 #include <vector>
 
@@ -59,6 +63,7 @@ public:
 	std::vector<Vec3Df> lights;
 	std::vector<Object*> objects;
     Object* object;
+	Camera cam;
 
 	inline Scene(){};
 	void load(string path);
@@ -76,3 +81,4 @@ public:
 private:
     unsigned int objectIndex;
 };
+#endif

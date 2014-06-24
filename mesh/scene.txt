@@ -1,4 +1,2 @@
 light 0 5 -8
-Diamond -3 2 -14
-Diamond 3 0 -14
-uglyThing 0 0 0
+cube 0 0 -14

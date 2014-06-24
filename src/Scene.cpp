@@ -173,6 +173,9 @@ void Scene::load(string path) {
 			Vec3Df lightPoint(x, y, z);
 			addLightPoint(lightPoint);
 		}
+		else if (name == "camera") {
+			cam.pos = Vec3Df(x, y, z);
+		}
 		else if (name == "sphere") {
 			Vec3Df pos(x, y, z);
 			float r;
@@ -201,6 +204,7 @@ void Scene::draw() {
 }
 
 void Scene::update() {
+	cam.Update();
 	for (Object* obj : objects)
 		obj->pos += obj->vel;
 }
