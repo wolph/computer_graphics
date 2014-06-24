@@ -2,7 +2,7 @@
 #include "Tree.hpp"
 #include "Scene.hpp"
 #include <ctime>
-
+#include <algorithm>
 #include <math.h>
 
 //temporary variables
@@ -29,6 +29,8 @@ bool g_reflect = true;
 bool g_refract = false;
 bool g_occlusion = false;
 
+bool threadsStarted = false;
+
 Vec3Df origin00, dest00;
 Vec3Df origin01, dest01;
 Vec3Df origin10, dest10;
@@ -36,10 +38,12 @@ Vec3Df origin11, dest11;
 
 //use this function for any preprocessing of the mesh.
 int init(int argc, char **argv){
+    std::srand(unsigned(std::time(0)));
+
     printf("Preview %dx%d@%d msaa using %d threads\n", PREVIEW_RES_X,
-           PREVIEW_RES_Y, PREVIEW_MSAA, THREADS);
+    PREVIEW_RES_Y, PREVIEW_MSAA, THREADS);
     printf("Raytrace %dx%d@%d msaa using %d threads\n", RAYTRACE_RES_X,
-           RAYTRACE_RES_Y, MSAA, THREADS);
+    RAYTRACE_RES_Y, MSAA, THREADS);
     printf("Window %dx%d\n", WINDOW_RES_X, WINDOW_RES_Y);
 
     string mesh;
@@ -89,7 +93,7 @@ int init(int argc, char **argv){
     unsigned char* buf = new unsigned char[720 * 720 * 3];
     fseek(fp, 54, SEEK_SET);
     fread(buf, 1, 720 * 720 * 3, fp);
-    for (int i = 0; i < 720 * 720; i++) {
+    for(int i = 0;i < 720 * 720;i++){
         hardwood[i * 3 + 0] = buf[i * 3 + 2] / 255.0f;
         hardwood[i * 3 + 1] = buf[i * 3 + 1] / 255.0f;
         hardwood[i * 3 + 2] = buf[i * 3 + 0] / 255.0f;
@@ -105,15 +109,32 @@ int init(int argc, char **argv){
     return 0;
 }
 
+void periodicDraw(Image* image, unsigned int w, unsigned int h){
+    std::thread([image, w, h](){
+        while(isRealtimeRaytracing){
+            // write to texture
+            glBindTexture(GL_TEXTURE_2D, textures[0]);
+            glTexImage2D(
+                    GL_TEXTURE_2D,// target
+                    0,// level
+                    GL_RGB,// internalFormat
+                    w,// width
+                    h,// height
+                    0,// border
+                    GL_RGB,// format
+                    GL_FLOAT,// type
+                    &image->_image[0]);// data
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000/30));
+        }
+    }).detach();
+}
+
 //transformer le x, y en position 3D
 void produceRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
     int viewport[4];
     double modelview[16];
     double projection[16];
-    //point sur near plane
-    //double positionN[3];
-    //point sur far plane
-    //double positionF[3];
     glGetDoublev(GL_MODELVIEW_MATRIX, modelview); //recuperer matrices
     glGetDoublev(GL_PROJECTION_MATRIX, projection); //recuperer matrices
     glGetIntegerv(GL_VIEWPORT, viewport); //viewport
@@ -131,13 +152,14 @@ void produceRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
     dest->p[2] = z;
 }
 
-int raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
+int threadedTracePart(Image* result, const unsigned int w,
+        const unsigned int h, const unsigned int xx, const unsigned int yy){
     Vec3Df origin, dest;
     std::vector<float>& image = result->_image;
 
     const unsigned int msaa = isRealtimeRaytracing ? PREVIEW_MSAA : MSAA;
-    for(float y = yy;y < hh;y++){
-        for(float x = xx;x < ww;x++){
+    for(float y = yy;y < yy + PREVIEW_PART_SIZE;y++){
+        for(float x = xx;x < xx + PREVIEW_PART_SIZE;x++){
             //svp, decidez vous memes quels parametres vous allez passer à la fonction
             //c'est le stront a la plafond, c'est drôle
             //e.g., maillage, triangles, sphères etc.
@@ -159,7 +181,7 @@ int raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
                             + (1 - yscale)
                                     * (xscale * dest01 + (1 - xscale) * dest11);
 
-					total += performRayTracing(origin, dest);
+                    total += performRayTracing(origin, dest);
                 }
             }
 
@@ -175,10 +197,30 @@ int raytracePart(Image* result, int w, int h, int xx, int yy, int ww, int hh){
     return yy;
 }
 
+void threadedTrace(Image* result, const unsigned int w, const unsigned int h){
+    // multithread
+    while(isRealtimeRaytracing){
+        std::queue<std::future<int>> results;
+        for(unsigned int i = 0;i < w;i += PREVIEW_PART_SIZE){
+            for(unsigned int j = 0;j < h;j += PREVIEW_PART_SIZE){
+                results.push(
+                             pool.enqueue(threadedTracePart, result, (unsigned int)w,
+                                          (unsigned int)h, (unsigned int)i, (unsigned int)j));
+            }
+        }
+
+        while(!results.empty()){
+            results.front().wait();
+            results.pop();
+        }
+    }
+    threadsStarted = false;
+}
+
 void startRayTracing(int texIndex, bool verbose){
     // update scene
-
     Image& result = isRealtimeRaytracing ? preview_image : output_image;
+
     int w = isRealtimeRaytracing ? PREVIEW_RES_X : RAYTRACE_RES_X;
     int h = isRealtimeRaytracing ? PREVIEW_RES_Y : RAYTRACE_RES_Y;
     w = alternateX ? alternateX : w;
@@ -192,37 +234,29 @@ void startRayTracing(int texIndex, bool verbose){
     produceRay(WINDOW_RES_X - 1, 0, &origin10, &dest10);
     produceRay(WINDOW_RES_X - 1, WINDOW_RES_Y - 1, &origin11, &dest11);
 
+    if(!threadsStarted){
+        new std::thread(threadedTrace, &result, w, h);
+        threadsStarted = true;
+    }
+
+    glTexImage2D(
+                 GL_TEXTURE_2D,      // target
+                 0,                  // level
+                 GL_RGB,             // internalFormat
+                 w,                  // width
+                 h,                  // height
+                 0,                  // border
+                 GL_RGB,             // format
+                 GL_FLOAT,           // type
+                 &result._image[0]); // data
+    std::this_thread::sleep_for(std::chrono::milliseconds(25));
+
     // Perform timing
     Timer timer(1);
-
-    // multithread
-    std::queue<std::future<int>> results;
-    for(int i = 0; i<w; i++){
-#ifndef ECLIPSE
-        results.push(pool.enqueue(raytracePart, &result, w, h, i, 0, i + 1, h));
-#endif
-    }
-
-    while(!results.empty()){
-        results.front().wait();
-        results.pop();
-    }
 
     if(verbose)
         // calculate elapsed time
         printf("Rendering took %.3f seconds\n", timer.next().count());
-
-    // write to texture
-    glTexImage2D(
-        GL_TEXTURE_2D,      // target
-        0,                  // level
-        GL_RGB,             // internalFormat
-        w,                  // width
-        h,                  // height
-        0,                  // border
-        GL_RGB,             // format
-        GL_FLOAT,           // type
-        &result._image[0]); // data
 
     if(verbose)
         result.writeImage("result");
@@ -231,113 +265,111 @@ void startRayTracing(int texIndex, bool verbose){
 #define VEWY_HIGH 10e6f
 
 inline Vec3Df background(Vec3Df orig, Vec3Df dir){
-    if(dir.p[Y] < -6){
-        float height = orig.p[Y] + 1;
+    if(dir.p[Y] < 0){
+        float height = orig.p[Y] - 6;
         float a = -height / dir.p[Y];
         float x = orig.p[X] + a * dir.p[X];
         float z = orig.p[Z] + a * dir.p[Z];
         if(height < 0)
             return Vec3Df(0, 0.3f, 0);
 
-        if (g_checkerboard) {
+        if(g_checkerboard){
             // checkerboard
             bool white = true;
-            if (x > floor(x) + 0.5f)
+            if(x > floor(x) + 0.5f)
                 white = !white;
-            if (z > floor(z) + 0.1f)
+            if(z > floor(z) + 0.1f)
                 white = !white;
 
-            if (white)
+            if(white)
                 return Vec3Df(0.1f, 0.1f, 0.1f);
             else
                 return Vec3Df(0.9f, 0.9f, 0.9f);
-        }
-        else {
+        }else{
             int xidx = (int)(x * 720 * 0.25) % 720;
             int zidx = (int)(z * 720 * 0.25) % 720;
-            if (xidx < 0) xidx += 720;
-            if (zidx < 0) zidx += 720;
+            if(xidx < 0)
+                xidx += 720;
+            if(zidx < 0)
+                zidx += 720;
             return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3];
         }
-    } else
+    }else
         return Vec3Df(0, 0.6f, 0.99f);
 }
 
-Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
-	// calculate nearest triangle
-	Object* obj;
-	Vec3Df color;
+Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir){
+    // calculate nearest triangle
+    Object* obj;
+    Vec3Df color;
 
-	Vec3Df impact;
-	Vec3Df normal;
-	Material* mat2;
-	MyScene.raytrace(orig, dir, &impact, &normal, &mat2, &obj);
-	Material& mat = *mat2;
+    Vec3Df impact;
+    Vec3Df normal;
+    Material* mat2;
+    MyScene.raytrace(orig, dir, &impact, &normal, &mat2, &obj);
+    Material& mat = *mat2;
 
-	// background
-	if (!obj) {
-		return background(orig, dir);
+    // background
+    if(!obj){
+        return background(orig, dir);
     }
 
-	Vec3Df tocam = orig - impact;
-	tocam.normalize();
+    Vec3Df tocam = orig - impact;
+    tocam.normalize();
 
+    // refraction
+    /* Can't use this unless we switch away from .mtl files. Need density index for materials.
+     float inIndex = 1;
+     float outIndex = 1;
+     float inDivOut = inIndex/outIndex;
+     float cosIncident = dot(ray.dir, normal);
+     float temp = inDivOut*inDivOut * 1-cosIncident*cosIncident;
+     if(temp <= 1){
+     Vec3Df t =inDivOut * ray.dir + (inDivOut * cosIncident - sqrt(1-temp))*normal;
+     //Ray transmittedRay(ray.color, impact, impact + t, ray.bounceCount-1);
+     } //temp > 1 means no refraction, only (total) reflection.
+     */
+    // }
+    Vec3Df lightColor(1, 1, 1);
 
-	// refraction
-	/* Can't use this unless we switch away from .mtl files. Need density index for materials.
-	float inIndex = 1;
-	float outIndex = 1;
-	float inDivOut = inIndex/outIndex;
-	float cosIncident = dot(ray.dir, normal);
-	float temp = inDivOut*inDivOut * 1-cosIncident*cosIncident;
-	if(temp <= 1){
-	Vec3Df t =inDivOut * ray.dir + (inDivOut * cosIncident - sqrt(1-temp))*normal;
-	//Ray transmittedRay(ray.color, impact, impact + t, ray.bounceCount-1);
-	} //temp > 1 means no refraction, only (total) reflection.
-	*/
-	// }
+    for(Vec3Df& light : MyScene.lights){
+        Vec3Df tolight = light - impact;
+        tolight.normalize();
 
-	Vec3Df lightColor(1, 1, 1);
+        // ambient
+        if(mat.ambient)
+            color += mat.Kd * 0.1f;
 
-	for (Vec3Df& light : MyScene.lights) {
-		Vec3Df tolight = light - impact;
-		tolight.normalize();
+        // diffuse
+        if(mat.color){
+            float angle = dot(normal, tolight) * 2;
+            color += lightColor * angle * mat.Kd;
+        }
 
-		// ambient
-		if (mat.ambient)
-			color += mat.Kd * 0.1f;
+        // specular
+        if(mat.highlight){
+            Vec3Df half = (tocam + tolight) * 0.5f;
+            float spec = pow(dot(half, normal), 1.5f);
+            //color += lightColor * spec * mat.Ks * 0.5f;
+        }
 
-		// diffuse
-		if (mat.color) {
-			float angle = dot(normal, tolight) * 2;
-			color += lightColor * angle * mat.Kd;
-		}
+        // reflect
+        /*if (mat.reflection) {
+         const Vec3Df r = dir - 2 * dot(dir, normal)*normal;
+         color += performRayTracing(impact, r) * 0.25f;
+         }*/
 
-		// specular
-		if (mat.highlight) {
-			Vec3Df half = (tocam + tolight) * 0.5f;
-			float spec = pow(dot(half, normal), 1.5f);
-			//color += lightColor * spec * mat.Ks * 0.5f;
-		}
+        // refract
+        // occlusion
+    }
 
-		// reflect
-		/*if (mat.reflection) {
-			const Vec3Df r = dir - 2 * dot(dir, normal)*normal;
-			color += performRayTracing(impact, r) * 0.25f;
-		}*/
+    // return color
+    for(int i = 0;i < 3;i++){
+        if(color.p[i] > 1)
+            color.p[i] = 1;
+    }
 
-		// refract
-
-		// occlusion
-	}
-
-	// return color
-	for (int i = 0; i < 3; i++){
-		if (color.p[i] > 1)
-			color.p[i] = 1;
-	}
-
-	return color;
+    return color;
 }
 
 void drawCube(AABB* cube){
@@ -367,14 +399,14 @@ void drawCube(AABB* cube){
 }
 
 void yourDebugDraw(){
-    if (!isRealtimeRaytracing && !isDrawingTexture)
+    if(!isRealtimeRaytracing && !isDrawingTexture)
         MyScene.debugDraw();
 }
 
 #define MOVE_VELOCITY 0.05f
 
 bool yourKeyboardPress(char key, int x, int y){
-    switch (key){
+    switch(key){
         case 'a':
             MyScene.object->vel.p[X] = -MOVE_VELOCITY;
             break;
@@ -409,7 +441,7 @@ bool yourKeyboardPress(char key, int x, int y){
 }
 
 bool yourKeyboardRelease(char t, int x, int y){
-    switch (t){
+    switch(t){
         case 'a':
         case 'd':
             MyScene.object->vel.p[X] = 0;

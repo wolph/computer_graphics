@@ -36,6 +36,9 @@
 #endif
 #endif
 
+#define PREVIEW_PARTS 16
+#define PREVIEW_PART_SIZE (PREVIEW_RES_X / PREVIEW_PARTS)
+
 #ifndef WINDOW_RES_X
 #ifdef WINDOW_RES
 #define WINDOW_RES_X WINDOW_RES
