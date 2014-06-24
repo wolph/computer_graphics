@@ -298,6 +298,9 @@ void keyboard(unsigned char key, int x, int y){
             break;
         case 27:     // touche ESC
             isRealtimeRaytracing = false;
+            // TODO: fix this horrible hack to stop segfaults when exiting
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
             exit(0);
         default:
             if(!yourKeyboardPress(key, x, y)){
