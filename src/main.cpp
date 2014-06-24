@@ -11,8 +11,6 @@
 // don't define anything in headers! only declare it!!!1!one!
 Vec3Df MyCameraPosition;
 
-std::vector<Vec3Df> MyLightPositions;
-
 // double buffered
 unsigned int textures[2];
 unsigned int activeTexIndex = 0;
@@ -71,7 +69,7 @@ int main(int argc, char** argv){
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(0, 0, -4);
-    glRotatef(30, -1, 1, 1);
+    glRotatef(0, -1, 1, 1);
     tbInitTransform();     // initialisation du point de vue
     tbHelp();                      // affiche l'aide sur la traqueboule
     MyCameraPosition = getCameraPosition();
