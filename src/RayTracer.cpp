@@ -247,7 +247,7 @@ void startRayTracing(int texIndex, bool verbose){
                                       w, h, i, 0, i+1, h));
         }
 
-        unsigned int total = results.size();
+        unsigned int total = (unsigned int)results.size();
         unsigned int i = 0;
         while(!results.empty()){
             results.front().wait();
