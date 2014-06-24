@@ -445,6 +445,13 @@ bool Mesh::loadMtl(const char * filename,
             int illum = -1;
             sscanf(line, "illum %i", &illum);
 			mat.illum = illum;
+			if (mat.illum >= 0) { mat.color = true; mat.ambient = false; }
+			if (mat.illum >= 1) { mat.color = true; mat.ambient = true; }
+			if (mat.illum >= 2) { mat.highlight = true; }
+			if (mat.illum >= 3) { mat.reflection = true; }
+			if (mat.illum >= 8) { mat.refraction = true; }
+			if (mat.illum >= 9) { mat.refraction = true; mat.reflection = false; }
+			if (mat.illum >= 10) { /* casts shadow on invisible surfaces */ }
         }else if(strncmp(line, "map_Kd ", 7) == 0) // map images
                 {
             std::string t = &(line[7]);

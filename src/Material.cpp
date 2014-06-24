@@ -12,9 +12,19 @@ Material::Material(){
 }
 
 void Material::cleanup() {
+	illum = 2;
+	Ns = 1.0f;
+	Ni = 0.3f;
     name = "empty";
 	Tr = 0;
-	n = 0;
+	n = 1;
+
+	color = false;
+	ambient = false;
+	highlight = false;
+	reflection = false;
+	refraction = false;
+
 }
 
 bool Material::is_valid(void) {

@@ -59,6 +59,13 @@ public:
     std::string name;
     std::string textureName;
 
+	// illum
+	bool color;
+	bool ambient;
+	bool highlight;
+	bool reflection;
+	bool refraction;
+
 	bool is_valid();
 	void cleanup();
 };
