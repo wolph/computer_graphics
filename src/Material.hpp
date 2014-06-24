@@ -44,7 +44,7 @@ class Material{
 
 public:
 
-    Material();
+    //Material();
     //Material(const Material & m);
     //Material& operator=(const Material& m);
 

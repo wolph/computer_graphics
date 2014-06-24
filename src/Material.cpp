@@ -7,10 +7,6 @@
 
 #include "Material.hpp"
 
-Material::Material(){
-    cleanup();
-}
-
 void Material::cleanup() {
 	illum = 2;
 	Ns = 1.0f;

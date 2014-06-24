@@ -43,8 +43,12 @@ void AABB::split() {
 bool AABB::collidePlane(int axis, const Vec3Df& orig, const Vec3Df& dir) {
 	// check axis plane
 	float v1 = pos.p[axis];
-	if (dir.p[axis] < 0)
-		v1 += 2 * radius;
+
+	// flip
+	bool flip = (dir.p[axis] < 0);
+	if (dir.p[axis] > 0 && orig.p[axis] > v1) flip = !flip;
+	if (dir.p[axis] < 0 && orig.p[axis] < v1 + 2 * radius) flip = !flip;
+	if (flip) v1 += 2 * radius;
 
 	// factor
 	float a = (v1 - orig.p[axis]) / dir.p[axis];
