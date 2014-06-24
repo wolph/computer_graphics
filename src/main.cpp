@@ -240,17 +240,10 @@ void display(void){
                 needRebuild = false;
             }
         }
-<<<<<<< HEAD
-    } else {
-        viewTransform(); // origine et orientation de la scene
-=======
-    }else{
-        tbVisuTransform(); // origine et orientation de la scene
->>>>>>> e3118cd8dcd14aa6e2cac87407c6127d2ba7cbe7
-        MyScene.draw();
-        if(g_debug)
-            MyScene.debugDraw();
-    }
+	}
+	else {
+		viewTransform(); // origine et orientation de la scene
+	}
 
     glutSwapBuffers();
     glPopAttrib();
@@ -307,11 +300,7 @@ void keyboard(unsigned char key, int x, int y){
     }
 }
 
-<<<<<<< HEAD
 void keyup(unsigned char key, int x, int y) {
-=======
-void keyup(unsigned char key, int x, int y){
->>>>>>> e3118cd8dcd14aa6e2cac87407c6127d2ba7cbe7
     yourKeyboardRelease(key, x, y);
 }
 
