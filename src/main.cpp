@@ -149,24 +149,11 @@ int main(int argc, char** argv){
 
 // draw fps
 void drawInfo(){
-    clock_t diff = clock() - lastFrameTime;
-    lastFrameTime = clock();
-
-	const int clock = CLOCKS_PER_SEC; // only on mac! *(isRealtimeRaytracing ? THREADS : 1);
-
-    if((0. + lastFrameTime - lastFPSRenderTime) / clock > .03){
-        diffIndex = (diffIndex + 1) % 10;
-        diffs[diffIndex] = diff;
-
-        MyScene.update();
-        lastFPSRenderTime = lastFrameTime;
-
-        clock_t diff = 0;
-        for(int i=0; i<20; i++)diff += diffs[i];
-
-        float fps = (1. / (diff / 20.)) * clock;
-		sprintf(infoString, "%5.1f fps");// -Current object : %s", fps,
-                //MyScene.object->mesh.name.c_str());
+    if(fpsTimer.needsDisplay()){
+        float fps = 1. / fpsTimer.avg();
+        fpsTimer.updateLastDisplay();
+        sprintf(infoString, "%7.1f fps - Current object : %s", fps,
+                MyScene.object->getName().c_str());
     }
 
     int i = 0;

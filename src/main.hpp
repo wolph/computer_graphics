@@ -14,6 +14,7 @@
 
 #include "Vec3D.hpp"
 #include <vector>
+#include "Timer.hpp"
 
 extern std::vector<Vec3Df> MyLightPositions;
 
@@ -30,10 +31,7 @@ void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
 void keyup(unsigned char key, int x, int y);
 
-clock_t lastFrameTime = clock();
-clock_t lastFPSRenderTime = clock();
-clock_t diffs[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-unsigned int diffIndex = 0;
+Timer fpsTimer(20);
 char infoString[100];
 void drawFPS();
 
