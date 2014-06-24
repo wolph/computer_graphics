@@ -34,6 +34,10 @@ public:
     }
 	virtual void draw();
 	virtual float raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat);
+    virtual std::string getName(){
+        if(&mesh == NULL)return "Unknown object";
+        else return mesh.name;
+    }
 };
 
 class Sphere : public Object {
@@ -45,6 +49,9 @@ public:
 	}
 	void draw();
 	float raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat);
+    std::string getName(){
+        return "Sphere";
+    }
 };
 
 class Scene {

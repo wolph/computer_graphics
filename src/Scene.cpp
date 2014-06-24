@@ -369,10 +369,7 @@ float Sphere::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Ve
 }
 
 Object* Scene::nextObject(){
-    while(true){
-        objectIndex = (objectIndex + 1) % objects.size();
-        if(!objects[objectIndex]->mesh == NULL)break;
-    }
+    objectIndex = (unsigned int)(objectIndex ? objectIndex : objects.size()) - 1;
     return object = objects[objectIndex];
 }
 
