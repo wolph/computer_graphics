@@ -71,4 +71,8 @@
 #endif
 #endif
 
+#ifndef MAX_DEPTH
+#define MAX_DEPTH 5
+#endif
+
 #endif /* CONSTANTS_HPP_ */

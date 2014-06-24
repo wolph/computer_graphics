@@ -318,10 +318,14 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
         return Vec3Df(0, 0.6f, 0.99f);
 }
 
-Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir){
+Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
+        const unsigned int depth = MAX_DEPTH){
     // calculate nearest triangle
     Object* obj;
     Vec3Df color;
+
+    if(!depth)
+        return Vec3Df(0, 0, 0);
 
     Vec3Df impact;
     Vec3Df normal;
@@ -340,17 +344,18 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir){
     // refraction
     /* Can't use this unless we switch away from .mtl files. Need density
      index for materials. */
-    float inIndex = 1;
-    float outIndex = 1;
-    float inDivOut = inIndex / outIndex;
-    float cosIncident = dot(dir, normal);
-    float temp = inDivOut * inDivOut * 1 - cosIncident * cosIncident;
-    if(temp <= 1){
-        Vec3Df t = inDivOut * dir
-                + (inDivOut * cosIncident - sqrt(1 - temp)) * normal;
-        //Ray transmittedRay(ray.color, impact, impact + t, ray.bounceCount-1);
-    } //temp > 1 means no refraction, only (total) reflection.
-      // }
+    if(g_refract){
+        float inIndex = 1;
+        float outIndex = 1;
+        float inDivOut = inIndex / outIndex;
+        float cosIncident = dot(dir, normal);
+        float temp = inDivOut * inDivOut * 1 - cosIncident * cosIncident;
+        if(temp <= 1){
+            Vec3Df t = inDivOut * dir
+                    + (inDivOut * cosIncident - sqrt(1 - temp)) * normal;
+            color += performRayTracing(impact, t, depth - 1);
+        } //temp > 1 means no refraction, only (total) reflection.
+    }
     Vec3Df lightColor(1, 1, 1);
 
     unsigned int shadows = 0;
