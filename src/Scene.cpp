@@ -355,7 +355,8 @@ inline float intersectSphere(const Vec3Df& orig, const Vec3Df& dir, const Vec3Df
 		return 1e10f;
 
 	float discrSqrt = sqrtf(discr);
-	float q = ((b < 0) ? (-b - discrSqrt) / 2.0f : (-b + discrSqrt)) / 2.0f;
+	//float q = ((b < 0) ? (-b - discrSqrt) / 2.0f : (-b + discrSqrt)) / 2.0f;
+	float q = (b > 0) ? -0.5 * (b + discrSqrt) : -0.5 * (b - discrSqrt);
 	
 	float t0 = q / a;
 	float t1 = c / q;
