@@ -85,5 +85,6 @@ void drawFPS();
 #define X 0
 #define Y 1
 #define Z 2
+#define VEWY_HIGH 10e6f
 
 #endif

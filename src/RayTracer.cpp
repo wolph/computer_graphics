@@ -130,30 +130,8 @@ void periodicDraw(Image* image, unsigned int w, unsigned int h){
     }).detach();
 }
 
-//transformer le x, y en position 3D
-void produceRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
-    int viewport[4];
-    double modelview[16];
-    double projection[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelview); //recuperer matrices
-    glGetDoublev(GL_PROJECTION_MATRIX, projection); //recuperer matrices
-    glGetIntegerv(GL_VIEWPORT, viewport); //viewport
-    int y_new = viewport[3] - y_I;
-
-    double x, y, z;
-
-    gluUnProject(x_I, y_new, 0, modelview, projection, viewport, &x, &y, &z);
-    origin->p[0] = x;
-    origin->p[1] = y;
-    origin->p[2] = z;
-    gluUnProject(x_I, y_new, 1, modelview, projection, viewport, &x, &y, &z);
-    dest->p[0] = x;
-    dest->p[1] = y;
-    dest->p[2] = z;
-}
-
-int threadedTracePart(Image* result, const unsigned int w,
-        const unsigned int h, const unsigned int xx, const unsigned int yy){
+int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
+        const unsigned int xx, const unsigned int yy){
     Vec3Df origin, dest;
     std::vector<float>& image = result->_image;
 
@@ -199,22 +177,47 @@ int threadedTracePart(Image* result, const unsigned int w,
 
 void threadedTrace(Image* result, const unsigned int w, const unsigned int h){
     // multithread
-    while(isRealtimeRaytracing){
+    while(isRealtimeRaytracing && pool.running()){
         std::queue<std::future<int>> results;
-        for(unsigned int i = 0;i < w;i += PREVIEW_PART_SIZE){
-            for(unsigned int j = 0;j < h;j += PREVIEW_PART_SIZE){
+        for(unsigned int i = 0;i < w && isRealtimeRaytracing;i +=
+        PREVIEW_PART_SIZE){
+            for(unsigned int j = 0;j < h && isRealtimeRaytracing;j +=
+            PREVIEW_PART_SIZE){
                 results.push(
-                             pool.enqueue(threadedTracePart, result, (unsigned int)w,
-                                          (unsigned int)h, (unsigned int)i, (unsigned int)j));
+                        pool.enqueue(threadedTracePart, result, (unsigned int)w,
+                                (unsigned int)h, (unsigned int)i,
+                                (unsigned int)j));
             }
         }
 
-        while(!results.empty()){
+        while(!results.empty() && isRealtimeRaytracing){
             results.front().wait();
             results.pop();
         }
     }
     threadsStarted = false;
+}
+
+//transformer le x, y en position 3D
+void produceRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
+    int viewport[4];
+    double modelview[16];
+    double projection[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview); //recuperer matrices
+    glGetDoublev(GL_PROJECTION_MATRIX, projection); //recuperer matrices
+    glGetIntegerv(GL_VIEWPORT, viewport); //viewport
+    int y_new = viewport[3] - y_I;
+
+    double x, y, z;
+
+    gluUnProject(x_I, y_new, 0, modelview, projection, viewport, &x, &y, &z);
+    origin->p[0] = x;
+    origin->p[1] = y;
+    origin->p[2] = z;
+    gluUnProject(x_I, y_new, 1, modelview, projection, viewport, &x, &y, &z);
+    dest->p[0] = x;
+    dest->p[1] = y;
+    dest->p[2] = z;
 }
 
 void startRayTracing(int texIndex, bool verbose){
@@ -240,15 +243,15 @@ void startRayTracing(int texIndex, bool verbose){
     }
 
     glTexImage2D(
-                 GL_TEXTURE_2D,      // target
-                 0,                  // level
-                 GL_RGB,             // internalFormat
-                 w,                  // width
-                 h,                  // height
-                 0,                  // border
-                 GL_RGB,             // format
-                 GL_FLOAT,           // type
-                 &result._image[0]); // data
+    GL_TEXTURE_2D,      // target
+            0,                  // level
+            GL_RGB,             // internalFormat
+            w,                  // width
+            h,                  // height
+            0,                  // border
+            GL_RGB,             // format
+            GL_FLOAT,           // type
+            &result._image[0]); // data
     std::this_thread::sleep_for(std::chrono::milliseconds(25));
 
     // Perform timing
@@ -262,15 +265,13 @@ void startRayTracing(int texIndex, bool verbose){
         result.writeImage("result");
 }
 
-#define VEWY_HIGH 10e6f
-
 inline Vec3Df background(Vec3Df orig, Vec3Df dir){
-    if(dir.p[Y] < 0){
+    if(dir.p[Y] < -6){
         float height = orig.p[Y] - 6;
         float a = -height / dir.p[Y];
         float x = orig.p[X] + a * dir.p[X];
         float z = orig.p[Z] + a * dir.p[Z];
-        if(height < 0)
+        if(height < -6)
             return Vec3Df(0, 0.3f, 0);
 
         if(g_checkerboard){
