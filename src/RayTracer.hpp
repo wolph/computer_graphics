@@ -43,13 +43,15 @@ struct Arg: public option::Arg
 };
 
 enum optionIndex{
-    UNKNOWN, HELP, SCENE, RAYTRACE_X, RAYTRACE_Y
+    UNKNOWN, HELP, RAYTRACE, SCENE, RAYTRACE_X, RAYTRACE_Y
 };
 const option::Descriptor usage[] = {
         {UNKNOWN, 0, "", "", Arg::Unknown,
             "USAGE: computer_graphics [options]\n\nOptions:"},
         {HELP, 0, "h", "help", Arg::None,
             "--help, -h \tPrint usage and exit."},
+        {RAYTRACE, 0, "r", "raytrace", Arg::None,
+            "--raytrace, -r \tRay trace and exit."},
         {SCENE, 0, "s", "scene", Arg::Optional,
             "--scene, -s \tScene to load"},
  		{RAYTRACE_X, 0, "x", "raytraceX", Arg::Optional,
@@ -67,12 +69,12 @@ int init(int argc, char ** argv);
 //you can use this function to transform a click to an origin and destination
 //the last two values will be changed. There is no need to define this function.
 //it is defined elsewhere
-void createRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest);
+void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest);
 
 void startRayTracing(int texIndex, bool verbose);
 
 //your main function to rewrite
-Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir, const unsigned int depth=MAX_TRACE_DEPTH);
+Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir);
 
 //want keyboard interaction? Here it is...
 bool yourKeyboardPress(char t, int x, int y);
@@ -83,6 +85,5 @@ void drawFPS();
 #define X 0
 #define Y 1
 #define Z 2
-#define VEWY_HIGH 10e6f
 
 #endif

@@ -36,9 +36,6 @@
 #endif
 #endif
 
-#define PREVIEW_PARTS 16
-#define PREVIEW_PART_SIZE (PREVIEW_RES_X / PREVIEW_PARTS)
-
 #ifndef WINDOW_RES_X
 #ifdef WINDOW_RES
 #define WINDOW_RES_X WINDOW_RES
@@ -69,10 +66,6 @@
 #else
 #define RAYTRACE_RES_Y 1024
 #endif
-#endif
-
-#ifndef MAX_TRACE_DEPTH
-#define MAX_TRACE_DEPTH 5
 #endif
 
 #endif /* CONSTANTS_HPP_ */
