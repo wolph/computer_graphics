@@ -11,7 +11,7 @@ const void Mesh::drawSmooth(){
     glBegin(GL_TRIANGLES);
 
     for(unsigned int i = 0;i < triangles.size();++i){
-        Vec3Df col = this->materials[triangleMaterials[i]].Kd();
+        Vec3Df col = this->materials[triangleMaterials[i]].Kd;
 
         glColor3fv(col.pointer());
         for(int v = 0;v < 3;v++){
@@ -32,7 +32,7 @@ const void Mesh::draw(){
 
     for(unsigned int i = 0;i < triangles.size();++i){
         unsigned int triMat = triangleMaterials.at(i);
-        Vec3Df col = this->materials.at(triMat).Kd();
+        Vec3Df col = this->materials.at(triMat).Kd;
         glColor3fv(col.pointer());
         const Vec3Df edge01 = triangles[i].vertices[1].p - triangles[i].vertices[0].p;
         const Vec3Df edge02 = triangles[i].vertices[2].p - triangles[i].vertices[0].p;
@@ -64,14 +64,13 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
 
     materials.clear();
     Material defaultMat;
-    defaultMat.set_Kd(0.5f, 0.5f, 0.5f);
-    defaultMat.set_Ka(0.f, 0.f, 0.f);
-    defaultMat.set_Ks(0.5f, 0.5f, 0.5f);
-    defaultMat.set_Ns(96.7f);
-    //defaultMat.set_Ni();
-    //defaultMat.set_Tr();
-    defaultMat.set_illum(2);
-    defaultMat.set_name(std::string("StandardMaterialInitFromTriMesh"));
+    defaultMat.Kd = Vec3Df(0.5f, 0.5f, 0.5f);
+    defaultMat.Ka = Vec3Df(0.f, 0.f, 0.f);
+    defaultMat.Ks = Vec3Df(0.5f, 0.5f, 0.5f);
+    defaultMat.Ns = 96.7f;
+
+	defaultMat.illum = 2;
+	defaultMat.name = "StandardMaterialInitFromTriMesh";
     materials.push_back(defaultMat);
 
     std::map<std::string, unsigned int> materialIndex;
@@ -401,7 +400,7 @@ bool Mesh::loadMtl(const char * filename,
         else if(isspace(line[0]) || line[0] == '\0'){
             if(indef && !key.empty() && mat.is_valid()){
                 if(materialIndex.find(key) == materialIndex.end()){
-                    mat.set_name(key);
+					mat.name = key;
                     materials.push_back(mat);
                     materialIndex[key] = (unsigned int)materials.size() - 1;
                 }
@@ -424,28 +423,35 @@ bool Mesh::loadMtl(const char * filename,
         }else if(strncmp(line, "Kd ", 3) == 0) // diffuse color
                 {
             sscanf(line, "Kd %f %f %f", &f1, &f2, &f3);
-            mat.set_Kd(f1, f2, f3);
+            mat.Kd = Vec3Df(f1, f2, f3);
         }else if(strncmp(line, "Ka ", 3) == 0) // ambient color
                 {
-            sscanf(line, "Ka %f %f %f", &f1, &f2, &f3);
-            mat.set_Ka(f1, f2, f3);
+			sscanf(line, "Ka %f %f %f", &f1, &f2, &f3);
+			mat.Ka = Vec3Df(f1, f2, f3);
         }else if(strncmp(line, "Ks ", 3) == 0) // specular color
                 {
-            sscanf(line, "Ks %f %f %f", &f1, &f2, &f3);
-            mat.set_Ks(f1, f2, f3);
+			sscanf(line, "Ks %f %f %f", &f1, &f2, &f3);
+			mat.Ks = Vec3Df(f1, f2, f3);
         }else if(strncmp(line, "Ns ", 3) == 0) // Shininess [0..200]
                 {
             sscanf(line, "Ns %f", &f1);
-            mat.set_Ns(f1);
+            mat.Ns = f1;
         }else if(strncmp(line, "Ni ", 3) == 0) // Shininess [0..200]
                 {
             sscanf(line, "Ni %f", &f1);
-            mat.set_Ni(f1);
+			mat.Ni = f1;
         }else if(strncmp(line, "illum ", 6) == 0) // diffuse/specular shading model
                 {
             int illum = -1;
             sscanf(line, "illum %i", &illum);
-            mat.set_illum(illum);
+			mat.illum = illum;
+			if (mat.illum >= 0) { mat.color = true; mat.ambient = false; }
+			if (mat.illum >= 1) { mat.color = true; mat.ambient = true; }
+			if (mat.illum >= 2) { mat.highlight = true; }
+			if (mat.illum >= 3) { mat.reflection = true; }
+			if (mat.illum >= 8) { mat.refraction = true; }
+			if (mat.illum >= 9) { mat.refraction = true; mat.reflection = false; }
+			if (mat.illum >= 10) { /* casts shadow on invisible surfaces */ }
         }else if(strncmp(line, "map_Kd ", 7) == 0) // map images
                 {
             std::string t = &(line[7]);
@@ -459,21 +465,23 @@ bool Mesh::loadMtl(const char * filename,
             // map_Bump, bump map
             // map_d,  opacity map
             // just skip this
-            mat.set_textureName(t);
+			mat.textureName = t;
 
         }else if(strncmp(line, "Tr ", 3) == 0) // transparency value
                 {
-            sscanf(line, "Tr %f", &f1);
-            mat.set_Tr(f1);
+            sscanf(line, "Tr %f", &mat.Tr);
         }else if(strncmp(line, "d ", 2) == 0) // transparency value
                 {
-            sscanf(line, "d %f", &f1);
-            mat.set_Tr(f1);
-        }
+            sscanf(line, "d %f", &mat.Tr);
+		}
+		else if (strncmp(line, "n ", 2) == 0) // refraction index
+		{
+			sscanf(line, "n %f", &mat.n);
+		}
 
         if(feof(_in) && indef && mat.is_valid() && !key.empty()){
             if(materialIndex.find(key) == materialIndex.end()){
-                mat.set_name(key);
+				mat.name = key;
                 materials.push_back(mat);
                 materialIndex[key] = (unsigned int)materials.size() - 1;
             }

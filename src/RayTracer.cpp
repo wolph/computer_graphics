@@ -314,31 +314,31 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 	*/
 	// }
 
-	Vec3Df lightColor(1, 1, 0.5);
+	Vec3Df lightColor(1, 1, 1);
 
 	for (Vec3Df& light : MyScene.lights) {
 		Vec3Df tolight = light - impact;
 		tolight.normalize();
 
 		// ambient
-		//if (g_ambient)
-		//color += lightColor * mat.Ka() * 0.1f;
+		if (mat.ambient)
+			color += mat.Kd * 0.1f;
 
 		// diffuse
-		if (g_diffuse) {
+		if (mat.color) {
 			float angle = dot(normal, tolight) * 2;
-			color += lightColor * angle * mat.Kd() * 0.25f;
+			color += lightColor * angle * mat.Kd;
 		}
 
 		// specular
-		if (g_specular) {
+		if (mat.highlight) {
 			Vec3Df half = (tocam + tolight) * 0.5f;
-			float spec = pow(dot(half, normal), mat.Ns());
-			color += lightColor * spec * mat.Ks() * mat.Ni();
+			float spec = pow(dot(half, normal), 1.5f);
+			//color += lightColor * spec * mat.Ks * 0.5f;
 		}
 
 		// reflect
-		/*if (g_reflect) {
+		/*if (mat.reflection) {
 			const Vec3Df r = dir - 2 * dot(dir, normal)*normal;
 			color += performRayTracing(impact, r) * 0.25f;
 		}*/
@@ -347,7 +347,6 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 
 		// occlusion
 	}
-	color /= MyScene.lights.size();
 
 	// return color
 	for (int i = 0; i < 3; i++){
