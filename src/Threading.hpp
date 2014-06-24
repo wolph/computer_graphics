@@ -68,7 +68,7 @@ auto ThreadPool::enqueue(F&& f, Args&&... args)
 -> std::future<typename std::result_of<F(Args...)>::type>{
     typedef typename std::result_of<F(Args...)>::type return_type;
     // TODO: fix this horrible hack to stop segfaults when exiting
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     // don't allow enqueueing after stopping the pool
     if(stop_)
