@@ -7,10 +7,6 @@
 
 #include "Triangle.hpp"
 
-Triangle::Triangle(){
-    vertices[0] = vertices[1] = vertices[2] = Vertex();
-}
-
 Triangle::Triangle(const Triangle & triangle) : material(triangle.material){
     vertices[0] = triangle.vertices[0];
     vertices[1] = triangle.vertices[1];
