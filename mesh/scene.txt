@@ -1,2 +1,4 @@
-simple_monkey 0 0 0
 light 0 5 10
+simple_monkey 0 0 -6
+cube 0.5 1 -6
+cube -1.5 1 -6
