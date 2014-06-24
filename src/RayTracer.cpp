@@ -338,10 +338,10 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir) {
 		}
 
 		// reflect
-		if (g_reflect) {
+		/*if (g_reflect) {
 			const Vec3Df r = dir - 2 * dot(dir, normal)*normal;
 			color += performRayTracing(impact, r) * 0.25f;
-		}
+		}*/
 
 		// refract
 
