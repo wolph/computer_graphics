@@ -246,7 +246,7 @@ void startRayTracing(int texIndex, bool verbose){
 #define VEWY_HIGH 10e6f
 
 inline Vec3Df background(Vec3Df orig, Vec3Df dir){
-    if(dir.p[Y] < -2){
+    if(dir.p[Y] < -6){
         float height = orig.p[Y] + 1;
         float a = -height / dir.p[Y];
         float x = orig.p[X] + a * dir.p[X];
