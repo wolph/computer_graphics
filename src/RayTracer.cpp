@@ -319,7 +319,7 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 }
 
 Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
-        const unsigned int depth = MAX_DEPTH){
+        const unsigned int depth){
     // calculate nearest triangle
     Object* obj;
     Vec3Df color;
@@ -392,7 +392,7 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
         // reflect
         if(g_reflect && mat.reflection){
             const Vec3Df r = dir - 2 * dot(dir, normal)*normal;
-            color += performRayTracing(impact, r) * 0.25f;
+            color += performRayTracing(impact, r, depth - 1) * 0.25f;
         }
 
         // refract
