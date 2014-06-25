@@ -429,10 +429,11 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
 		}
 
 		// phong shading
+		// model source: http://www.cpp-home.com/tutorials/211_1.htm
 		if (g_phong){
 			Vec3Df refl = 2 * normal * dot(normal, tolight) - tolight;
 			Vec3Df res1 = mat.Kd * dot(normal, tolight);
-			res1 += pow(mat.Ks * mat.Ns * dot(refl, dir), (float)(mat.Ns / mat.Ni));
+			res1 += pow(mat.Ns * mat.Ks * dot(refl, dir), (float)(mat.Ns / mat.Ni));
 			res1 *= lightColor;
 			if (g_ambient)
 				res1 += mat.Ka * mat.Kd;
