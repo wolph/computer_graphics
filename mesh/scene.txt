@@ -1,3 +1,4 @@
 light 0 5 -8
 floor 0 0 0
 texture_monkey 0 0 -5
+camera 0 0.2 0 140 0
