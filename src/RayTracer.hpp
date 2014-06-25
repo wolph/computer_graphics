@@ -19,7 +19,6 @@
 extern unsigned int texture;
 
 extern std::vector<Vec3Df> MyLightPositions;
-extern Vec3Df MyCameraPosition; //currCamera
 extern unsigned int activeTexIndex;
 extern unsigned int isDrawingTexture;
 extern unsigned int isRealtimeRaytracing;

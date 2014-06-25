@@ -8,9 +8,6 @@
 #include "main.hpp"
 #include "Scene.hpp"
 
-// don't define anything in headers! only declare it!!!1!one!
-Vec3Df MyCameraPosition;
-
 // double buffered
 unsigned int textures[2];
 unsigned int activeTexIndex = 0;
@@ -44,7 +41,6 @@ void drawTexture(int texIndex){
 }
 
 void animate(){
-    MyCameraPosition = getCameraPosition();
     glutPostRedisplay();
 }
 
@@ -68,7 +64,6 @@ int main(int argc, char** argv){
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     initViewTransform();
-    MyCameraPosition = getCameraPosition();
 
     glEnable( GL_LIGHTING);
     glEnable( GL_LIGHT0);
@@ -265,11 +260,10 @@ void keyboard(unsigned char key, int x, int y){
             isRealtimeRaytracing = 0;
             break;
         case 'L':
-            MyCameraPosition = getCameraPosition();
-            MyScene.addLightPoint(MyCameraPosition);
+            MyScene.addLightPoint(MyScene.cam.pos);
             break;
         case 'l':
-            MyScene.lights[0] = getCameraPosition();
+            MyScene.lights[0] = MyScene.cam.pos;
             break;
         case 'r':
             needRebuild = true;
