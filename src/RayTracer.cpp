@@ -222,6 +222,7 @@ void createRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
 }
 
 void startRayTracing(int texIndex, bool verbose){
+	printf("%f %f\n", MyScene.cam.xrot, MyScene.cam.yrot);
     // update scene
     Image& result = isRealtimeRaytracing ? preview_image : output_image;
 
@@ -293,13 +294,13 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 
 	float fog;
 	Vec3Df tocam = Vec3Df(x, 0, z) - orig;
-	fog = 1.0f - 1.0f / (tocam.getLength() * 0.25f);
+	fog = 1.0f - 1.0f / (tocam.getLength() * 0.06125f);
 
-    if(dir.p[Y] < -6){
+    if(dir.p[Y] < MyScene.floorheight){
 
         unsigned int shadows = 0;
         for(Vec3Df& light : MyScene.lights){
-            Vec3Df impact = Vec3Df(x, -6, z);
+            Vec3Df impact = Vec3Df(x, MyScene.floorheight, z);
             Vec3Df tolight = light - impact;
             tolight.normalize();
 
@@ -328,8 +329,8 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
             else
                 return Vec3Df(0.9f, 0.9f, 0.9f) * ratio;
         }else{
-            int xidx = (int)(x * 720 * 0.25) % 720;
-            int zidx = (int)(z * 720 * 0.25) % 720;
+            int xidx = (int)(x * 720 * 0.025) % 720;
+            int zidx = (int)(z * 720 * 0.025) % 720;
             if(xidx < 0)
                 xidx += 720;
             if(zidx < 0)
@@ -356,6 +357,8 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
     MyScene.raytrace(orig, dir, &impact, &normal, &mat2, &obj);
     Material& mat = *mat2;
 
+	//return normal;
+
     // background
     if(!obj){
         return background(orig, dir);
@@ -364,20 +367,19 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
     Vec3Df tocam = orig - impact;
     tocam.normalize();
 
+	//return normal;
+
     // refraction
     /* Can't use this unless we switch away from .mtl files. Need density
      index for materials. */
-    if(g_refract){
-        float inIndex = 1;
-        float outIndex = 1;
-        float inDivOut = inIndex / outIndex;
-        float cosIncident = dot(dir, normal);
-        float temp = inDivOut * inDivOut * 1 - cosIncident * cosIncident;
-        if(temp <= 1){
-            Vec3Df t = inDivOut * dir
-                    + (inDivOut * cosIncident - sqrt(1 - temp)) * normal;
-            color += performRayTracing(impact, t, depth - 1);
-        } //temp > 1 means no refraction, only (total) reflection.
+    if (g_refract) {
+		Vec3Df& i = tocam;
+		float idx = 1;
+		float costh = dot(-i, normal);
+		float sinth = idx * idx * (1 - costh * costh);
+		Vec3Df refr = idx * i + (idx * costh - sqrt(1 - sinth)) * normal;
+
+		return performRayTracing(impact, refr, depth - 1);
     }
     Vec3Df lightColor(1, 1, 1);
 
@@ -418,7 +420,7 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
         if(g_reflect && mat.reflection){
             const Vec3Df r = dir - 2 * dot(dir, normal)*normal;
             color += performRayTracing(impact, r, depth - 1) * 0.25f;
-        }
+		}
 
         // refract
         // occlusion
