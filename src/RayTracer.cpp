@@ -274,8 +274,6 @@ void startRayTracing(int texIndex, bool needsRebuild){
                 timer.updateLastDisplay();
             }
         }
-        if(!asyncResults.empty())
-            printf("Rendering took %.3f seconds\n", timer.next().count());
     }else if(!threadsStarted){
         new std::thread(threadedTrace, &result, w, h, isRealtimeRaytracing);
         threadsStarted = true;
