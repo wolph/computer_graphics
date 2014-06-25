@@ -551,6 +551,10 @@ bool yourKeyboardPress(char key, int x, int y){
             g_occlusion = !g_occlusion;
             printf("Set occlusion to %d\n", g_occlusion);
             break;
+		case '0':
+			g_phong = !g_phong;
+			printf("Set phong illumination to %d\n", g_phong);
+			break;
 
             /* Movement */
 		case 'a':
