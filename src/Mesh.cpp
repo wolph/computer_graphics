@@ -457,8 +457,7 @@ bool Mesh::loadMtl(const char * filename,
 			if (mat.illum >= 8) { mat.refraction = true; }
 			if (mat.illum >= 9) { mat.refraction = true; mat.reflection = false; }
 			if (mat.illum >= 10) { /* casts shadow on invisible surfaces */ }
-        }else if(strncmp(line, "map_Kd ", 7) == 0) // map images
-                {
+        }else if(strncmp(line, "map_Kd ", 7) == 0){ // map images
             std::string t = &(line[7]);
             if(!t.empty() && t[t.length() - 1] == '\n'){
                 t.erase(t.length() - 1);
