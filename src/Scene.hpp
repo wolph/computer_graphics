@@ -64,6 +64,7 @@ public:
 	std::vector<Object*> objects;
     Object* object;
 	Camera cam;
+	float floorheight;
 
 	inline Scene(){};
 	void load(string path);
