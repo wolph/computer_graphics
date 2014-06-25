@@ -188,6 +188,7 @@ void display(void){
             ticks = clock() - start;
             activeTexIndex = !activeTexIndex;
         }else{
+            startRayTracing(activeTexIndex, needRebuild);
             if(needRebuild == true){
                 int millis = (int)(ticks * 1000. / CLOCKS_PER_SEC);
                 long long expected = millis;
@@ -195,7 +196,6 @@ void display(void){
                 expected *= RAYTRACE_RES_Y / PREVIEW_RES_Y;
                 expected *= MSAA / PREVIEW_MSAA;
                 expected *= MSAA / PREVIEW_MSAA;
-                //  expected /= THREADS; only for mac!
                 if(expected < 1000)
                     printf("will take %d milliseconds\n", (int)expected);
                 else if(expected < 1000 * 60)
@@ -229,7 +229,6 @@ void display(void){
                     printf("THIS IS MADNESS!\n");
                     printf("will take %s seconds\n", "<overflow error>");
                 }
-                startRayTracing(activeTexIndex, true);
                 needRebuild = false;
             }
         }

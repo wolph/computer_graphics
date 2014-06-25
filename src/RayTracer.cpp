@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <math.h>
 
+#include "Threading.hpp"
+
 //temporary variables
 extern unsigned int textures[2];
 extern Scene MyScene;
@@ -25,7 +27,7 @@ bool g_ambient = false;
 bool g_diffuse = true;
 bool g_specular = false;
 bool g_reflect = true;
-bool g_refract = true;
+bool g_refract = false;
 bool g_occlusion = true;
 
 bool threadsStarted = false;
@@ -34,6 +36,11 @@ Vec3Df origin00, dest00;
 Vec3Df origin01, dest01;
 Vec3Df origin10, dest10;
 Vec3Df origin11, dest11;
+
+std::queue<std::future<int>> asyncResults;
+unsigned int asyncResultsSize;
+bool asyncBuildStarted = false;
+
 
 //use this function for any preprocessing of the mesh.
 int init(int argc, char **argv){
@@ -221,7 +228,7 @@ void createRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
     dest->p[2] = z;
 }
 
-void startRayTracing(int texIndex, bool verbose){
+void startRayTracing(int texIndex, bool needsRebuild){
     // update scene
     Image& result = isRealtimeRaytracing ? preview_image : output_image;
 
@@ -230,7 +237,7 @@ void startRayTracing(int texIndex, bool verbose){
     w = alternateX ? alternateX : w;
     h = alternateY ? alternateY : h;
 
-    if(verbose)
+    if(needsRebuild)
         printf("Raytracing image with resolution of %d by %d\n", w, h);
 
     createRay(0, 0, &origin00, &dest00);
@@ -240,44 +247,54 @@ void startRayTracing(int texIndex, bool verbose){
 
     if(!isRealtimeRaytracing){
         Timer timer(1, 0.2);
-        std::queue<std::future<int>> results;
-        for(unsigned int i = 0;i < w;i++){
-            results.push(pool.enqueue(threadedTracePart, &result,
-                                      w, h, i, 0, i+1, h));
+
+        if(needsRebuild){
+            for(unsigned int i = 0;i < w;i++){
+                asyncResults.push(pool.enqueue(threadedTracePart, &result,
+                                          w, h, i, 0, i+1, h));
+            }
+            asyncBuildStarted = true;
+            asyncResultsSize = (unsigned int)asyncResults.size();
         }
 
-        unsigned int total = (unsigned int)results.size();
-        unsigned int i = 0;
-        while(!results.empty()){
-            results.front().wait();
-            results.pop();
+        while(!asyncResults.empty()){
+            auto status = asyncResults.front().wait_for(std::chrono::milliseconds(25));
+            if(status == std::future_status::ready){
+                asyncResults.pop();
+            }else if(status == std::future_status::timeout){
+                break;
+            }
 
-            i++;
             if(timer.needsDisplay()){
-                printf("Rendered %d/%d: %.1f%%\n", i, total, 100. * i / total);
+                unsigned int current = asyncResultsSize - (int)asyncResults.size();
+                printf("Rendered %d/%d: %.1f%%\n",
+                       current,
+                       asyncResultsSize,
+                       100. * current / asyncResultsSize);
                 timer.updateLastDisplay();
             }
         }
-        printf("Rendering took %.3f seconds\n", timer.next().count());
+        if(!asyncResults.empty())
+            printf("Rendering took %.3f seconds\n", timer.next().count());
     }else if(!threadsStarted){
         new std::thread(threadedTrace, &result, w, h, isRealtimeRaytracing);
         threadsStarted = true;
     }
 
     glTexImage2D(
-    GL_TEXTURE_2D,      // target
-            0,                  // level
-            GL_RGB,             // internalFormat
-            w,                  // width
-            h,                  // height
-            0,                  // border
-            GL_RGB,             // format
-            GL_FLOAT,           // type
-            &result._image[0]); // data
+                 GL_TEXTURE_2D,      // target
+                 0,                  // level
+                 GL_RGB,             // internalFormat
+                 w,                  // width
+                 h,                  // height
+                 0,                  // border
+                 GL_RGB,             // format
+                 GL_FLOAT,           // type
+                 &result._image[0]); // data
 
-    if(isRealtimeRaytracing){
+    if(isRealtimeRaytracing || asyncResults.empty()){
         std::this_thread::sleep_for(std::chrono::milliseconds(25));
-    }else{
+    }else if(!isRealtimeRaytracing && !asyncBuildStarted){
         result.writeImage("result");
     }
 }
@@ -414,12 +431,11 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
             color += performRayTracing(impact, r, depth - 1) * 0.25f;
         }
 
-        // refract
         // occlusion
 
-        // shadow
     }
 
+    // shadow
     if(g_shadow){
         color *= ((float)shadows / (float)MyScene.lights.size());
     }

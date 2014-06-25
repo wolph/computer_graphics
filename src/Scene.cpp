@@ -213,7 +213,7 @@ Material defaultMat;
 
 bool Scene::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Object** obj) {
 	float close = 1e10f;
-	*normal = Vec3Df(0, 0, 1);
+	*normal = Vec3Df(0, 0, 0);
 	*mat = &defaultMat;
 	*obj = 0;
 
@@ -342,7 +342,7 @@ float Object::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Ve
 	float f3 = a3 / total;
 
 	// calc normal
-	*normal = f1 * tr->vertices[0].normal + f2 * tr->vertices[1].normal
+	*normal = f1 * tr->vertices[0].normal - f2 * tr->vertices[1].normal
 		+ f3 * tr->vertices[2].normal;
 
 	*mat = (Material*) &tr->material;
