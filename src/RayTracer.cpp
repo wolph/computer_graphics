@@ -228,7 +228,7 @@ void createRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
     dest->p[2] = z;
 }
 
-void startRayTracing(int texIndex, bool verbose){
+void startRayTracing(int texIndex, bool needsRebuild){
     // update scene
     Image& result = isRealtimeRaytracing ? preview_image : output_image;
 
