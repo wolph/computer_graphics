@@ -221,7 +221,7 @@ void Scene::update() {
 
 Material defaultMat;
 
-bool Scene::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Object** obj) {
+bool Scene::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Object** obj, Vec3Df* color) {
 	float close = 1e10f;
 	*normal = Vec3Df(0, 0, 0);
 	*mat = &defaultMat;
@@ -231,7 +231,7 @@ bool Scene::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3
 		Vec3Df tempNormal;
 		Vec3Df tempImpact;
 		Material* tempMat;
-		float dist = objects[i]->raytrace(orig, dir, &tempImpact, &tempNormal, &tempMat);
+		float dist = objects[i]->raytrace(orig, dir, &tempImpact, &tempNormal, &tempMat, color);
 		if (dist < close) {
 			*normal = tempNormal;
 			*impact = tempImpact;
@@ -329,7 +329,7 @@ float surface(const Vec3Df& a, const Vec3Df& b, const Vec3Df& c){
 	return surface(f);
 }
 
-float Object::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat) {
+float Object::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Vec3Df* color) {
 	Triangle* tr;
 	float dist = tree.collide(orig - pos, dir, &tr);
 	*impact = orig + dist * dir;
@@ -356,6 +356,9 @@ float Object::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Ve
 		+ f3 * tr->vertices[2].normal;
 
 	*mat = (Material*) &tr->material;
+
+//    *color
+
 	return dist;
 }
 
@@ -394,7 +397,7 @@ inline float intersectSphere(const Vec3Df& orig, const Vec3Df& dir, const Vec3Df
 	return distance;*/
 }
 
-float Sphere::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat) {
+float Sphere::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Vec3Df* color) {
 	float dist = intersectSphere(orig, dir, center, radius);
 	*impact = orig + dist * dir;
 	*mat = &defaultMat;

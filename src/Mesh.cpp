@@ -469,7 +469,7 @@ bool Mesh::loadMtl(const char * filename,
             // map_Bump, bump map
             // map_d,  opacity map
             // just skip this
-			mat.textureName = t;
+            mat.loadTexture(t);
 
         }else if(strncmp(line, "Tr ", 3) == 0) // transparency value
                 {

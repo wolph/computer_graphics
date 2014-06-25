@@ -13,6 +13,7 @@ class Material;
 
 #include "Vec3D.hpp"
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -58,6 +59,7 @@ public:
 	float n;
     std::string name;
     std::string textureName;
+    std::vector<Vec3Df> map_Kd;
 
 	// illum
 	bool color;
@@ -68,6 +70,7 @@ public:
 
 	bool is_valid();
 	void cleanup();
+    void loadTexture(std::string textureName);
 };
 
 #endif /* MATERIAL_H_ */
