@@ -301,7 +301,10 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
 
 			unsigned int mat = 0;
 
-			if (!materialIndex.count(matname))
+			if (matname[0] == '\0')
+			    /* default material */
+			    mat = 0;
+			else if (!materialIndex.count(matname))
 				printf("Material %s not found!\n", matname.c_str());
 			else
 				mat = materialIndex.find(matname)->second;
