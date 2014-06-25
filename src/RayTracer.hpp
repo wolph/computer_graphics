@@ -81,8 +81,4 @@ bool yourKeyboardRelease(char t, int x, int y);
 
 void drawFPS();
 
-#define X 0
-#define Y 1
-#define Z 2
-
 #endif

@@ -20,15 +20,25 @@ Image output_image(RAYTRACE_RES_X, RAYTRACE_RES_Y);
 float hardwood[720 * 720 * 3];
 
 // runtime options
+//bool g_shadow = false;
+//bool g_checkerboard = false;
+//bool g_debug = false;
+//bool g_ambient = true;
+//bool g_diffuse = true;
+//bool g_specular = true;
+//bool g_reflect = true;
+//bool g_refract = true;
+//bool g_occlusion = true;
+
 bool g_shadow = false;
 bool g_checkerboard = false;
 bool g_debug = false;
-bool g_ambient = true;
+bool g_ambient = false;
 bool g_diffuse = true;
-bool g_specular = true;
-bool g_reflect = true;
-bool g_refract = true;
-bool g_occlusion = true;
+bool g_specular = false;
+bool g_reflect = false;
+bool g_refract = false;
+bool g_occlusion = false;
 
 bool threadsStarted = false;
 
@@ -181,10 +191,10 @@ int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
     return yb;
 }
 
-void threadedTrace(Image* result, const unsigned int w, const unsigned int h, bool realtime){
+void threadedTrace(Image* result, const unsigned int w, const unsigned int h, const bool background=true){
     Timer timer(10, 1);
     // multithread
-    while((isRealtimeRaytracing || !realtime) && pool.running()){
+    while(isRealtimeRaytracing && pool.running() && background){
         std::queue<std::future<int>> results;
         for(unsigned int i = 0;i < w && isRealtimeRaytracing;i +=
         PREVIEW_PART_SIZE){
@@ -278,7 +288,7 @@ void startRayTracing(int texIndex, bool needsRebuild){
             }
         }
     }else if(!threadsStarted){
-        new std::thread(threadedTrace, &result, w, h, isRealtimeRaytracing);
+        new std::thread(threadedTrace, &result, w, h, true);
         threadsStarted = true;
     }
 
