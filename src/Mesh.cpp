@@ -339,12 +339,14 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
         memset(&s, 0, LINE_LEN);
     }
 
+	printf("Calculating normals...\n");
+
 	// calculate vertex normals
 	for (Vertex& v : vertices)
 		v.normal = Vec3Df(0, 0, 0);
 
 	for (auto& triangle : tempTriangles) {
-		Triangle tr = Triangle(vertices[triangle[0]], vertices[triangle[1]],
+		Triangle tr(vertices[triangle[0]], vertices[triangle[1]],
 			vertices[triangle[2]], materials[triangle[6]]);
 
 		vertices[triangle[0]].normal += tr.normal;
@@ -356,6 +358,7 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
 		v.normal.normalize();
 
 	// make triangles
+	printf("Making triangles...\n");
     for(auto& triangle : tempTriangles){
 		if (!texcoords.empty())
 			triangles.push_back(Triangle(vertices[triangle[0]], vertices[triangle[1]],
@@ -365,6 +368,8 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
 			triangles.push_back(Triangle(vertices[triangle[0]], vertices[triangle[1]],
 						vertices[triangle[2]], materials[triangle[6]]));
     }
+
+	printf("Done!\n");
 
     fclose(in);
     return true;

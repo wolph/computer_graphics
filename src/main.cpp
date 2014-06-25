@@ -122,9 +122,14 @@ int main(int argc, char** argv){
     glutKeyboardFunc(keyboard);
     glutKeyboardUpFunc(keyup);
     glutDisplayFunc(display);
-    glutMouseFunc(mouseFunc);    // traqueboule utilise la souris
-    glutPassiveMotionFunc(mouseMotionFunc);  // traqueboule utilise la souris
+    glutMouseFunc(mouseFunc);
     glutIdleFunc(animate);
+
+#ifdef NO_FPS
+	glutMotionFunc(mouseMotionFunc);
+#else
+	glutPassiveMotionFunc(mouseMotionFunc);
+#endif
 
     int ret = init(argc, argv);
     if(ret == 255)

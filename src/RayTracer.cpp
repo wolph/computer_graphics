@@ -228,7 +228,7 @@ void createRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
     dest->p[2] = z;
 }
 
-void startRayTracing(int texIndex, bool needsRebuild){
+void startRayTracing(int texIndex, bool verbose){
     // update scene
     Image& result = isRealtimeRaytracing ? preview_image : output_image;
 
@@ -303,13 +303,19 @@ void startRayTracing(int texIndex, bool needsRebuild){
 
 inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 
-    if(dir.p[Y] < -6){
         float height = orig.p[Y] + 1;
         float a = -height / dir.p[Y];
         float x = orig.p[X] + a * dir.p[X];
         float z = orig.p[Z] + a * dir.p[Z];
 
-        unsigned int shadows = 0;
+	float fog;
+	Vec3Df tocam = Vec3Df(x, 0, z) - orig;
+	fog = 1.0f - 1.0f / (tocam.getLength() * 0.06125f);
+
+	if (dir.p[Y] < MyScene.floorheight){
+
+		unsigned int shadows = MyScene.lights.size();
+		if (g_shadow){
         for(Vec3Df& light : MyScene.lights){
             Vec3Df impact = Vec3Df(x, -6, z);
             Vec3Df tolight = light - impact;
@@ -318,9 +324,10 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
             Vec3Df tempImpact, tempNormal;
             Material* tempMat;
             Object* tempObj;
-            if(!MyScene.raytrace(impact, tolight, &tempImpact, &tempNormal,
+			if (MyScene.raytrace(impact, tolight, &tempImpact, &tempNormal,
                     &tempMat, &tempObj))
-                shadows++;
+				shadows--;
+			}
         }
         float ratio = (float)shadows / (float)MyScene.lights.size();
 
@@ -340,20 +347,21 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
             else
                 return Vec3Df(0.9f, 0.9f, 0.9f) * ratio;
         }else{
-            int xidx = (int)(x * 720 * 0.25) % 720;
-            int zidx = (int)(z * 720 * 0.25) % 720;
+            int xidx = (int)(x * 720 * 0.025) % 720;
+            int zidx = (int)(z * 720 * 0.025) % 720;
             if(xidx < 0)
                 xidx += 720;
             if(zidx < 0)
                 zidx += 720;
-            return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio;
+            return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio * (1.0f - fog)
+				+ fog * Vec3Df(0.9, 0.9, 0.9);
         }
     }else
-        return Vec3Df(0, 0.6f, 0.99f);
+		return Vec3Df(0, 0.6f, 0.99f) * (1.0f - fog) + fog * Vec3Df(0.9, 0.9, 0.9);
 }
 
 Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
-        const unsigned int depth){
+        const unsigned int depth, bool inside){
     // calculate nearest triangle
     Object* obj;
     Vec3Df color;
@@ -367,6 +375,8 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
     MyScene.raytrace(orig, dir, &impact, &normal, &mat2, &obj);
     Material& mat = *mat2;
 
+	//return normal;
+
     // background
     if(!obj){
         return background(orig, dir);
@@ -376,23 +386,20 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
     tocam.normalize();
 
     // refraction
-    /* Can't use this unless we switch away from .mtl files. Need density
-     index for materials. */
     if(g_refract){
-        float inIndex = 1;
-        float outIndex = 1;
-        float inDivOut = inIndex / outIndex;
-        float cosIncident = dot(dir, normal);
-        float temp = inDivOut * inDivOut * 1 - cosIncident * cosIncident;
-        if(temp <= 1){
-            Vec3Df t = inDivOut * dir
-                    + (inDivOut * cosIncident - sqrt(1 - temp)) * normal;
-            color += performRayTracing(impact, t, depth - 1);
-        } //temp > 1 means no refraction, only (total) reflection.
+		Vec3Df& i = tocam;
+		float idx = mat.refraction;
+		if (!inside) idx = 1.0f / idx;
+		float costh = dot(i, normal);
+		float sinth = idx * idx * (1 - costh * costh);
+		Vec3Df refr = idx * i + (idx * costh - sqrt(1 - sinth)) * normal;
+		refr = -refr;
+
+		return performRayTracing(impact, refr, depth - 1, true);
     }
     Vec3Df lightColor(1, 1, 1);
 
-    unsigned int shadows = 0;
+    unsigned int shadows = MyScene.lights.size();
 
     for(Vec3Df& light : MyScene.lights){
         Vec3Df tolight = light - impact;
@@ -404,12 +411,14 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
         }
 
         // shadow
+		if (g_shadow){
         Vec3Df tempImpact, tempNormal;
         Material* tempMat;
         Object* tempObj;
         if(MyScene.raytrace(impact, tolight, &tempImpact, &tempNormal, &tempMat,
                 &tempObj))
-            shadows++;
+				shadows--;
+		}
 
         // diffuse
         if(g_diffuse && mat.color){

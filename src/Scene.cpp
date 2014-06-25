@@ -162,6 +162,7 @@ void Model::load(std::string file) {
 }
 
 void Scene::load(string path) {
+	floorheight = 0;
 
 	ifstream scene(path);
 	string name;
@@ -174,7 +175,16 @@ void Scene::load(string path) {
 			addLightPoint(lightPoint);
 		}
 		else if (name == "camera") {
-			cam.pos = Vec3Df(x, y, z);
+			cam.pos.p[0] = x;
+			cam.pos.p[1] = y;
+			cam.pos.p[2] = z;
+			float xrot, yrot;
+			scene >> xrot >> yrot;
+			cam.xrot = xrot;
+			cam.yrot = yrot;
+		}
+		else if (name == "floor") {
+			floorheight = y;
 		}
 		else if (name == "sphere") {
 			Vec3Df pos(x, y, z);
@@ -328,11 +338,11 @@ float Object::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Ve
 		return 1e10f;
 
 	// calc areas
-	float a1 = surface(tr->vertices[1].position, *impact + pos,
+	float a1 = surface(tr->vertices[1].position, *impact - pos,
 		tr->vertices[2].position);
-	float a2 = surface(tr->vertices[0].position, *impact + pos,
+	float a2 = surface(tr->vertices[0].position, *impact - pos,
 		tr->vertices[2].position);
-	float a3 = surface(tr->vertices[0].position, *impact + pos,
+	float a3 = surface(tr->vertices[0].position, *impact - pos,
 		tr->vertices[1].position);
 	float total = a1 + a2 + a3;
 

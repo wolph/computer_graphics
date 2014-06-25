@@ -74,7 +74,7 @@ void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest);
 void startRayTracing(int texIndex, bool needsRebuild=false);
 
 //your main function to rewrite
-Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir, const unsigned int depth=MAX_TRACE_DEPTH);
+Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir, const unsigned int depth=MAX_TRACE_DEPTH, bool inside = false);
 
 //want keyboard interaction? Here it is...
 bool yourKeyboardPress(char t, int x, int y);
