@@ -200,6 +200,8 @@ void Scene::load(string path) {
 		}
 		scene >> name >> x >> y >> z;
 	}
+
+    scene.close();
 }
 
 void Scene::add(Object* object) {
