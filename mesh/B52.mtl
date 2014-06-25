@@ -9,9 +9,9 @@ Ks 0.039600 0.039600 0.039600
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd C:\Users\ArendJan\Downloads\Green Fighter 3D Models\6\B52\B52\B52-003.JPG
-map_Ka C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\B52-003.JPG
-refl C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\LAKEREF.JPG
+map_Kd B52\B52-003.JPG
+map_Ka B52\B52-003.JPG
+refl B52\LAKEREF.JPG
 
 newmtl B52_BLAC
 Ns 98.039216
@@ -21,7 +21,7 @@ Ks 0.039600 0.039600 0.039600
 Ni 1.500000
 d 1.000000
 illum 2
-refl C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\LAKEREF.JPG
+refl B52\LAKEREF.JPG
 
 newmtl B52_BLAC1
 Ns 98.039216
@@ -31,7 +31,7 @@ Ks 0.039600 0.039600 0.039600
 Ni 1.500000
 d 1.000000
 illum 2
-refl C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\LAKEREF.JPG
+refl B52\LAKEREF.JPG
 
 newmtl B52_CAM1
 Ns 98.039216
@@ -41,9 +41,9 @@ Ks 0.039600 0.039600 0.039600
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd C:\Users\ArendJan\Downloads\Green Fighter 3D Models\6\B52\B52\B52-008.JPG
-map_Ka C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\B52-008.JPG
-refl C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\LAKEREF.JPG
+map_Kd B52\B52-008.JPG
+map_Ka B52\B52-008.JPG
+refl B52\LAKEREF.JPG
 
 newmtl B52_CAM2
 Ns 98.039216
@@ -53,9 +53,9 @@ Ks 0.039600 0.039600 0.039600
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd C:\Users\ArendJan\Downloads\Green Fighter 3D Models\6\B52\B52\B52-009.JPG
-map_Ka C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\B52-009.JPG
-refl C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\LAKEREF.JPG
+map_Kd B52\B52-009.JPG
+map_Ka B52\B52-009.JPG
+refl B52\LAKEREF.JPG
 
 newmtl B52_CAM3
 Ns 98.039216
@@ -65,9 +65,9 @@ Ks 0.039600 0.039600 0.039600
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd C:\Users\ArendJan\Downloads\Green Fighter 3D Models\6\B52\B52\B52-010.JPG
-map_Ka C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\B52-010.JPG
-refl C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\LAKEREF.JPG
+map_Kd B52\B52-010.JPG
+map_Ka B52\B52-010.JPG
+refl B52\LAKEREF.JPG
 
 newmtl B52_COIW1
 Ns 98.039216
@@ -77,7 +77,7 @@ Ks 0.039600 0.039600 0.039600
 Ni 1.500000
 d 1.000000
 illum 2
-refl C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\LAKEREF.JPG
+refl B52\LAKEREF.JPG
 
 newmtl B52_GLAS
 Ns 98.039216
@@ -87,7 +87,7 @@ Ks 0.050000 0.050000 0.050000
 Ni 1.500000
 d 0.900000
 illum 2
-refl C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\LAKEREF.JPG
+refl B52\LAKEREF.JPG
 
 newmtl B52_GODP
 Ns 98.039216
@@ -97,9 +97,9 @@ Ks 0.039600 0.039600 0.039600
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd C:\Users\ArendJan\Downloads\Green Fighter 3D Models\6\B52\B52\B52-007.JPG
-map_Ka C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\B52-007.JPG
-refl C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\LAKEREF.JPG
+map_Kd B52\B52-007.JPG
+map_Ka B52\B52-007.JPG
+refl B52\LAKEREF.JPG
 
 newmtl B52_RUBB
 Ns 21.568627
@@ -118,8 +118,8 @@ Ks 0.039600 0.039600 0.039600
 Ni 1.500000
 d 1.000000
 illum 2
-map_Bump C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\B52-006.JPG
-refl C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\LAKEREF.JPG
+map_Bump B52\B52-006.JPG
+refl B52\LAKEREF.JPG
 
 newmtl B52_TCRI
 Ns 98.039216
@@ -129,8 +129,8 @@ Ks 0.039600 0.039600 0.039600
 Ni 1.500000
 d 1.000000
 illum 2
-map_Bump C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\B52-006.JPG
-refl C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\LAKEREF.JPG
+map_Bump B52\B52-006.JPG
+refl B52\LAKEREF.JPG
 
 newmtl B52_TICO
 Ns 98.039216
@@ -140,10 +140,10 @@ Ks 0.039600 0.039600 0.039600
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd C:\Users\ArendJan\Downloads\Green Fighter 3D Models\6\B52\B52\B52-011.JPG
-map_Bump C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\B52-012.JPG
-map_Ka C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\B52-011.JPG
-refl C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\LAKEREF.JPG
+map_Kd B52\B52-011.JPG
+map_Bump B52\B52-012.JPG
+map_Ka B52\B52-011.JPG
+refl B52\LAKEREF.JPG
 
 newmtl B52_WHIT
 Ns 98.039216
@@ -153,7 +153,7 @@ Ks 0.050000 0.050000 0.050000
 Ni 1.500000
 d 1.000000
 illum 2
-refl C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\LAKEREF.JPG
+refl B52\LAKEREF.JPG
 
 newmtl B52_WIU
 Ns 98.039216
@@ -163,7 +163,7 @@ Ks 0.039600 0.039600 0.039600
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd C:\Users\ArendJan\Downloads\Green Fighter 3D Models\6\B52\B52\B52-013.JPG
-map_Bump C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\B52-014.JPG
-map_Ka C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\B52-013.JPG
-refl C:\\Users\\ArendJan\\Downloads\\Green Fighter 3D Models\\6\\B52\\B52\\LAKEREF.JPG
+map_Kd B52\B52-013.JPG
+map_Bump B52\B52-014.JPG
+map_Ka B52\B52-013.JPG
+refl B52\LAKEREF.JPG
