@@ -85,4 +85,6 @@ void drawFPS();
 #define Y 1
 #define Z 2
 
+inline Vec3Df pow(Vec3Df in1, float in2);
+
 #endif

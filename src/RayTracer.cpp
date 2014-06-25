@@ -29,6 +29,7 @@ bool g_specular = true;
 bool g_reflect = true;
 bool g_refract = true;
 bool g_occlusion = true;
+bool g_phong = true;
 
 bool threadsStarted = false;
 
@@ -427,15 +428,26 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
 				shadows--;
 		}
 
+		// phong shading
+		if (g_phong){
+			Vec3Df refl = 2 * normal * dot(normal, tolight) - tolight;
+			Vec3Df res1 = mat.Kd * dot(normal, tolight);
+			res1 += pow(mat.Ks * mat.Ns * dot(refl, dir), (float)(mat.Ns / mat.Ni));
+			res1 *= lightColor;
+			if (g_ambient)
+				res1 += mat.Ka * mat.Kd;
+			color += res1;
+		}
+
         // diffuse
-        if(g_diffuse && mat.color){
+        if(g_diffuse && mat.color && !g_phong){
 
             float angle = dot(normal, tolight) * 2;
             color += lightColor * angle * mat.Kd;
         }
 
         // specular
-        if(g_specular && mat.highlight){
+        if(g_specular && mat.highlight & !g_phong){
             Vec3Df half = (tocam + tolight) * 0.5f;
             float spec = pow(dot(half, normal), 1.5f);
             color += lightColor * spec * mat.Ks * 0.5f;
@@ -450,6 +462,8 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
         // occlusion
 
     }
+
+	color /= MyScene.lights.size();
 
     // shadow
     if(g_shadow){
@@ -593,4 +607,11 @@ bool yourKeyboardRelease(char t, int x, int y){
             break;
     }
     return true;
+}
+
+inline Vec3Df pow(Vec3Df in1, float in2){
+	in1[0] = pow(in1[0], in2);
+	in1[1] = pow(in1[1], in2);
+	in1[2] = pow(in1[2], in2);
+	return in1;
 }
