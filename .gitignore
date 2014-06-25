@@ -41,5 +41,6 @@ result.*
 *.sdf
 *.vcsproj.user
 *.suo
+~$*.pptx
 Thumbs.db
 Makefile.local
