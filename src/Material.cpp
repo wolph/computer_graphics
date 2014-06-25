@@ -6,6 +6,8 @@
  */
 
 #include "Material.hpp"
+#include <iostream>
+#include <cstring>
 
 void Material::cleanup() {
 	illum = 2;
@@ -42,9 +44,11 @@ void Material::loadTexture(std::string textureName){
 
     unsigned char info[54];
     fread(info, sizeof(unsigned char), 54, fp);
-
-    unsigned int width = *(int*)&info[18];
-    unsigned int height = *(int*)&info[22];
+    
+    unsigned int width;
+    unsigned int height;
+    std::memcpy(&width, &info[18], 4);
+    std::memcpy(&height, &info[22], 4);
 
     map_Kd.resize(width * height);
 
