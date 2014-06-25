@@ -4,7 +4,6 @@
 */
 #pragma once
 #include "Mesh.hpp"
-#define MAX_DEPTH 10
 
 struct AABB {
 	// the subtrees, if any
@@ -30,6 +29,7 @@ struct AABB {
 
 class Tree {
 private:
+    unsigned int max_depth;
 	void calcSize(Mesh& mesh);
 
 public:

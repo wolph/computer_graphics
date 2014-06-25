@@ -348,7 +348,7 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
 	for (Vertex& v : vertices)
 		v.normal = Vec3Df(0, 0, 0);
 
-    int vsize = (int)vertices.size();
+    unsigned int vsize = (int)vertices.size();
 	for (auto& triangle : tempTriangles) {
         bool error = false;
         for(int i=0; i<3; i++){

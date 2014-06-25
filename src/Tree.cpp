@@ -185,7 +185,8 @@ void Tree::calcSize(Mesh& mesh) {
 }
 
 void Tree::build(Mesh& mesh) {
-//	printf("Building tree!\n");
+    max_depth = (int)(std::log(mesh.triangles.size()) / std::log(2));
+    printf("building tree with size %d\n", max_depth);
 	calcSize(mesh);
 
 	for (unsigned int i = 0; i < mesh.triangles.size(); i++)
@@ -196,8 +197,8 @@ void Tree::add(Triangle& tr) {
 	AABB* current = root;
 	int a0, a1, a2;
 
-	int depth = 0;
-	while (depth < MAX_DEPTH) {
+	unsigned int depth = 0;
+	while (depth < max_depth) {
 		a0 = current->follow(tr.vertices[0].position);
 		a1 = current->follow(tr.vertices[1].position);
 		a2 = current->follow(tr.vertices[2].position);
