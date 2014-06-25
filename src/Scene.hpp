@@ -37,7 +37,7 @@ public:
 	    tree.build(mesh);
     }
 	virtual void draw();
-	virtual float raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat);
+	virtual float raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Vec3Df* color=NULL);
     virtual std::string getName(){
         if(&mesh == NULL)return "Unknown object";
         else return mesh.name;
@@ -52,7 +52,7 @@ public:
 		this->radius = radius;
 	}
 	void draw();
-	float raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat);
+	float raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Vec3Df* color=NULL);
     std::string getName(){
         return "Sphere";
     }
@@ -74,7 +74,7 @@ public:
 	void add(Object* object);
 	void addLightPoint(Vec3Df& lightPos);
 	bool raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact,
-                  Vec3Df* normal, Material** mat, Object** obj);
+                  Vec3Df* normal, Material** mat, Object** obj, Vec3Df* color=NULL);
 
     Object* nextObject();
     Object* prevObject();

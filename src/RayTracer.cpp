@@ -22,13 +22,13 @@ float hardwood[720 * 720 * 3];
 // runtime options
 bool g_shadow = false;
 bool g_checkerboard = false;
-bool g_debug = true;
-bool g_ambient = false;
-bool g_diffuse = true;
+bool g_debug = false;
+bool g_ambient = true;
+bool g_diffuse = false;
 bool g_specular = false;
-bool g_reflect = true;
+bool g_reflect = false;
 bool g_refract = false;
-bool g_occlusion = true;
+bool g_occlusion = false;
 
 bool threadsStarted = false;
 
@@ -364,15 +364,15 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
         const unsigned int depth, bool inside){
     // calculate nearest triangle
     Object* obj;
-    Vec3Df color;
 
     if(!depth)
         return Vec3Df(0, 0, 0);
 
     Vec3Df impact;
     Vec3Df normal;
+    Vec3Df color;
     Material* mat2;
-    MyScene.raytrace(orig, dir, &impact, &normal, &mat2, &obj);
+    MyScene.raytrace(orig, dir, &impact, &normal, &mat2, &obj, &color);
     Material& mat = *mat2;
 
 	//return normal;
@@ -380,6 +380,12 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
     // background
     if(!obj){
         return background(orig, dir);
+    }
+
+    // ambient
+    if(g_ambient){
+        //            if(g_ambient && mat.ambient){
+        color += mat.Kd;
     }
 
     Vec3Df tocam = orig - impact;
@@ -399,16 +405,12 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
     }
     Vec3Df lightColor(1, 1, 1);
 
+
     unsigned int shadows = (int)MyScene.lights.size();
 
     for(Vec3Df& light : MyScene.lights){
         Vec3Df tolight = light - impact;
         tolight.normalize();
-
-        // ambient
-        if(g_ambient && mat.ambient){
-            color += mat.Kd * 0.1f;
-        }
 
         // shadow
 		if (g_shadow){
