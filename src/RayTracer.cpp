@@ -343,7 +343,7 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 }
 
 Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
-        const unsigned int depth){
+        const unsigned int depth, bool inside){
     // calculate nearest triangle
     Object* obj;
     Vec3Df color;
@@ -367,19 +367,17 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
     Vec3Df tocam = orig - impact;
     tocam.normalize();
 
-	//return normal;
-
     // refraction
-    /* Can't use this unless we switch away from .mtl files. Need density
-     index for materials. */
     if (g_refract) {
 		Vec3Df& i = tocam;
-		float idx = 1;
-		float costh = dot(-i, normal);
+		float idx = mat.refraction;
+		if (!inside) idx = 1.0f / idx;
+		float costh = dot(i, normal);
 		float sinth = idx * idx * (1 - costh * costh);
 		Vec3Df refr = idx * i + (idx * costh - sqrt(1 - sinth)) * normal;
+		refr = -refr;
 
-		return performRayTracing(impact, refr, depth - 1);
+		return performRayTracing(impact, refr, depth - 1, true);
     }
     Vec3Df lightColor(1, 1, 1);
 
