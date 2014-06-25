@@ -43,7 +43,6 @@ public:
 
     const std::string name;
 
-    inline Mesh(){};
     inline Mesh(const std::string name, const std::string filename): name(name){
         loadMesh(filename, true);
     }

@@ -1,8 +1,12 @@
 /**
 * Contains a scene with light sources and meshes
 */
+#ifndef SCENE_HPP
+#define SCENE_HPP
+
 #include "Vec3D.hpp"
 #include "Mesh.hpp"
+#include "Camera.hpp"
 #include "Tree.hpp"
 #include <vector>
 
@@ -19,7 +23,11 @@ public:
 	void load(std::string file);
 };
 
+static const char* nil = 0;
+
 class Object {
+protected:
+	inline Object() : mesh((Mesh&) *nil) {}
 public:
     Tree tree;
 	Mesh& mesh;
@@ -28,8 +36,26 @@ public:
 	inline Object(Vec3Df& pos, Mesh& mesh) : mesh(mesh), pos(pos), vel(0, 0, 0) {
 	    tree.build(mesh);
     }
+	virtual void draw();
+	virtual float raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Vec3Df* color=NULL);
+    virtual std::string getName(){
+        if(&mesh == NULL)return "Unknown object";
+        else return mesh.name;
+    }
+};
+
+class Sphere : public Object {
+	float radius;
+	Vec3Df center;
+public:
+	inline Sphere(Vec3Df& center, float radius) : center(center) {
+		this->radius = radius;
+	}
 	void draw();
-	float raytrace(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr);
+	float raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Vec3Df* color=NULL);
+    std::string getName(){
+        return "Sphere";
+    }
 };
 
 class Scene {
@@ -37,6 +63,8 @@ public:
 	std::vector<Vec3Df> lights;
 	std::vector<Object*> objects;
     Object* object;
+	Camera cam;
+	float floorheight;
 
 	inline Scene(){};
 	void load(string path);
@@ -45,17 +73,13 @@ public:
 	void update();
 	void add(Object* object);
 	void addLightPoint(Vec3Df& lightPos);
-	float raytrace(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr, Object** obj);
+	bool raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact,
+                  Vec3Df* normal, Material** mat, Object** obj, Vec3Df* color=NULL);
 
-    Object* nextObject(){
-        objectIndex = (objectIndex + 1) % objects.size();
-        return object = objects[objectIndex];
-    }
+    Object* nextObject();
+    Object* prevObject();
 
-    Object* prevObject(){
-        objectIndex = (unsigned int)(objectIndex ? objectIndex : objects.size()) - 1;
-        return object = objects[objectIndex];
-    }
 private:
     unsigned int objectIndex;
 };
+#endif

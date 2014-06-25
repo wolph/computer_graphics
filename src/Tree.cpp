@@ -29,22 +29,26 @@ void AABB::split() {
 	// make leaves
 	sub = new AABB*[8];
 	for (int x = 0; x < 2; x++){
-	    for (int y = 0; y < 2; y++){
-	        for (int z = 0; z < 2; z++){
-		        Vec3Df subpos(pos + Vec3Df(x * radius, y * radius, z * radius));
-		        float subradius = radius * 0.5f;
+		for (int y = 0; y < 2; y++){
+			for (int z = 0; z < 2; z++){
+				Vec3Df subpos(pos + Vec3Df(x * radius, y * radius, z * radius));
+				float subradius = radius * 0.5f;
 
-		        sub[z * 4 + y * 2 + x] = new AABB(subpos, subradius);
-	        }
-        }
-    }
+				sub[z * 4 + y * 2 + x] = new AABB(subpos, subradius);
+			}
+		}
+	}
 }
 
 bool AABB::collidePlane(int axis, const Vec3Df& orig, const Vec3Df& dir) {
 	// check axis plane
 	float v1 = pos.p[axis];
-	if (dir.p[axis] < 0)
-		v1 += 2 * radius;
+
+	// flip
+	bool flip = (dir.p[axis] < 0);
+	//if (dir.p[axis] > 0 && orig.p[axis] > v1) flip = !flip;
+	//if (dir.p[axis] < 0 && orig.p[axis] < v1 + 2 * radius) flip = !flip;
+	if (flip) v1 += 2 * radius;
 
 	// factor
 	float a = (v1 - orig.p[axis]) / dir.p[axis];
@@ -70,16 +74,16 @@ bool AABB::collidePlane(int axis, const Vec3Df& orig, const Vec3Df& dir) {
 
 bool AABB::hit(const Vec3Df& orig, const Vec3Df& dir) {
 	for (int i = 0; i < 3; i++)
-	if (collidePlane(i, orig, dir))
-		return true;
+		if (collidePlane(i, orig, dir))
+			return true;
 	return false;
 }
 
 inline float intersect(const Vec3Df& orig, const Vec3Df& dir, const Triangle* const triangle) {
 	const Vertex* vertices = triangle->vertices;
-	const Vec3Df& v0 = vertices[0].p;
-	const Vec3Df& v1 = vertices[1].p;
-	const Vec3Df& v2 = vertices[2].p;
+	const Vec3Df& v0 = vertices[0].position;
+	const Vec3Df& v1 = vertices[1].position;
+	const Vec3Df& v2 = vertices[2].position;
 
 	Vec3Df e1 = v1;
 	e1 -= v0;
@@ -96,7 +100,7 @@ inline float intersect(const Vec3Df& orig, const Vec3Df& dir, const Triangle* co
 	inv_det /= det;
 
 	Vec3Df T = orig;
-	T -= vertices[0].p;
+	T -= vertices[0].position;
 
 	float u = dot(T, P);
 	u *= inv_det;
@@ -161,7 +165,7 @@ void Tree::calcSize(Mesh& mesh) {
 	for (unsigned int i = 0; i < mesh.triangles.size(); i++) { // triangle
 		for (int v = 0; v < 3; v++) { // vertex
 			for (int d = 0; d < 3; d++) { // dimension
-				const float dim = mesh.triangles[i].vertices[v].p.p[d];
+				const float dim = mesh.triangles[i].vertices[v].position.p[d];
 				if (dim < p1.p[d])
 					p1.p[d] = dim;
 				if (dim > p2.p[d])
@@ -169,8 +173,8 @@ void Tree::calcSize(Mesh& mesh) {
 			}
 		}
 	}
-	printf("min: (%.1f,%.1f,%.1f)\n", p1.p[0], p1.p[1], p1.p[2]);
-	printf("max: (%.1f,%.1f,%.1f)\n", p2.p[0], p2.p[1], p2.p[2]);
+//	printf("min: (%.1f,%.1f,%.1f)\n", p1.p[0], p1.p[1], p1.p[2]);
+//	printf("max: (%.1f,%.1f,%.1f)\n", p2.p[0], p2.p[1], p2.p[2]);
 
 	Vec3Df dim = p2 - p1;
 	float sdim = dim.p[0];
@@ -181,7 +185,7 @@ void Tree::calcSize(Mesh& mesh) {
 }
 
 void Tree::build(Mesh& mesh) {
-	printf("Building tree!\n");
+//	printf("Building tree!\n");
 	calcSize(mesh);
 
 	for (unsigned int i = 0; i < mesh.triangles.size(); i++)
@@ -194,9 +198,9 @@ void Tree::add(Triangle& tr) {
 
 	int depth = 0;
 	while (depth < MAX_DEPTH) {
-		a0 = current->follow(tr.vertices[0].p);
-		a1 = current->follow(tr.vertices[1].p);
-		a2 = current->follow(tr.vertices[2].p);
+		a0 = current->follow(tr.vertices[0].position);
+		a1 = current->follow(tr.vertices[1].position);
+		a2 = current->follow(tr.vertices[2].position);
 
 		if (a0 != a1 || a1 != a2)
 			break;

@@ -13,62 +13,64 @@ class Material;
 
 #include "Vec3D.hpp"
 #include <string>
+#include <vector>
 
 using namespace std;
+
+/**
+
+Ka = Ambient Color
+Kd = diffuse color
+Ks = specular color
+Ns = specular coefficient
+Tr = transparency factor
+n = density index
+illum = options
+
+
+0. Color on and Ambient off
+1. Color on and Ambient on
+2. Highlight on
+3. Reflection on and Ray trace on
+4. Transparency: Glass on, Reflection: Ray trace on
+5. Reflection: Fresnel on and Ray trace on
+6. Transparency: Refraction on, Reflection: Fresnel off and Ray trace on
+7. Transparency: Refraction on, Reflection: Fresnel on and Ray trace on
+8. Reflection on and Ray trace off
+9. Transparency: Glass on, Reflection: Ray trace off
+10. Casts shadows onto invisible surfaces
+*/
 
 class Material{
 
 public:
 
-    Material();
-    Material(const Material & m);
-    Material& operator=(const Material& m);
-    void cleanup();
-    bool is_valid(void) const;
-    bool has_Kd(void);
-    bool has_Ka(void);
-    bool has_Ks(void);
-    bool has_Ns(void);
-    bool has_Ni(void);
-    bool has_illum(void);
-    bool has_Tr(void);
-    void set_Kd(float r, float g, float b);
-    void set_Ka(float r, float g, float b);
-    void set_Ks(float r, float g, float b);
-    void set_Ns(float r);
-    void set_Ni(float r);
-    void set_illum(int r);
-    void set_Tr(float t);
-    void set_textureName(const std::string & s); //name of the texture image file
-    void set_name(const std::string & s);
-    const Vec3Df& Kd(void) const;
-    const Vec3Df& Ka(void) const;
-    const Vec3Df& Ks(void) const;
-    const float Ni(void) const;
-    const float Ns(void) const;
-    const int illum(void) const;
-    const float Tr(void) const;
-    const std::string & textureName() const; //name of the texture image file
-    const std::string & name() const; //name of the material
+    //Material();
+    //Material(const Material & m);
+    //Material& operator=(const Material& m);
 
-private:
+    Vec3Df Kd;
+	Vec3Df Ka;
+	Vec3Df Ks;
+	float Ns;
+	float Ni;
+	int illum;
+	float Tr;
+	float n;
+    std::string name;
+    std::string textureName;
+    std::vector<Vec3Df> map_Kd;
 
-    Vec3Df Kd_;
-    bool Kd_is_set_; // diffuse
-    Vec3Df Ka_;
-    bool Ka_is_set_; // ambient
-    Vec3Df Ks_;
-    bool Ks_is_set_; // specular
-    float Ns_;
-    bool Ns_is_set_; // specular
-    float Ni_;
-    bool Ni_is_set_; // specular
-    int illum_;
-    bool illum_is_set_; //illumination model
-    float Tr_;
-    bool Tr_is_set_; // transparency
-    std::string name_;
-    std::string textureName_;
+	// illum
+	bool color;
+	bool ambient;
+	bool highlight;
+	bool reflection;
+	bool refraction;
+
+	bool is_valid();
+	void cleanup();
+    void loadTexture(std::string textureName);
 };
 
 #endif /* MATERIAL_H_ */

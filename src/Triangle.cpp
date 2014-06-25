@@ -7,10 +7,6 @@
 
 #include "Triangle.hpp"
 
-Triangle::Triangle(){
-    vertices[0] = vertices[1] = vertices[2] = Vertex();
-}
-
 Triangle::Triangle(const Triangle & triangle) : material(triangle.material){
     vertices[0] = triangle.vertices[0];
     vertices[1] = triangle.vertices[1];
@@ -58,7 +54,7 @@ Triangle::~Triangle(){
 
 
 void Triangle::calculateNormal(){
-	normal = vertices[0].p.crossProduct(vertices[1].p - vertices[0].p,
-		vertices[2].p - vertices[0].p);
+	normal = vertices[0].position.crossProduct(vertices[1].position - vertices[0].position,
+		vertices[2].position - vertices[0].position);
 	normal.normalize();
 }

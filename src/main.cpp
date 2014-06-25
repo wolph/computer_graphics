@@ -11,8 +11,6 @@
 // don't define anything in headers! only declare it!!!1!one!
 Vec3Df MyCameraPosition;
 
-std::vector<Vec3Df> MyLightPositions;
-
 // double buffered
 unsigned int textures[2];
 unsigned int activeTexIndex = 0;
@@ -25,13 +23,6 @@ Scene MyScene;
 extern bool g_phong;
 extern bool g_checkerboard;
 extern bool g_debug;
-
-extern bool g_ambient;
-extern bool g_diffuse;
-extern bool g_specular;
-extern bool g_reflect;
-extern bool g_refract;
-extern bool g_occlusion;
 
 bool needRebuild = false; // if the raytrace needs to be built
 
@@ -53,7 +44,7 @@ void drawTexture(int texIndex){
     glEnd();
 }
 
-void animate() {
+void animate(){
     MyCameraPosition = getCameraPosition();
     glutPostRedisplay();
 }
@@ -70,22 +61,15 @@ int main(int argc, char** argv){
     glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 
     // position et taille de la fenetre
-    glutInitWindowPosition(200, 100);
+    glutInitWindowPosition(200, 10);
     glutInitWindowSize(WINDOW_RES_X, WINDOW_RES_Y);
     glutCreateWindow(argv[0]);
 
     // Initialisation du point de vue
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(0, 0, -4);
-    glRotatef(30, -1, 1, 1);
-    tbInitTransform();     // initialisation du point de vue
-    tbHelp();                      // affiche l'aide sur la traqueboule
+    initViewTransform();
     MyCameraPosition = getCameraPosition();
-    //
-    // Active la lumière
-    // Pour la partie
-    // ECLAIRAGE
 
     glEnable( GL_LIGHTING);
     glEnable( GL_LIGHT0);
@@ -138,9 +122,14 @@ int main(int argc, char** argv){
     glutKeyboardFunc(keyboard);
     glutKeyboardUpFunc(keyup);
     glutDisplayFunc(display);
-    glutMouseFunc(tbMouseFunc);    // traqueboule utilise la souris
-    glutMotionFunc(tbMotionFunc);  // traqueboule utilise la souris
+    glutMouseFunc(mouseFunc);
     glutIdleFunc(animate);
+
+#ifdef NO_FPS
+	glutMotionFunc(mouseMotionFunc);
+#else
+	glutPassiveMotionFunc(mouseMotionFunc);
+#endif
 
     int ret = init(argc, argv);
     if(ret == 255)
@@ -156,35 +145,23 @@ int main(int argc, char** argv){
 
 // draw fps
 void drawInfo(){
-    clock_t diff = clock() - lastFrameTime;
-    lastFrameTime = clock();
-
-    const int clock = CLOCKS_PER_SEC * (isRealtimeRaytracing ? THREADS : 1);
-
-    if((0. + lastFrameTime - lastFPSRenderTime) / clock > .03){
-        diffIndex = (diffIndex + 1) % 10;
-        diffs[diffIndex] = diff;
-
+    if(fpsTimer.needsDisplay()){
+        float fps = 1. / fpsTimer.avg();
+        fpsTimer.updateLastDisplay();
+        sprintf(infoString, "%06.1f fps - Current object : %s", fps,
+                MyScene.object->getName().c_str());
         MyScene.update();
-        lastFPSRenderTime = lastFrameTime;
-
-        clock_t diff = 0;
-        for(int i=0; i<20; i++)diff += diffs[i];
-
-        float fps = (1. / (diff / 20.)) * clock;
-        sprintf(infoString, "%5.1f fps - Current object: %s", fps,
-                MyScene.object->mesh.name.c_str());
     }
 
     int i = 0;
     while(infoString[i] != '\0'){
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, infoString[i++]);
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, infoString[i++]);
     }
 }
 
 // display
 clock_t ticks;
-void display(void) {
+void display(void){
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     // Effacer tout
@@ -207,33 +184,33 @@ void display(void) {
 
         // reset view
         glLoadIdentity();
-        tbVisuTransform();
+        viewTransform();
 
         // swap buffers; draw on back buffer
-        if (isRealtimeRaytracing){
+        if(isRealtimeRaytracing){
             clock_t start = clock();
             startRayTracing(!activeTexIndex, false);
             ticks = clock() - start;
             activeTexIndex = !activeTexIndex;
-        } else {
-            if (needRebuild == true){
+        }else{
+            startRayTracing(activeTexIndex, needRebuild);
+            if(needRebuild == true){
                 int millis = (int)(ticks * 1000. / CLOCKS_PER_SEC);
                 long long expected = millis;
                 expected *= RAYTRACE_RES_X / PREVIEW_RES_X;
                 expected *= RAYTRACE_RES_Y / PREVIEW_RES_Y;
                 expected *= MSAA / PREVIEW_MSAA;
                 expected *= MSAA / PREVIEW_MSAA;
-                expected /= THREADS;
-                if (expected < 1000)
+                if(expected < 1000)
                     printf("will take %d milliseconds\n", (int)expected);
-                else if (expected < 1000 * 60)
+                else if(expected < 1000 * 60)
                     printf("will take %d seconds\n", (int)(expected / 1000));
-                else if (expected < 1000 * 60 * 60)
+                else if(expected < 1000 * 60 * 60)
                     printf("will take %d minutes\n", (int)(expected / 1000 / 60));
-                else if (expected < 1000 * 60 * 60 * 24) {
+                else if(expected < 1000 * 60 * 60 * 24){
                     printf("RENDERING WILL TAKE LONG!\n");
                     printf("will take %d hour\n", (int)(expected / 1000 / 60 / 60));
-                } else if (expected < (long long)1000 * 60 * 60 * 24 * 365) {
+                }else if(expected < (long long)1000 * 60 * 60 * 24 * 365){
                     printf("RENDERING WILL TAKE VERY LONG!\n");
                     printf("will take %d days\n", (int)(expected / 1000 / 60 / 60 / 24));
                 }
@@ -257,15 +234,14 @@ void display(void) {
                     printf("THIS IS MADNESS!\n");
                     printf("will take %s seconds\n", "<overflow error>");
                 }
-                startRayTracing(activeTexIndex, true);
                 needRebuild = false;
             }
         }
-    } else {
-        tbVisuTransform(); // origine et orientation de la scene
+    }else{
+        viewTransform(); // origine et orientation de la scene
         MyScene.draw();
-		if (g_debug)
-			MyScene.debugDraw();
+        if(g_debug)
+            MyScene.debugDraw();
     }
 
     glutSwapBuffers();
@@ -277,23 +253,13 @@ void reshape(int w, int h){
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     //glOrtho (-1.1, 1.1, -1.1,1.1, -1000.0, 1000.0);
-    gluPerspective(50, (float)w / h, 1, 10);
+    gluPerspective(50, (float)w / h, 1, 1000);
     glMatrixMode(GL_MODELVIEW);
 }
 
 // prise en compte du clavier
 void keyboard(unsigned char key, int x, int y){
-    cout << "down " << key << endl;
     switch(key){
-        case '1': g_phong = !g_phong; break;
-        case '2': g_checkerboard = !g_checkerboard; break;
-		case '3': g_debug = !g_debug;	break;
-		case '4': g_ambient = !g_ambient; break;
-		case '5': g_diffuse = !g_diffuse; break;
-		case '6': g_specular = !g_specular; break;
-		case '7': g_reflect = !g_reflect; break;
-		case '8': g_refract = !g_refract; break;
-		case '9': g_occlusion = !g_occlusion; break;
         case 't':
             cout << "Deprecated, 'b' toggles raytracing" << endl;
             isDrawingTexture = 0;
@@ -304,7 +270,7 @@ void keyboard(unsigned char key, int x, int y){
             MyScene.addLightPoint(MyCameraPosition);
             break;
         case 'l':
-			MyScene.lights[0] = getCameraPosition();
+            MyScene.lights[0] = getCameraPosition();
             break;
         case 'r':
             needRebuild = true;
@@ -317,12 +283,15 @@ void keyboard(unsigned char key, int x, int y){
                 isRealtimeRaytracing = 0;
             }else{
                 cout << "Using " << THREADS << " threads and resolution of "
-                << PREVIEW_RES_X << "x" << PREVIEW_RES_Y << endl;
+                        << PREVIEW_RES_X << "x" << PREVIEW_RES_Y << endl;
                 isRealtimeRaytracing = 1;
                 isDrawingTexture = 0;
             }
             break;
         case 27:     // touche ESC
+            isRealtimeRaytracing = false;
+            // TODO: fix this horrible hack to stop segfaults when exiting
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             exit(0);
         default:
             if(!yourKeyboardPress(key, x, y)){
@@ -332,8 +301,7 @@ void keyboard(unsigned char key, int x, int y){
     }
 }
 
-void keyup(unsigned char key, int x, int y) {
-    cout << "up " << key << endl;
+void keyup(unsigned char key, int x, int y){
     yourKeyboardRelease(key, x, y);
 }
 
