@@ -40,6 +40,7 @@ Vec3Df origin11, dest11;
 std::queue<std::future<int>> asyncResults;
 unsigned int asyncResultsSize;
 bool asyncBuildStarted = false;
+Timer asyncTimer;
 
 
 //use this function for any preprocessing of the mesh.
@@ -231,6 +232,7 @@ void createRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
 void startRayTracing(int texIndex, bool needsRebuild){
     // update scene
     Image& result = isRealtimeRaytracing ? preview_image : output_image;
+    std::future_status status = std::future_status::deferred;
 
     unsigned int w = isRealtimeRaytracing ? PREVIEW_RES_X : RAYTRACE_RES_X;
     unsigned int h = isRealtimeRaytracing ? PREVIEW_RES_Y : RAYTRACE_RES_Y;
@@ -253,12 +255,13 @@ void startRayTracing(int texIndex, bool needsRebuild){
                 asyncResults.push(pool.enqueue(threadedTracePart, &result,
                                           w, h, i, 0, i+1, h));
             }
+            asyncTimer.next();
             asyncBuildStarted = true;
             asyncResultsSize = (unsigned int)asyncResults.size();
         }
 
         while(!asyncResults.empty()){
-            auto status = asyncResults.front().wait_for(std::chrono::milliseconds(25));
+            status = asyncResults.front().wait_for(std::chrono::milliseconds(25));
             if(status == std::future_status::ready){
                 asyncResults.pop();
             }else if(status == std::future_status::timeout){
@@ -291,9 +294,14 @@ void startRayTracing(int texIndex, bool needsRebuild){
                  &result._image[0]); // data
 
     if(isRealtimeRaytracing || asyncResults.empty()){
+        if(!isRealtimeRaytracing && status == std::future_status::ready){
+            result.writeImage("result");
+            printf("Rendered %d in %.1f seconds\n",
+                asyncResultsSize,
+                asyncTimer.next().count()
+            );
+        }
         std::this_thread::sleep_for(std::chrono::milliseconds(25));
-    }else if(!isRealtimeRaytracing && !asyncBuildStarted){
-        result.writeImage("result");
     }
 }
 
