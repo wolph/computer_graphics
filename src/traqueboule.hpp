@@ -59,14 +59,23 @@ void mouseFunc(int button, int state, int x, int y){
 
 /** Mouse moded */
 void mouseMotionFunc(int x, int y){
-	if (abs(x - WINDOW_RES_X/2 + y - WINDOW_RES_Y/2) < 2)
+#ifdef NO_FPS
+	if (!leftButton)
+#else
+	if (abs(x - WINDOW_RES_X / 2 + y - WINDOW_RES_Y / 2) < 2)
+#endif
 		return;
 
 	double dx, dy, nrm;
 
 	// move cam around
+#ifdef NO_FPS
+	dx = x - oldMouseX;
+	dy = y - oldMouseY;
+#else
 	dx = x - WINDOW_RES_X / 2;
 	dy = y - WINDOW_RES_Y / 2;
+#endif
 
 	nrm = sqrt(dx * dx + dy * dy + dx * dx + dy * dy) * 0.002;// speedfact;
 
@@ -76,7 +85,9 @@ void mouseMotionFunc(int x, int y){
 	if (MyScene.cam.yrot < -90) MyScene.cam.yrot = -90;
 	if (MyScene.cam.yrot > 90) MyScene.cam.yrot = 90;
 
+#ifndef NO_FPS
 	glutWarpPointer(WINDOW_RES_X / 2, WINDOW_RES_Y / 2);
+#endif
 
 	oldMouseX = x;
 	oldMouseY = y;
