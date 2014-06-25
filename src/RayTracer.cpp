@@ -286,11 +286,16 @@ void startRayTracing(int texIndex, bool verbose){
 
 inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 
+	float height = orig.p[Y] + 1;
+	float a = -height / dir.p[Y];
+	float x = orig.p[X] + a * dir.p[X];
+	float z = orig.p[Z] + a * dir.p[Z];
+
+	float fog;
+	Vec3Df tocam = Vec3Df(x, 0, z) - orig;
+	fog = 1.0f - 1.0f / (tocam.getLength() * 0.25f);
+
     if(dir.p[Y] < -6){
-        float height = orig.p[Y] + 1;
-        float a = -height / dir.p[Y];
-        float x = orig.p[X] + a * dir.p[X];
-        float z = orig.p[Z] + a * dir.p[Z];
 
         unsigned int shadows = 0;
         for(Vec3Df& light : MyScene.lights){
@@ -329,10 +334,11 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
                 xidx += 720;
             if(zidx < 0)
                 zidx += 720;
-            return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio;
+            return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio * (1.0f - fog)
+				+ fog * Vec3Df(0.9, 0.9, 0.9);
         }
     }else
-        return Vec3Df(0, 0.6f, 0.99f);
+		return Vec3Df(0, 0.6f, 0.99f) * (1.0f - fog) + fog * Vec3Df(0.9, 0.9, 0.9);
 }
 
 Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
