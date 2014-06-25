@@ -173,8 +173,8 @@ void Tree::calcSize(Mesh& mesh) {
 			}
 		}
 	}
-	printf("min: (%.1f,%.1f,%.1f)\n", p1.p[0], p1.p[1], p1.p[2]);
-	printf("max: (%.1f,%.1f,%.1f)\n", p2.p[0], p2.p[1], p2.p[2]);
+//	printf("min: (%.1f,%.1f,%.1f)\n", p1.p[0], p1.p[1], p1.p[2]);
+//	printf("max: (%.1f,%.1f,%.1f)\n", p2.p[0], p2.p[1], p2.p[2]);
 
 	Vec3Df dim = p2 - p1;
 	float sdim = dim.p[0];
@@ -185,7 +185,7 @@ void Tree::calcSize(Mesh& mesh) {
 }
 
 void Tree::build(Mesh& mesh) {
-	printf("Building tree!\n");
+//	printf("Building tree!\n");
 	calcSize(mesh);
 
 	for (unsigned int i = 0; i < mesh.triangles.size(); i++)
