@@ -1,4 +1,8 @@
 light 0 5 -8
+<<<<<<< HEAD
 floor 0 0 0
 armadillo 0 0 -5
+=======
+armadillo 10 0 0
+>>>>>>> b6ed80ab526d6623d8b65e9007f52d0cc981042d
 camera 0 0.2 0 140 0
