@@ -295,21 +295,26 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 	Vec3Df tocam = Vec3Df(x, 0, z) - orig;
 	fog = 1.0f - 1.0f / (tocam.getLength() * 0.25f);
 
-    if(dir.p[Y] < -6){
+	if (dir.p[Y] < -6){
 
-        unsigned int shadows = 0;
-        for(Vec3Df& light : MyScene.lights){
-            Vec3Df impact = Vec3Df(x, -6, z);
-            Vec3Df tolight = light - impact;
-            tolight.normalize();
+		unsigned int shadows = MyScene.lights.size();
+		if (g_shadow){
+			for (Vec3Df& light : MyScene.lights){
+			Vec3Df impact = Vec3Df(x, -6, z);
+			Vec3Df tolight = light - impact;
+			tolight.normalize();
 
-            Vec3Df tempImpact, tempNormal;
-            Material* tempMat;
-            Object* tempObj;
-            if(!MyScene.raytrace(impact, tolight, &tempImpact, &tempNormal,
-                    &tempMat, &tempObj))
-                shadows++;
-        }
+			Vec3Df tempImpact, tempNormal;
+			Material* tempMat;
+			Object* tempObj;
+			if (MyScene.raytrace(impact, tolight, &tempImpact, &tempNormal,
+				&tempMat, &tempObj))
+				shadows--;
+			}
+		}
+		else {
+			shadows = MyScene.lights.size();
+		}
         float ratio = (float)shadows / (float)MyScene.lights.size();
 
         if(height < 0)
@@ -381,7 +386,7 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
     }
     Vec3Df lightColor(1, 1, 1);
 
-    unsigned int shadows = 0;
+    unsigned int shadows = MyScene.lights.size();
 
     for(Vec3Df& light : MyScene.lights){
         Vec3Df tolight = light - impact;
@@ -393,12 +398,14 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
         }
 
         // shadow
-        Vec3Df tempImpact, tempNormal;
-        Material* tempMat;
-        Object* tempObj;
-        if(MyScene.raytrace(impact, tolight, &tempImpact, &tempNormal, &tempMat,
-                &tempObj))
-            shadows++;
+		if (g_shadow){
+			Vec3Df tempImpact, tempNormal;
+			Material* tempMat;
+			Object* tempObj;
+			if (MyScene.raytrace(impact, tolight, &tempImpact, &tempNormal, &tempMat,
+				&tempObj))
+				shadows--;
+		}
 
         // diffuse
         if(g_diffuse && mat.color){
