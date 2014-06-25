@@ -135,16 +135,6 @@ void mouseProject(const GLdouble* p, GLdouble* q){
     project(view_inverse, p, q);
     //cout<<"projRep: "<<q[0]<<", "<<q[1]<<", "<<q[2]<<", "<<q[3]<<endl;
 }
-Vec3Df getCameraPosition(){
-    const GLdouble p[] = {0, 0, 0, 1};
-    GLdouble LightP[4];
-    mouseProject(p, LightP);
-    Vec3Df LightPos;
-    LightPos[0] = LightP[0];
-    LightPos[1] = LightP[1];
-    LightPos[2] = LightP[2];
-    return LightPos;
-}
 
 Vec3Df getWorldPositionOfPixel(unsigned int px, unsigned int py){
 
