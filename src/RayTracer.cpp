@@ -314,7 +314,7 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 
 	if (dir.p[Y] < MyScene.floorheight){
 
-		unsigned int shadows = MyScene.lights.size();
+		unsigned int shadows = (int)MyScene.lights.size();
 		if (g_shadow){
         for(Vec3Df& light : MyScene.lights){
             Vec3Df impact = Vec3Df(x, -6, z);
@@ -399,7 +399,7 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
     }
     Vec3Df lightColor(1, 1, 1);
 
-    unsigned int shadows = MyScene.lights.size();
+    unsigned int shadows = (int)MyScene.lights.size();
 
     for(Vec3Df& light : MyScene.lights){
         Vec3Df tolight = light - impact;
