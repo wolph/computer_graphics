@@ -75,4 +75,8 @@
 #define MAX_TRACE_DEPTH 20
 #endif
 
+#define X 0
+#define Y 1
+#define Z 2
+
 #endif /* CONSTANTS_HPP_ */
