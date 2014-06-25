@@ -274,7 +274,6 @@ void Scene::debugDraw() {
 		glColor3f(1, 0.5, 0.5);
 		glLineWidth(3);
 		glBegin(GL_LINES);
-		//drawCube(MyTree.root);
 		for (Object* obj : objects)
 			drawNormals(obj);
 		glEnd();

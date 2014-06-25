@@ -16,7 +16,6 @@ unsigned int textures[2];
 unsigned int activeTexIndex = 0;
 unsigned int isDrawingTexture = 0;
 unsigned int isRealtimeRaytracing = 0;
-Tree MyTree;
 Scene MyScene;
 
 // options
