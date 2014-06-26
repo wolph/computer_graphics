@@ -1,4 +1,4 @@
 light 0 5 -15
 floor 0 0 0
-armadillo 0 0 -17
+cube 0 0 -17
 camera 0 0 0 0 -10

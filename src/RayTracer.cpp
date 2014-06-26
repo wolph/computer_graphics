@@ -164,9 +164,6 @@ int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
                 for(float ys = 0;ys < 1.0f;ys += step){
                     float xscale = 1.0f - (x + xs) / (w - 1);
                     float yscale = float(y + ys) / (h - 1);
-#ifdef LINUX
-                    yscale = 1.0f - yscale;
-#endif
                     origin = yscale
                             * (xscale * origin00 + (1 - xscale) * origin10)
                             + (1 - yscale)
@@ -397,8 +394,9 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
                 zidx += 720;
 			return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio + fog;
         }
-    }else
-		return Vec3Df(0, 0.6f, 0.99f) + fog;
+	} else {
+		return Vec3Df(0, 0.6f, 0.99f) + (g_checkerboard ? 0 : fog);
+	}
 }
 
 Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
@@ -422,7 +420,6 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
     if(!obj){
         return background(orig, dir);
     }
-
 
     Vec3Df tocam = orig - impact;
     tocam.normalize();
@@ -462,13 +459,13 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
 				shadows--;
 		}
 
-		// phong shading
+		// phong illumination
 		// model source: http://www.cpp-home.com/tutorials/211_1.htm
 		if (g_phong){
 			Vec3Df refl = 2 * normal * dot(normal, tolight) - tolight;
 			Vec3Df res1 = mat.Kd * dot(normal, tolight);
 			res1 += pow(mat.Ns * mat.Ks * dot(refl, dir), (float)(mat.Ns / mat.Ni));
-			res1 *= lightColor;
+			res1 *= lightColor * mat.Tr;
 			if (g_ambient)
 				res1 += mat.Ka * mat.Kd;
 			color += res1;
