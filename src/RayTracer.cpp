@@ -195,19 +195,18 @@ int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
 void threadedTrace(Image* result, const unsigned int w, const unsigned int h, const bool background=true){
     Timer timer(10, 1);
     printf("preview part size: %d\n", PREVIEW_PART_SIZE);
-    // multithread
+
+    std::vector<std::pair<unsigned int, unsigned int>>parts;
+    for(unsigned int i = 0;i < w && isRealtimeRaytracing;i +=
+        PREVIEW_PART_SIZE){
+        for(unsigned int j = 0;j < h && isRealtimeRaytracing;j +=
+            PREVIEW_PART_SIZE){
+            parts.push_back(pair<unsigned int, unsigned int>(i, j));
+        }
+    }
 
     while(isRealtimeRaytracing && pool.running() && background){
         std::queue<std::future<int>> results;
-        std::vector<std::pair<unsigned int, unsigned int>>parts((w * h)/PREVIEW_PART_SIZE);
-        for(unsigned int i = 0;i < w && isRealtimeRaytracing;i +=
-        PREVIEW_PART_SIZE){
-            for(unsigned int j = 0;j < h && isRealtimeRaytracing;j +=
-            PREVIEW_PART_SIZE){
-                parts[i * PREVIEW_PART_SIZE + j] = pair<unsigned int, unsigned int>(i, j);
-            }
-        }
-
         std::random_shuffle(parts.begin(), parts.end());
         for(pair<unsigned int, unsigned int> p: parts){
             results.push(
