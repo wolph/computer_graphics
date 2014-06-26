@@ -197,9 +197,9 @@ void threadedTrace(Image* result, const unsigned int w, const unsigned int h, co
     printf("preview part size: %d\n", PREVIEW_PART_SIZE);
 
     std::vector<std::pair<unsigned int, unsigned int>>parts;
-    for(unsigned int i = 0;i < w && isRealtimeRaytracing;i +=
+    for(unsigned int i = 0;i < w;i +=
         PREVIEW_PART_SIZE){
-        for(unsigned int j = 0;j < h && isRealtimeRaytracing;j +=
+        for(unsigned int j = 0;j < h;j +=
             PREVIEW_PART_SIZE){
             parts.push_back(pair<unsigned int, unsigned int>(i, j));
         }
@@ -271,10 +271,23 @@ void startRayTracing(int texIndex, bool needsRebuild){
         Timer timer(1, 0.2);
 
         if(needsRebuild){
-            for(unsigned int i = 0;i < w;i++){
-                asyncResults.push(pool.enqueue(threadedTracePart, &result,
-                                          w, h, i, 0, i+1, h));
+            std::vector<std::pair<unsigned int, unsigned int>>parts;
+            for(unsigned int i = 0;i < w;i +=
+                PREVIEW_PART_SIZE){
+                for(unsigned int j = 0;j < h;j +=
+                    PREVIEW_PART_SIZE){
+                    parts.push_back(pair<unsigned int, unsigned int>(i, j));
+                }
             }
+
+            std::random_shuffle(parts.begin(), parts.end());
+            for(pair<unsigned int, unsigned int> p: parts){
+                asyncResults.push(pool.enqueue(
+                    threadedTracePart, &result, w, h,
+                    p.first, p.second,
+                    p.first+PREVIEW_PART_SIZE, p.second+PREVIEW_PART_SIZE));
+            }
+
             asyncTimer.next();
             asyncBuildStarted = true;
             asyncResultsSize = (unsigned int)asyncResults.size();
