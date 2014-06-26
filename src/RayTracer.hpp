@@ -81,4 +81,6 @@ bool yourKeyboardRelease(char t, int x, int y);
 
 void drawFPS();
 
+inline Vec3Df pow(Vec3Df in1, float in2);
+
 #endif
