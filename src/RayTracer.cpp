@@ -401,8 +401,7 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
     }
 
     // ambient
-    if(g_ambient){
-        //            if(g_ambient && mat.ambient){
+    if(g_ambient && mat.ambient){
         color += mat.Kd;
     }
 
