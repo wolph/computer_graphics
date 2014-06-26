@@ -419,7 +419,7 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
 	//return normal;
 
     // background
-    if(!obj){
+    if(!obj || impact.z < MyScene.floorheight) {
         return background(orig, dir);
     }
 
