@@ -421,7 +421,6 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
         return background(orig, dir);
     }
 
-
     Vec3Df tocam = orig - impact;
     tocam.normalize();
 
@@ -466,7 +465,7 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
 			Vec3Df refl = 2 * normal * dot(normal, tolight) - tolight;
 			Vec3Df res1 = mat.Kd * dot(normal, tolight);
 			res1 += pow(mat.Ns * mat.Ks * dot(refl, dir), (float)(mat.Ns / mat.Ni));
-			res1 *= lightColor;
+			res1 *= lightColor * mat.Tr;
 			if (g_ambient)
 				res1 += mat.Ka * mat.Kd;
 			color += res1;
