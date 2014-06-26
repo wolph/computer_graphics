@@ -231,13 +231,13 @@ void createRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
 	double* modelview = MyScene.cam.viewmat;
 
     gluUnProject(x_I, y_new, 0, modelview, projection, viewport, &x, &y, &z);
-    origin->p[0] = x;
-    origin->p[1] = y;
-    origin->p[2] = z;
+    origin->p[X] = x;
+    origin->p[Y] = y;
+    origin->p[Z] = z;
     gluUnProject(x_I, y_new, 1, modelview, projection, viewport, &x, &y, &z);
-    dest->p[0] = x;
-    dest->p[1] = y;
-    dest->p[2] = z;
+    dest->p[X] = x;
+    dest->p[Y] = y;
+    dest->p[Z] = z;
 }
 
 void startRayTracing(int texIndex, bool needsRebuild){
