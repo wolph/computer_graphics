@@ -112,9 +112,10 @@ int main(int argc, char** argv){
 
     // cablage des callback
     glutReshapeFunc(reshape);
-    glutSetKeyRepeat(true);
+    glutSetKeyRepeat(false);
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(specialKeyboard);
+    glutSpecialUpFunc(specialKeyboardUp);
     glutKeyboardUpFunc(keyup);
     glutDisplayFunc(display);
     glutMouseFunc(mouseFunc);

@@ -648,19 +648,35 @@ bool yourKeyboardRelease(char t, int x, int y){
     return true;
 }
 
+void specialKeyboardUp(int key, int x, int y){
+    switch(key){
+        case GLUT_KEY_UP:
+        case GLUT_KEY_DOWN:
+            MyScene.cam.rotateY = 0;
+            break;
+        case GLUT_KEY_RIGHT:
+        case GLUT_KEY_LEFT:
+            MyScene.cam.rotateX = 0;
+            break;
+        default:
+            printf("Unknown special key %d\n", key);
+            break;
+    }
+}
+
 void specialKeyboard(int key, int x, int y){
     switch(key){
         case GLUT_KEY_UP:
-            MyScene.cam.yrot += 5;
+            MyScene.cam.rotateY = 1;
             break;
         case GLUT_KEY_DOWN:
-            MyScene.cam.yrot -= 5;
-            break;
-        case GLUT_KEY_LEFT:
-            MyScene.cam.xrot -= 5;
+            MyScene.cam.rotateY = -1;
             break;
         case GLUT_KEY_RIGHT:
-            MyScene.cam.xrot += 5;
+            MyScene.cam.rotateX = 1;
+            break;
+        case GLUT_KEY_LEFT:
+            MyScene.cam.rotateX = -1;
             break;
         default:
             printf("Unknown special key %d\n", key);

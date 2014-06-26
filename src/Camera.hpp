@@ -11,6 +11,8 @@ public:
 	int forward;
 	int side;
 	int alt;
+	int rotateX;
+	int rotateY;
 
 	Vec3Df pos;
 	float xrot, yrot;

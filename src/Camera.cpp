@@ -11,6 +11,8 @@ Camera::Camera() {
 
 	forward = 0;
 	side = 0;
+	rotateX = 0;
+	rotateY = 0;
 }
 
 void Camera::Update() {
@@ -20,6 +22,8 @@ void Camera::Update() {
 	dir2.normalize();
 	pos += dir1 * 0.1 * forward;
 	pos += dir2 * 0.1 * side;
+	xrot += 2 * rotateX;
+	yrot += 1 * rotateY;
 	pos.p[Y] += alt * -0.1;
 
 	if (pos.p[Y] > -0.01) pos.p[Y] = -0.01;
