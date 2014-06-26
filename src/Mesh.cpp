@@ -336,7 +336,7 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
 
             }else{
                 printf(
-                        "TriMesh::LOAD: Unexpected number of face vertices (<3). Ignoring face");
+                        "TriMesh::LOAD: Unexpected number of face vertices (<3). Ignoring face\n");
             }
         }
         memset(&s, 0, LINE_LEN);
