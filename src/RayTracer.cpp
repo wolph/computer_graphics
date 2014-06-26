@@ -425,6 +425,8 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
 		float sinth = idx * idx * (1 - costh * costh);
 		Vec3Df refr = idx * i + (idx * costh - sqrt(1 - sinth)) * normal;
 		refr = -refr;
+
+		global_color += performRayTracing(impact, refr, depth - 1, true);
     }
 
     Vec3Df lightColor(1, 1, 1);
