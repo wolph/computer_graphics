@@ -49,10 +49,6 @@ Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2, cons
 	calculateNormal();
 }
 
-Triangle::~Triangle(){
-}
-
-
 void Triangle::calculateNormal(){
 	normal = vertices[0].position.crossProduct(vertices[1].position - vertices[0].position,
 		vertices[2].position - vertices[0].position);
