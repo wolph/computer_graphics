@@ -79,6 +79,7 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir, const unsigned i
 //want keyboard interaction? Here it is...
 bool yourKeyboardPress(char t, int x, int y);
 bool yourKeyboardRelease(char t, int x, int y);
+void specialKeyboard(int key, int x, int y);
 
 void drawFPS();
 

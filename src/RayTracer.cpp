@@ -648,6 +648,26 @@ bool yourKeyboardRelease(char t, int x, int y){
     return true;
 }
 
+void specialKeyboard(int key, int x, int y){
+    switch(key){
+        case GLUT_KEY_UP:
+            MyScene.cam.yrot += 5;
+            break;
+        case GLUT_KEY_DOWN:
+            MyScene.cam.yrot -= 5;
+            break;
+        case GLUT_KEY_LEFT:
+            MyScene.cam.xrot -= 5;
+            break;
+        case GLUT_KEY_RIGHT:
+            MyScene.cam.xrot += 5;
+            break;
+        default:
+            printf("Unknown special key %d\n", key);
+            break;
+    }
+}
+
 inline Vec3Df pow(Vec3Df in1, float in2){
 	in1[X] = pow(in1[X], in2);
 	in1[Y] = pow(in1[Y], in2);
