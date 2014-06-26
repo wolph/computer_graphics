@@ -184,9 +184,9 @@ int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
             total /= msaa;
             total /= msaa;
             // result->_image
-            image[(y * w + x) * 3] = total.p[0];
-            image[(y * w + x) * 3 + 1] = total.p[1];
-            image[(y * w + x) * 3 + 2] = total.p[2];
+            image[(y * w + x) * 3] = total.p[X];
+            image[(y * w + x) * 3 + 1] = total.p[Y];
+            image[(y * w + x) * 3 + 2] = total.p[Z];
         }
     }
     return yb;
@@ -507,10 +507,10 @@ void drawCube(AABB* cube){
                     v.p[(axis + 1) % 3] += x * dim;
                     v.p[(axis + 2) % 3] += y * dim;
 
-                    glVertex3f(v.p[0], v.p[1], v.p[2]);
-                    glVertex3f(v.p[0] + ((axis == 0) ? dim : 0),
-                            v.p[1] + ((axis == 1) ? dim : 0),
-                            v.p[2] + ((axis == 2) ? dim : 0));
+                    glVertex3f(v.p[X], v.p[Y], v.p[Z]);
+                    glVertex3f(v.p[X] + ((axis == 0) ? dim : 0),
+                            v.p[Y] + ((axis == 1) ? dim : 0),
+                            v.p[Z] + ((axis == 2) ? dim : 0));
                 }
             }
         }
@@ -626,8 +626,8 @@ bool yourKeyboardRelease(char t, int x, int y){
 }
 
 inline Vec3Df pow(Vec3Df in1, float in2){
-	in1[0] = pow(in1[0], in2);
-	in1[1] = pow(in1[1], in2);
-	in1[2] = pow(in1[2], in2);
+	in1[X] = pow(in1[X], in2);
+	in1[Y] = pow(in1[Y], in2);
+	in1[Z] = pow(in1[Z], in2);
 	return in1;
 }
