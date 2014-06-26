@@ -395,10 +395,13 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
                 xidx += 720;
             if(zidx < 0)
                 zidx += 720;
-			return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio + fog;
+			Vec3Df res = *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio + fog;
+			return Vec3Df(fmin(res[X], 1), fmin(res[Y], 1), fmin(res[Z], 1));
         }
-    }else
-		return Vec3Df(0, 0.6f, 0.99f) + fog;
+	} else {
+		Vec3Df res = Vec3Df(0, 0.6f, 0.99f) + fog;
+		return Vec3Df(fmin(res[X], 1), fmin(res[Y], 1), fmin(res[Z], 1));
+	}
 }
 
 Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
