@@ -351,7 +351,7 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 
 	float fogVar = -(tocam.getLength() * 0.05f + 1.0f);
 	fogVar = (1.0f + fogVar ) / fogVar / 1.2f;
-	Vec3Df fog = Vec3Df(1, 1, 1) * -fogVar; // Remove the minus for white fog
+	Vec3Df fog = Vec3Df(0, 0, 0) * -fogVar; // Remove the minus for white fog
 
 	if (dir.p[Y] < MyScene.floorheight){
 
@@ -462,7 +462,7 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
 				shadows--;
 		}
 
-		// phong shading
+		// phong illumination
 		// model source: http://www.cpp-home.com/tutorials/211_1.htm
 		if (g_phong){
 			Vec3Df refl = 2 * normal * dot(normal, tolight) - tolight;
