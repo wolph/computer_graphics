@@ -320,14 +320,16 @@ void startRayTracing(int texIndex, bool needsRebuild){
 
 inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 
-        float height = orig.p[Y] + 1;
-        float a = -height / dir.p[Y];
-        float x = orig.p[X] + a * dir.p[X];
-        float z = orig.p[Z] + a * dir.p[Z];
+    float height = orig.p[Y] + 1,
+		a = -height / dir.p[Y],
+		x = orig.p[X] + a * dir.p[X],
+		z = orig.p[Z] + a * dir.p[Z];
 
-	float fog;
 	Vec3Df tocam = Vec3Df(x, 0, z) - orig;
-	fog = 1.0f - 1.0f / (tocam.getLength() * 0.06125f);
+
+	float fogVar = -(tocam.getLength() * 0.05f + 1.0f);
+	fogVar = (1.0f + fogVar ) / fogVar / 1.2f;
+	Vec3Df fog = Vec3Df(1, 1, 1) * -fogVar; // Remove the minus for white fog
 
 	if (dir.p[Y] < MyScene.floorheight){
 
@@ -371,11 +373,10 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
                 xidx += 720;
             if(zidx < 0)
                 zidx += 720;
-            return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio * (1.0f - fog)
-				+ fog * Vec3Df(0.9, 0.9, 0.9);
+			return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio + fog;
         }
     }else
-		return Vec3Df(0, 0.6f, 0.99f) * (1.0f - fog) + fog * Vec3Df(0.9, 0.9, 0.9);
+		return Vec3Df(0, 0.6f, 0.99f) + fog;
 }
 
 Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
@@ -624,8 +625,8 @@ bool yourKeyboardRelease(char t, int x, int y){
 }
 
 inline Vec3Df pow(Vec3Df in1, float in2){
-	in1[0] = pow(in1[0], in2);
-	in1[1] = pow(in1[1], in2);
-	in1[2] = pow(in1[2], in2);
+	in1[X] = pow(in1[X], in2);
+	in1[Y] = pow(in1[Y], in2);
+	in1[Z] = pow(in1[Z], in2);
 	return in1;
 }
