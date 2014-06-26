@@ -1,4 +1,4 @@
 light 0 5 -15
 floor 0 0 0
-cube 0 0 -17
 camera 0 0 0 0 -10
+simple_monkey 0 0 0
