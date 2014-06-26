@@ -50,6 +50,7 @@ const void Mesh::draw(){
 }
 
 bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
+    Timer timer;
     vertices.clear();
     triangles.clear();
     texcoords.clear();
@@ -341,35 +342,18 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
         }
         memset(&s, 0, LINE_LEN);
     }
-
-	printf("Calculating normals...\n");
-
-	// calculate vertex normals
-	for (Vertex& v : vertices)
-		v.normal = Vec3Df(0, 0, 0);
+    printf("Done reading file in %.3f seconds\n", timer.next().count());
 
     unsigned int vsize = (int)vertices.size();
-	for (auto& triangle : tempTriangles) {
-        bool error = false;
-        for(int i=0; i<3; i++){
-            if(triangle[i] >= vsize){
-                printf("This model is broken, it's referring to non-existing vertice with index %d\n", triangle[i]);
-                error = true;
-                break;
-            }
-        }
-        if(!error){
-            Triangle tr(vertices[triangle[0]], vertices[triangle[1]],
-                        vertices[triangle[2]], materials[triangle[6]]);
 
-            vertices[triangle[0]].normal += tr.normal;
-            vertices[triangle[1]].normal += tr.normal;
-            vertices[triangle[2]].normal += tr.normal;
-        }
-	}
-
-	for (auto& v : vertices)
-		v.normal.normalize();
+    /* WARNING! 
+     The double loop looks useless but it's needed for normal calculation.
+     
+     1. run through the triangles and add the triangle normals to the vertices
+     2. run through the vertices to normalize
+     3. run through the triangles to create the triangles with the correct
+        vertex normals
+     */
 
 	// make triangles
 	printf("Making triangles...\n");
@@ -382,18 +366,41 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
                 break;
             }
         }
+
+        Triangle t(vertices[triangle[0]], vertices[triangle[1]],
+                   vertices[triangle[2]], materials[triangle[0]]);
+
+        for(int i=0; i<3; i++)
+            vertices[triangle[i]].normal += t.normal;
+    }
+
+    for(auto& vertex: vertices)
+        vertex.normal.normalize();
+    printf("Calculated vertex normals in %.3f seconds\n", timer.next().count());
+
+    for(auto& triangle : tempTriangles){
+        bool error = false;
+        for(int i=0; i<3; i++){
+            if(triangle[i] >= vsize){
+                printf("This model is broken, it's referring to non-existing vertice with index %d\n", triangle[i]);
+                error = true;
+                break;
+            }
+        }
         if(!error){
-            if (!texcoords.empty())
+            if (!texcoords.empty()){
                 triangles.push_back(Triangle(vertices[triangle[0]], vertices[triangle[1]],
                                              vertices[triangle[2]], texcoords[triangle[3]],
                                              texcoords[triangle[4]], texcoords[triangle[5]], materials[triangle[6]]));
-            else
+
+            }else{
                 triangles.push_back(Triangle(vertices[triangle[0]], vertices[triangle[1]],
                                              vertices[triangle[2]], materials[triangle[6]]));
+            }
+
         }
     }
-
-	printf("Done!\n");
+    printf("DOne making triangles in %.3f seconds\n", timer.next().count());
 
     fclose(in);
     return true;

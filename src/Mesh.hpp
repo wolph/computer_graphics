@@ -15,6 +15,7 @@
 #include <string.h>
 #include <vector>
 #include <string>
+#include "Timer.hpp"
 
 /************************************************************
  * Class de maillage basique
