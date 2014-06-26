@@ -20,9 +20,9 @@ void Camera::Update() {
 	dir2.normalize();
 	pos += dir1 * 0.1 * forward;
 	pos += dir2 * 0.1 * side;
-	pos.p[1] += alt * -0.1;
+	pos.p[Y] += alt * -0.1;
 
-	if (pos.p[1] > -0.01) pos.p[1] = -0.01;
+	if (pos.p[Y] > -0.01) pos.p[Y] = -0.01;
 }
 
 void Camera::BuildMatrix() {
@@ -40,18 +40,18 @@ void Camera::BuildMatrix() {
 		glTranslated(1, 0, 0);
 		double mat[16];
 		glGetDoublev(GL_MODELVIEW_MATRIX, mat);
-		dir.p[0] = mat[12] - 2;
-		dir.p[1] = mat[13];
-		dir.p[2] = mat[14];
+		dir.p[X] = mat[12] - 2;
+		dir.p[Y] = mat[13];
+		dir.p[Z] = mat[14];
 		//dir.normalize();
-		printf("%f %f %f\n", dir.p[0], dir.p[1], dir.p[2]);
+		printf("%f %f %f\n", dir.p[X], dir.p[Y], dir.p[Z]);
 	glPopMatrix();*/
 
 
 	// translate to pos
 	glRotated(xrot, 0, 1, 0);
 	glRotated(yrot, cos(xrot / 180.0 * 3.14), 0, sin(xrot / 180.0 * 3.14));
-	glTranslatef(pos.p[0], pos.p[1], pos.p[2]);
+	glTranslatef(pos.p[X], pos.p[Y], pos.p[Z]);
 
 	glGetDoublev(GL_MODELVIEW_MATRIX, viewmat);
 }

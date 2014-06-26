@@ -184,9 +184,9 @@ int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
             total /= msaa;
             total /= msaa;
             // result->_image
-            image[(y * w + x) * 3] = total.p[0];
-            image[(y * w + x) * 3 + 1] = total.p[1];
-            image[(y * w + x) * 3 + 2] = total.p[2];
+            image[(y * w + x) * 3] = total.p[X];
+            image[(y * w + x) * 3 + 1] = total.p[Y];
+            image[(y * w + x) * 3 + 2] = total.p[Z];
         }
     }
     return yb;
@@ -231,13 +231,13 @@ void createRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
 	double* modelview = MyScene.cam.viewmat;
 
     gluUnProject(x_I, y_new, 0, modelview, projection, viewport, &x, &y, &z);
-    origin->p[0] = x;
-    origin->p[1] = y;
-    origin->p[2] = z;
+    origin->p[X] = x;
+    origin->p[Y] = y;
+    origin->p[Z] = z;
     gluUnProject(x_I, y_new, 1, modelview, projection, viewport, &x, &y, &z);
-    dest->p[0] = x;
-    dest->p[1] = y;
-    dest->p[2] = z;
+    dest->p[X] = x;
+    dest->p[Y] = y;
+    dest->p[Z] = z;
 }
 
 void startRayTracing(int texIndex, bool needsRebuild){
@@ -505,10 +505,10 @@ void drawCube(AABB* cube){
                     v.p[(axis + 1) % 3] += x * dim;
                     v.p[(axis + 2) % 3] += y * dim;
 
-                    glVertex3f(v.p[0], v.p[1], v.p[2]);
-                    glVertex3f(v.p[0] + ((axis == 0) ? dim : 0),
-                            v.p[1] + ((axis == 1) ? dim : 0),
-                            v.p[2] + ((axis == 2) ? dim : 0));
+                    glVertex3f(v.p[X], v.p[Y], v.p[Z]);
+                    glVertex3f(v.p[X] + ((axis == 0) ? dim : 0),
+                            v.p[Y] + ((axis == 1) ? dim : 0),
+                            v.p[Z] + ((axis == 2) ? dim : 0));
                 }
             }
         }

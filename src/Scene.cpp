@@ -125,7 +125,7 @@ void Model::load(std::string file) {
 				Vec3Df vec;
 				fread(vec.p, sizeof(vec), 1, fp);
 				vertices.push_back(vec);
-				//printf("(%f,%f,%f)\n", vec.p[0], vec.p[1], vec.p[2]);
+				//printf("(%f,%f,%f)\n", vec.p[X], vec.p[Y], vec.p[Z]);
 			}
 			break;
 		case FACES:
@@ -175,9 +175,9 @@ void Scene::load(string path) {
 			addLightPoint(lightPoint);
 		}
 		else if (name == "camera") {
-			cam.pos.p[0] = x;
-			cam.pos.p[1] = y;
-			cam.pos.p[2] = z;
+			cam.pos.p[X] = x;
+			cam.pos.p[Y] = y;
+			cam.pos.p[Z] = z;
 			float xrot, yrot;
 			scene >> xrot >> yrot;
 			cam.xrot = xrot;
@@ -252,9 +252,9 @@ void Scene::addLightPoint(Vec3Df& lightPos) {
 }
 
 void drawNormal(const Vec3Df& avg, const Vec3Df& n){
-	glVertex3f(avg.p[0], avg.p[1], avg.p[2]);
+	glVertex3f(avg.p[X], avg.p[Y], avg.p[Z]);
 	Vec3Df d = avg + n * 0.1f;
-	glVertex3f(d.p[0], d.p[1], d.p[2]);
+	glVertex3f(d.p[X], d.p[Y], d.p[Z]);
 }
 
 void drawNormals(Object* obj) {
@@ -281,14 +281,14 @@ void Scene::debugDraw() {
 
 void Object::draw() {
 	glPushMatrix();
-	glTranslatef(pos.p[0], pos.p[1], pos.p[2]);
+	glTranslatef(pos.p[X], pos.p[Y], pos.p[Z]);
 	mesh.drawSmooth();
 	glPopMatrix();
 }
 
 void Sphere::draw() {
 	glPushMatrix();
-	glTranslatef(center.p[0], center.p[1], center.p[2]);
+	glTranslatef(center.p[X], center.p[Y], center.p[Z]);
 	glutSolidSphere(radius, 20, 20);
 	glPopMatrix();
 }

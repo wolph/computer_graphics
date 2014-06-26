@@ -2,6 +2,7 @@
 #define CAMERA
 #include <GL/glut.h>
 #include "Vec3D.hpp"
+#include "constants.hpp"
 
 class Camera {
 public:

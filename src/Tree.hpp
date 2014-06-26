@@ -4,6 +4,7 @@
 */
 #pragma once
 #include "Mesh.hpp"
+#include "constants.hpp"
 
 struct AABB {
 	// the subtrees, if any

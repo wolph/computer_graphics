@@ -173,13 +173,13 @@ void Tree::calcSize(Mesh& mesh) {
 			}
 		}
 	}
-//	printf("min: (%.1f,%.1f,%.1f)\n", p1.p[0], p1.p[1], p1.p[2]);
-//	printf("max: (%.1f,%.1f,%.1f)\n", p2.p[0], p2.p[1], p2.p[2]);
+//	printf("min: (%.1f,%.1f,%.1f)\n", p1.p[X], p1.p[Y], p1.p[Z]);
+//	printf("max: (%.1f,%.1f,%.1f)\n", p2.p[X], p2.p[Y], p2.p[Z]);
 
 	Vec3Df dim = p2 - p1;
-	float sdim = dim.p[0];
-	sdim = fmax(sdim, dim.p[1]);
-	sdim = fmax(sdim, dim.p[2]);
+	float sdim = dim.p[X];
+	sdim = fmax(sdim, dim.p[Y]);
+	sdim = fmax(sdim, dim.p[Z]);
 
 	root = new AABB(p1, sdim * 0.5f);
 }
