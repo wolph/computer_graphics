@@ -366,6 +366,7 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
                 break;
             }
         }
+        if(error)continue;
 
         Triangle t(vertices[triangle[0]], vertices[triangle[1]],
                    vertices[triangle[2]], materials[triangle[0]]);
