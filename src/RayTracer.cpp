@@ -351,7 +351,7 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 
 	float fogVar = -(tocam.getLength() * 0.05f + 1.0f);
 	fogVar = (1.0f + fogVar ) / fogVar / 1.2f;
-	Vec3Df fog = Vec3Df(0, 0, 0) * -fogVar; // Remove the minus for white fog
+	Vec3Df fog = Vec3Df(1, 1, 1) * -fogVar; // Remove the minus for white fog
 
 	if (dir.p[Y] < MyScene.floorheight){
 
@@ -395,12 +395,10 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
                 xidx += 720;
             if(zidx < 0)
                 zidx += 720;
-			Vec3Df res = *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio + fog;
-			return Vec3Df(fmin(res[X], 1), fmin(res[Y], 1), fmin(res[Z], 1));
+			return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio + fog;
         }
 	} else {
-		Vec3Df res = Vec3Df(0, 0.6f, 0.99f) + fog;
-		return Vec3Df(fmin(res[X], 1), fmin(res[Y], 1), fmin(res[Z], 1));
+		return Vec3Df(0, 0.6f, 0.99f) + (g_checkerboard ? 0 : fog);
 	}
 }
 
