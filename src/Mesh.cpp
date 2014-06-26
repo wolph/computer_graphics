@@ -376,6 +376,7 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
 
     for(auto& vertex: vertices)
         vertex.normal.normalize();
+    
     printf("Calculated vertex normals in %.3f seconds\n", timer.next().count());
 
     for(auto& triangle : tempTriangles){
