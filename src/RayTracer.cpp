@@ -395,7 +395,9 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 			return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio + fog;
         }
 	} else {
-		return Vec3Df(0, 0.6f, 0.99f) + (g_checkerboard ? 0 : fog);
+        if(!g_checkerboard)
+            fog += Vec3Df(0, 0.6f, 0.99f);
+        return fog;
 	}
 }
 
