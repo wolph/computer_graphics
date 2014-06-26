@@ -14,7 +14,7 @@
 #include "stdio.h"
 #include "Vec3D.hpp"
 #include "Scene.hpp"
-
+#include "Timer.hpp"
 extern Scene MyScene;
 
 static const float speedfact = 0.2f;
@@ -30,6 +30,8 @@ GLdouble view_inverse[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 int oldMouseX, oldMouseY, rotatingXY = 0, translateXY = 0, moveZ = 0;
 bool leftButton, rightButton;
 double angleX, angleY;
+bool mouseMode = false;
+Timer startDrag(1);
 
 
 /** Initialize model view matrix */
@@ -44,50 +46,57 @@ void viewTransform() {
 
 /** Mouse button click */
 void mouseFunc(int button, int state, int x, int y){ 
+    double last_click = startDrag.next().count();
+    if(button == GLUT_LEFT_BUTTON && state == GLUT_UP && last_click < 0.3){
+        mouseMode = !mouseMode;
+        if(mouseMode)
+	        glutWarpPointer(WINDOW_RES_X / 2, WINDOW_RES_Y / 2);
+    }
+
     // press left
 	oldMouseX = x;
 	oldMouseY = y;
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-		leftButton = true;
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
-		leftButton = false;
-	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
-		rightButton = true;
-	if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP)
-		rightButton = false;
+	switch(button){
+	    case GLUT_LEFT_BUTTON:
+	        leftButton = state == GLUT_DOWN;
+	        break;
+	    case GLUT_RIGHT_BUTTON:
+	        rightButton = state == GLUT_DOWN;
+	        break;
+	}
 }
 
 /** Mouse moded */
 void mouseMotionFunc(int x, int y){
-#ifdef NO_FPS
-	if (!leftButton)
-#else
-	if (abs(x - WINDOW_RES_X / 2 + y - WINDOW_RES_Y / 2) < 2)
-#endif
-		return;
+    if(mouseMode){
+        /* Don't move if there's no movement */
+        if(abs(x - WINDOW_RES_X / 2 + y - WINDOW_RES_Y / 2) < 2)return;
+    }else if(!leftButton){
+        return;
+    }
 
 	double dx, dy, nrm;
 
 	// move cam around
-#ifdef NO_FPS
-	dx = x - oldMouseX;
-	dy = y - oldMouseY;
-#else
-	dx = x - WINDOW_RES_X / 2;
-	dy = y - WINDOW_RES_Y / 2;
-#endif
-
+	if(mouseMode){
+	    dx = x - WINDOW_RES_X / 2;
+	    dy = y - WINDOW_RES_Y / 2;
+    }else{
+	    dx = x - oldMouseX;
+	    dy = y - oldMouseY;
+    }
 	nrm = sqrt(dx * dx + dy * dy + dx * dx + dy * dy) * 0.002;// speedfact;
 
 	MyScene.cam.xrot += dx * nrm;
 	MyScene.cam.yrot += dy * nrm;
 
-	if (MyScene.cam.yrot < -90) MyScene.cam.yrot = -90;
-	if (MyScene.cam.yrot > 90) MyScene.cam.yrot = 90;
+	if (MyScene.cam.yrot < -90)
+	    MyScene.cam.yrot = -90;
+	if (MyScene.cam.yrot > 90)
+	    MyScene.cam.yrot = 90;
 
-#ifndef NO_FPS
-	glutWarpPointer(WINDOW_RES_X / 2, WINDOW_RES_Y / 2);
-#endif
+    if(mouseMode)
+	    glutWarpPointer(WINDOW_RES_X / 2, WINDOW_RES_Y / 2);
 
 	oldMouseX = x;
 	oldMouseY = y;

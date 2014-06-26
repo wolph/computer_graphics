@@ -40,13 +40,10 @@ void drawTexture(int texIndex){
     glEnd();
 }
 
-void animate(){
-    glutPostRedisplay();
-}
-
 void display(void);
 void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
+void drawInfo();
 
 // entry point
 int main(int argc, char** argv){
@@ -119,13 +116,10 @@ int main(int argc, char** argv){
     glutKeyboardUpFunc(keyup);
     glutDisplayFunc(display);
     glutMouseFunc(mouseFunc);
-    glutIdleFunc(animate);
+    glutIdleFunc(drawInfo);
 
-#ifdef NO_FPS
 	glutMotionFunc(mouseMotionFunc);
-#else
 	glutPassiveMotionFunc(mouseMotionFunc);
-#endif
 
     int ret = init(argc, argv);
     if(ret == 255)
@@ -141,13 +135,13 @@ int main(int argc, char** argv){
 
 // draw fps
 void drawInfo(){
-    if(fpsTimer.needsDisplay()){
-        float fps = 1. / fpsTimer.avg();
-        fpsTimer.updateLastDisplay();
-        sprintf(infoString, "%06.1f fps - Current object : %s", fps,
-                MyScene.object->getName().c_str());
-        MyScene.update();
-    }
+    MyScene.update();
+    glutPostRedisplay();
+
+    float fps = 1. / fpsTimer.avg();
+    fpsTimer.updateLastDisplay();
+    sprintf(infoString, "%06.1f fps - Current object : %s", fps,
+            MyScene.object->getName().c_str());
 
     int i = 0;
     while(infoString[i] != '\0'){
@@ -162,8 +156,6 @@ void display(void){
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     // Effacer tout
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // la couleur et le z
-
-    drawInfo();
 
     glLoadIdentity();  // repere camera
 
