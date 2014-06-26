@@ -20,26 +20,16 @@ Image output_image(RAYTRACE_RES_X, RAYTRACE_RES_Y);
 float hardwood[720 * 720 * 3];
 
 // runtime options
-//bool g_shadow = false;
-//bool g_checkerboard = false;
-//bool g_debug = false;
-//bool g_ambient = true;
-//bool g_diffuse = true;
-//bool g_specular = true;
-//bool g_reflect = true;
-//bool g_refract = true;
-//bool g_occlusion = true;
-
 bool g_shadow = false;
 bool g_checkerboard = false;
 bool g_debug = false;
-bool g_ambient = false;
+bool g_ambient = true;
 bool g_diffuse = true;
 bool g_specular = true;
 bool g_reflect = true;
 bool g_refract = true;
 bool g_occlusion = true;
-bool g_phong = true;
+bool g_phong = false;
 
 bool threadsStarted = false;
 
@@ -474,23 +464,23 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
 		}
 
         // diffuse
-        if(g_diffuse && mat.color && !g_phong){
+        if(g_specular && mat.color){
 
             float angle = dot(normal, tolight) * 2;
             color += lightColor * angle * mat.Kd;
         }
 
         // specular
-        if(g_specular && mat.highlight & !g_phong){
+        if(g_diffuse && mat.highlight){
             Vec3Df half = (tocam + tolight) * 0.5f;
-            float spec = pow(dot(half, normal), 1.5f);
-            color += lightColor * spec * mat.Ks * 0.5f;
+            float spec = pow(dot(half, normal), mat.Ns);
+            color += lightColor * spec * mat.Ks;
         }
 
         // reflect
         if(g_reflect && mat.reflection){
-            const Vec3Df r = dir - 2 * dot(dir, normal)*normal;
-            color += performRayTracing(impact, r, depth - 1) * 0.25f;
+            const Vec3Df r = dir - 2 * dot(dir, normal) * normal;
+            color += performRayTracing(impact, r, depth - 1) * mat.Ni;
         }
 
         // occlusion

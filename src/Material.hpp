@@ -49,14 +49,14 @@ public:
     //Material(const Material & m);
     //Material& operator=(const Material& m);
 
-    Vec3Df Kd;
-	Vec3Df Ka;
-	Vec3Df Ks;
-	float Ns;
-	float Ni;
-	int illum;
-	float Tr;
-	float n;
+    Vec3Df Kd; // diffuse color
+	Vec3Df Ka; // ambient color
+	Vec3Df Ks; // specular color
+	float Ns; // specular exponent
+	float Ni; // reflection index
+	int illum; // illumination model
+	float Tr; // transparency
+	float n; // density index
     std::string name;
     std::string textureName;
     std::vector<Vec3Df> map_Kd;
@@ -74,3 +74,4 @@ public:
 };
 
 #endif /* MATERIAL_H_ */
+

@@ -353,8 +353,11 @@ float Object::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Ve
 	float f3 = a3 / total;
 
 	// calc normal
-	*normal = f1 * tr->vertices[0].normal - f2 * tr->vertices[1].normal
+	*normal = 
+	    f1 * tr->vertices[0].normal 
+	    + f2 * tr->vertices[1].normal
 		+ f3 * tr->vertices[2].normal;
+	normal->normalize();
 
 	*mat = (Material*) &tr->material;
 
