@@ -151,7 +151,6 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
                 printf(
                         "Warning! Material '%s' not defined in material file. Taking default!\n",
                         matname.c_str());
-                throw std::runtime_error("Material is missing, exiting.");
                 matname = "";
             }
         }
