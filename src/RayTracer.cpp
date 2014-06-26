@@ -164,9 +164,6 @@ int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
                 for(float ys = 0;ys < 1.0f;ys += step){
                     float xscale = 1.0f - (x + xs) / (w - 1);
                     float yscale = float(y + ys) / (h - 1);
-#ifdef LINUX
-                    yscale = 1.0f - yscale;
-#endif
                     origin = yscale
                             * (xscale * origin00 + (1 - xscale) * origin10)
                             + (1 - yscale)
