@@ -194,18 +194,28 @@ int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
 
 void threadedTrace(Image* result, const unsigned int w, const unsigned int h, const bool background=true){
     Timer timer(10, 1);
+    printf("preview part size: %d\n", PREVIEW_PART_SIZE);
     // multithread
+
     while(isRealtimeRaytracing && pool.running() && background){
         std::queue<std::future<int>> results;
+        std::vector<std::pair<unsigned int, unsigned int>>parts((w * h)/PREVIEW_PART_SIZE);
         for(unsigned int i = 0;i < w && isRealtimeRaytracing;i +=
         PREVIEW_PART_SIZE){
             for(unsigned int j = 0;j < h && isRealtimeRaytracing;j +=
             PREVIEW_PART_SIZE){
-                results.push(
-                        pool.enqueue(threadedTracePart, result, w, h, i, j,
-                                     i+PREVIEW_PART_SIZE, j+PREVIEW_PART_SIZE));
+                parts[i * PREVIEW_PART_SIZE + j] = pair<unsigned int, unsigned int>(i, j);
             }
         }
+
+        std::random_shuffle(parts.begin(), parts.end());
+        for(pair<unsigned int, unsigned int> p: parts){
+            results.push(
+                         pool.enqueue(threadedTracePart, result, w, h,
+                                      p.first, p.second,
+                                      p.first+PREVIEW_PART_SIZE, p.second+PREVIEW_PART_SIZE));
+        }
+
 
         while(!results.empty() && isRealtimeRaytracing){
             results.front().wait();
@@ -387,11 +397,11 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
     if(!depth)
         return Vec3Df(0, 0, 0);
 
+    Vec3Df global_color;
     Vec3Df impact;
     Vec3Df normal;
-    Vec3Df color;
     Material* mat2;
-    MyScene.raytrace(orig, dir, &impact, &normal, &mat2, &obj, &color);
+    MyScene.raytrace(orig, dir, &impact, &normal, &mat2, &obj, &global_color);
     Material& mat = *mat2;
 
 	//return normal;
@@ -401,10 +411,6 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
         return background(orig, dir);
     }
 
-    // ambient
-    if(g_ambient && mat.ambient){
-        color += mat.Kd;
-    }
 
     Vec3Df tocam = orig - impact;
     tocam.normalize();
@@ -425,8 +431,14 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
     unsigned int shadows = (int)MyScene.lights.size();
 
     for(Vec3Df& light : MyScene.lights){
+        Vec3Df color(global_color);
         Vec3Df tolight = light - impact;
         tolight.normalize();
+
+        // ambient
+        if(g_ambient && mat.ambient){
+            color += mat.Kd;
+        }
 
         // shadow
 		if (g_shadow){
@@ -471,23 +483,23 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
         }
 
         // occlusion
-
+        global_color[0] = max(global_color[0], color[0]);
+        global_color[1] = max(global_color[1], color[1]);
+        global_color[2] = max(global_color[2], color[2]);
     }
-
-	color /= MyScene.lights.size();
 
     // shadow
     if(g_shadow){
-        color *= ((float)shadows / (float)MyScene.lights.size());
+        global_color *= ((float)shadows / (float)MyScene.lights.size());
     }
 
     // return color
     for(int i = 0;i < 3;i++){
-        if(color.p[i] > 1)
-            color.p[i] = 1;
+        if(global_color.p[i] > 1)
+            global_color.p[i] = 1;
     }
 
-    return color;
+    return global_color;
 }
 
 void drawCube(AABB* cube){
