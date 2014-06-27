@@ -44,4 +44,4 @@ result.*
 ~$*.pptx
 Thumbs.db
 Makefile.local
-scene.txt
+*/scene.txt
