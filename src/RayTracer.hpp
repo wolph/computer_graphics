@@ -72,6 +72,7 @@ int init(int argc, char ** argv);
 void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest);
 
 void startRayTracing(int texIndex, bool needsRebuild=false);
+void yourDebugDraw();
 
 //your main function to rewrite
 Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir, const unsigned int depth=MAX_TRACE_DEPTH, bool inside = false);
