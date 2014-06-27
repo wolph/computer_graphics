@@ -23,11 +23,11 @@ float hardwood[720 * 720 * 3];
 bool g_shadow = false;
 bool g_checkerboard = false;
 bool g_debug = false;
-bool g_ambient = true;
-bool g_diffuse = true;
+bool g_ambient = false;
+bool g_diffuse = false;
 bool g_specular = true;
-bool g_reflect = true;
-bool g_refract = true;
+bool g_reflect = false;
+bool g_refract = false;
 bool g_occlusion = false;
 bool g_phong = false;
 
@@ -470,17 +470,19 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
 		}
 
         // diffuse
-        if(g_specular && mat.color){
-
+        if(g_diffuse && mat.color){
             float angle = dot(normal, tolight) * 2;
             color += lightColor * angle * mat.Kd;
         }
 
         // specular
-        if(g_diffuse && mat.highlight){
-            Vec3Df half = (tocam + tolight) * 0.5f;
-            float spec = pow(dot(half, normal), mat.Ns);
-            color += lightColor * spec * mat.Ks;
+        if(g_specular && mat.highlight){
+            float LN = dot(tolight, normal);
+            Vec3Df R = 2 * LN * normal - tolight;
+            if(LN > 0){
+                R.normalize();
+                color += mat.Ks * pow(max(0.f, dot(tocam, R)), mat.Ns);
+            }
         }
 
         // reflect
