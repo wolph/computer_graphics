@@ -271,12 +271,17 @@ void drawNormals(Object* obj) {
 }
 
 void Scene::debugDraw() {
-		glColor3f(1, 0.5, 0.5);
-		glLineWidth(3);
-		glBegin(GL_LINES);
-		for (Object* obj : objects)
-			drawNormals(obj);
-		glEnd();
+    glColor3f(1, 0.5, 0.5);
+    glLineWidth(3);
+    yourDebugDraw();
+
+    //glBegin(GL_LINES);
+    //for (Object* obj : objects)
+    //    // draw octree
+    //    drawCube(obj->tree.root);
+    //// draw normals
+    ////			drawNormals(obj);
+    //glEnd();
 }
 
 void Object::draw() {

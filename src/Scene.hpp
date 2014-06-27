@@ -8,6 +8,7 @@
 #include "Mesh.hpp"
 #include "Camera.hpp"
 #include "Tree.hpp"
+#include "RayTracer.hpp"
 #include <vector>
 
 #pragma pack(push,1)

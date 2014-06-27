@@ -518,7 +518,6 @@ void drawCube(AABB* cube){
                     Vec3Df v = cube->pos;
                     v.p[(axis + 1) % 3] += x * dim;
                     v.p[(axis + 2) % 3] += y * dim;
-
                     glVertex3f(v.p[X], v.p[Y], v.p[Z]);
                     glVertex3f(v.p[X] + ((axis == 0) ? dim : 0),
                             v.p[Y] + ((axis == 1) ? dim : 0),
@@ -530,8 +529,16 @@ void drawCube(AABB* cube){
 }
 
 void yourDebugDraw(){
-    if(!isRealtimeRaytracing && !isDrawingTexture)
-        MyScene.debugDraw();
+    glBegin(GL_LINES);
+    // draw octree
+    for(Object* obj : MyScene.objects){
+        glPushMatrix();
+        glTranslatef(obj->pos.p[0], obj->pos.p[1], obj->pos.p[2]);
+        glTranslatef(100, 0, -50);
+        drawCube(obj->tree.root);
+        glPopMatrix();
+    }
+    glEnd();
 }
 
 #define MOVE_VELOCITY 0.05f
