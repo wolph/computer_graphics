@@ -22,7 +22,7 @@ float hardwood[720 * 720 * 3];
 // runtime options
 bool g_shadow = false;
 bool g_checkerboard = false;
-bool g_debug = false;
+bool g_debug = true;
 bool g_ambient = true;
 bool g_diffuse = true;
 bool g_specular = true;
@@ -109,8 +109,8 @@ int init(int argc, char **argv){
     delete[] buf;
     fclose(fp);
 
-    isRealtimeRaytracing = 1;
-    isDrawingTexture = 0;
+//    isRealtimeRaytracing = 1;
+//    isDrawingTexture = 0;
 
     return 0;
 }
@@ -529,16 +529,15 @@ void drawCube(AABB* cube){
 }
 
 void yourDebugDraw(){
-    glBegin(GL_LINES);
     // draw octree
     for(Object* obj : MyScene.objects){
-        glPushMatrix();
+        glPushAttrib(GL_ALL_ATTRIB_BITS);
         glTranslatef(obj->pos.p[0], obj->pos.p[1], obj->pos.p[2]);
-        glTranslatef(100, 0, -50);
+        glBegin(GL_LINES);
         drawCube(obj->tree.root);
-        glPopMatrix();
+        glEnd();
+        glPopAttrib();
     }
-    glEnd();
 }
 
 #define MOVE_VELOCITY 0.05f
