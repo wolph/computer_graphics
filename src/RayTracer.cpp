@@ -28,7 +28,7 @@ bool g_diffuse = true;
 bool g_specular = true;
 bool g_reflect = true;
 bool g_refract = true;
-bool g_occlusion = true;
+bool g_occlusion = false;
 bool g_phong = false;
 
 bool threadsStarted = false;
