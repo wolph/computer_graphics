@@ -22,7 +22,7 @@ float hardwood[720 * 720 * 3];
 // runtime options
 bool g_shadow = false;
 bool g_checkerboard = false;
-bool g_debug = true;
+bool g_debug = false;
 bool g_ambient = true;
 bool g_diffuse = true;
 bool g_specular = true;
@@ -109,8 +109,8 @@ int init(int argc, char **argv){
     delete[] buf;
     fclose(fp);
 
-//    isRealtimeRaytracing = 1;
-//    isDrawingTexture = 0;
+    isRealtimeRaytracing = 1;
+    isDrawingTexture = 0;
 
     return 0;
 }
@@ -411,8 +411,6 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
     Material* mat2;
     MyScene.raytrace(orig, dir, &impact, &normal, &mat2, &obj, &global_color);
     Material& mat = *mat2;
-
-	//return normal;
 
     // background
     if(!obj || impact.p[1] < MyScene.floorheight) {
