@@ -12,6 +12,7 @@ private:
     std::vector<duration<double>> measurements;
     unsigned int index = 0;
     const float displayInterval;
+    time_point<high_resolution_clock> first;
     time_point<high_resolution_clock> last;
     time_point<high_resolution_clock> lastDisplay;
 
@@ -41,11 +42,24 @@ public:
         double count = 0.;
         for(auto measurement: measurements){
             if(measurement.count() > 0){
-                total += measurement.count();
+                total += std::chrono::duration_cast<milliseconds>(measurement).count();
                 count++;
             }
         }
-        return total / count;
+        return total / 1000. / count;
+    }
+
+    void start(){
+        first = high_resolution_clock::now();
+        next();
+        for(int i=0; i<measurements.size(); i++){
+            measurements[i] = duration<double>(0);
+        }
+    }
+
+    double total(){
+        time_point<high_resolution_clock> now(high_resolution_clock::now());
+        return std::chrono::duration_cast<milliseconds>(now - first).count();
     }
 
     time_point<high_resolution_clock> updateLastDisplay(){

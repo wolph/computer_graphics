@@ -275,7 +275,7 @@ void startRayTracing(int texIndex, bool needsRebuild){
                     p.first+PREVIEW_PART_SIZE, p.second+PREVIEW_PART_SIZE));
             }
 
-            asyncTimer.next();
+            asyncTimer.start();
             asyncBuildStarted = true;
             asyncResultsSize = (unsigned int)asyncResults.size();
         }
@@ -289,11 +289,17 @@ void startRayTracing(int texIndex, bool needsRebuild){
             }
 
             if(timer.needsDisplay()){
-                unsigned int current = asyncResultsSize - (int)asyncResults.size();
-                printf("Rendered %d/%d: %.1f%%\n",
+                const unsigned int current = asyncResultsSize - (int)asyncResults.size();
+                const unsigned int todo = (int)asyncResults.size();
+                const double duration = asyncTimer.total() / 1000.;
+                const double time_per_part = duration / current;
+                printf("Rendered %d/%d in %.3f seconds: %.1f%%, eta: %.1f seconds\n",
                        current,
                        asyncResultsSize,
-                       100. * current / asyncResultsSize);
+                       duration,
+                       100. * current / asyncResultsSize,
+                       time_per_part * todo
+                );
                 timer.updateLastDisplay();
             }
         }
