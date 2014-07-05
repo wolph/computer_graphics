@@ -9,6 +9,10 @@
 #include <iostream>
 #include <cstring>
 
+Material::Material() {
+	cleanup();
+}
+
 void Material::cleanup() {
 	illum = 2;
 	Ns = 1.0f;
@@ -33,17 +37,15 @@ void Material::loadTexture(string textureName){
     // load texture
     FILE* fp;
     fp = fopen(("mesh/" + textureName).c_str(), "rb");
-    if (fp == NULL){
-        fp = fopen((textureName).c_str(), "rb");
-        if (fp == NULL){
-            cout << "Unable to open " << textureName << endl;
-            return;
-        }
-    }
+    if (!fp) fp = fopen(textureName.c_str(), "rb");
+    if (!fp) throw ("could not open file: " + textureName);
+
     cout << "Loading " << textureName << endl;
 
     unsigned char info[54];
-    fread(info, sizeof(unsigned char), 54, fp);
+    if (fread(info, sizeof(unsigned char), 54, fp) != 54)
+    	fclose(fp);
+    	throw "invalid bitmap file";
     
     unsigned int width;
     unsigned int height;
@@ -54,7 +56,10 @@ void Material::loadTexture(string textureName){
 
     unsigned int size = 3 * width * height;
     unsigned char* data = new unsigned char[size];
-    fread(data, sizeof(unsigned char), size, fp);
+    if (fread(data, sizeof(unsigned char), size, fp) != size) {
+    	fclose(fp);
+    	throw "invalid bitmap file";
+    }
     fclose(fp);
 
     for(unsigned int i = 0; i < width * height; i++){

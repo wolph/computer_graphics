@@ -98,7 +98,11 @@ int init(int argc, char **argv) {
     FILE* fp = fopen("mesh/hardwood.bmp", "rb");
     unsigned char* buf = new unsigned char[720 * 720 * 3];
     fseek(fp, 54, SEEK_SET);
-    fread(buf, 1, 720 * 720 * 3, fp);
+    if(fread(buf, 1, 720 * 720 * 3, fp) != 720*720*3) {
+    	fclose(fp);
+    	throw("Error loading hardwood floor file.");
+    }
+
     for(int i = 0;i < 720 * 720;i++){
         hardwood[i * 3 + 0] = buf[i * 3 + 2] / 255.0f;
         hardwood[i * 3 + 1] = buf[i * 3 + 1] / 255.0f;

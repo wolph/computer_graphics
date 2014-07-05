@@ -52,7 +52,7 @@ bool Image::write(const char * filename2){
 
     /* Set image attributes. */
 
-    png_set_IHDR(png_ptr, info_ptr, _width, _height, COLOR_DEPTH,
+    png_set_IHDR(png_ptr, info_ptr, width, height, COLOR_DEPTH,
             PNG_COLOR_TYPE_RGB,
             PNG_INTERLACE_NONE,
             PNG_COMPRESSION_TYPE_DEFAULT,
@@ -61,20 +61,20 @@ bool Image::write(const char * filename2){
     /* Initialize rows of PNG. */
 
     row_pointers = (png_voidp*)png_malloc(png_ptr,
-            _height * sizeof(png_byte *));
+            height * sizeof(png_byte *));
     int i = 0;
-    for(y = 0;y < _height;++y){
+    for(y = 0;y < height;++y){
         png_byte *row = (png_byte*)png_malloc(png_ptr,
-                sizeof(uint8_t) * _width * PIXEL_SIZE);
+                sizeof(uint8_t) * width * PIXEL_SIZE);
 
 #ifndef WIN32
-        row_pointers[_height - y - 1] = row;
+        row_pointers[height - y - 1] = row;
 #else
         row_pointers[y] = row;
 #endif
-        for(x = 0;x < _width;++x){
+        for(x = 0;x < width;++x){
             for(z = 0;z < PIXEL_SIZE;z++)
-            *row++ = _image[i++] * 255.0f;
+            *row++ = data[i++] * 255.0f;
         }
     }
 
@@ -86,7 +86,7 @@ bool Image::write(const char * filename2){
     /* The routine has successfully written the file, so we set
      "status" to a value which indicates success. */
 
-    for(y = 0;y < _height;y++){
+    for(y = 0;y < height;y++){
         png_free(png_ptr, row_pointers[y]);
     }
     png_free(png_ptr, row_pointers);
