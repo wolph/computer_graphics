@@ -1,5 +1,4 @@
-#ifndef CAMERA
-#define CAMERA
+#pragma once
 #include <GL/glut.h>
 #include "Vec3D.hpp"
 #include "constants.hpp"
@@ -22,5 +21,3 @@ public:
 	void BuildMatrix();
 	Vec3Df GetWorldPos(int px, int py);
 };
-
-#endif

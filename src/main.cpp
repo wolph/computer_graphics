@@ -5,8 +5,18 @@
 #include <assert.h>
 #include <cstdlib>
 
-#include "main.hpp"
+#include "Vec3D.hpp"
+#include "Timer.hpp"
+#include "constants.hpp"
+#include "mouse.hpp"
+#include "RayTracer.hpp"
 #include "Scene.hpp"
+
+// runtime options
+
+enum { SHADOW, CHECK, DEBUG, AMBIENT, DIFFUSE, SPECULAR, REFLECT, REFRACT, OCCLUSION, PHONG };
+extern bool g_flags[10];
+extern char* flagstrs[10];
 
 // double buffered
 unsigned int textures[2];
@@ -15,35 +25,133 @@ unsigned int isDrawingTexture = 0;
 unsigned int isRealtimeRaytracing = 0;
 Scene MyScene;
 
-// options
-extern bool g_phong;
-extern bool g_checkerboard;
-extern bool g_debug;
-
 bool needRebuild = false; // if the raytrace needs to be built
 
-/**
- * draw a full-screen texture
- */
-void drawTexture(int texIndex){
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
-    glBegin(GL_QUADS);
-    glTexCoord2f(0, 0);
-    glVertex3f(0, 0, 0);
-    glTexCoord2f(1, 0);
-    glVertex3f(4, 0, 0);
-    glTexCoord2f(1, 1);
-    glVertex3f(4, 4, 0);
-    glTexCoord2f(0, 1);
-    glVertex3f(0, 4, 0);
-    glEnd();
+
+void specialKeyboardUp(int key, int x, int y){
+	switch (key){
+	case GLUT_KEY_UP:
+	case GLUT_KEY_DOWN:
+		MyScene.cam.rotateY = 0;
+		break;
+	case GLUT_KEY_RIGHT:
+	case GLUT_KEY_LEFT:
+		MyScene.cam.rotateX = 0;
+		break;
+	default:
+		printf("Unknown special key %d\n", key);
+		break;
+	}
+}
+
+void specialKeyboard(int key, int x, int y){
+	switch (key){
+	case GLUT_KEY_UP:
+		MyScene.cam.rotateY = 1;
+		break;
+	case GLUT_KEY_DOWN:
+		MyScene.cam.rotateY = -1;
+		break;
+	case GLUT_KEY_RIGHT:
+		MyScene.cam.rotateX = 1;
+		break;
+	case GLUT_KEY_LEFT:
+		MyScene.cam.rotateX = -1;
+		break;
+	default:
+		printf("Unknown special key %d\n", key);
+		break;
+	}
+}
+
+// when the window is reshaped
+void reshape(int w, int h){
+	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(50, (float)w / h, 1, 1000);
+	glMatrixMode(GL_MODELVIEW);
+}
+
+// when a key is pressed
+
+#define MOVE_VELOCITY 0.05f
+void keyboard(unsigned char key, int x, int y){
+	switch (key){
+	case 'L':
+		MyScene.addLightPoint(MyScene.cam.pos);
+		break;
+	case 'l':
+		MyScene.lights[MyScene.lights.size() - 1] = MyScene.cam.pos;
+		break;
+	case 'r':
+		needRebuild = true;
+		isDrawingTexture = 1;
+		isRealtimeRaytracing = 0;
+		break;
+	case 'b':
+		if (isRealtimeRaytracing){
+			isDrawingTexture = 0;
+			isRealtimeRaytracing = 0;
+		}
+		else{
+			cout << "Using " << THREADS << " threads and resolution of "
+				<< PREVIEW_RES_X << "x" << PREVIEW_RES_Y << endl;
+			isRealtimeRaytracing = 1;
+			isDrawingTexture = 0;
+		}
+		break;
+
+		/* Escape */
+	case 27:
+		isRealtimeRaytracing = false;
+		// TODO: fix this horrible hack to stop segfaults when exiting
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		exit(0);
+
+		/* Movement */
+	case 'a': MyScene.cam.side = 1;	break;
+	case 'd': MyScene.cam.side = -1; break;
+	case 'q': MyScene.cam.alt = 1; break;
+	case 'e': MyScene.cam.alt = -1; break;
+	case 'w': MyScene.cam.forward = 1; break;
+	case 's': MyScene.cam.forward = -1; break;
+
+	default:
+		// flags
+		if ('0' <= key && key <= '9') {
+			int flag = key - '0';
+			g_flags[flag] = !g_flags[flag];
+			printf("%s := %s", flagstrs[flag], g_flags[flag] ? "on" : "off");
+		}
+		break;
+	}
+}
+
+void keyup(unsigned char key, int x, int y){
+	switch (key) {
+	case 'a': case 'd':
+		MyScene.cam.side = 0;
+		break;
+	case 'q': case 'e':
+		MyScene.cam.alt = 0;
+		break;
+	case 'w': case 's':
+		MyScene.cam.forward = 0;
+		break;
+	default:
+		break;
+	}
 }
 
 void display(void);
 void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
 void drawInfo();
+
+Timer fpsTimer(100);
+char infoString[100];
+void drawFPS();
 
 // entry point
 int main(int argc, char** argv){
@@ -55,11 +163,10 @@ int main(int argc, char** argv){
     // position et taille de la fenetre
     glutInitWindowPosition(200, 10);
     glutInitWindowSize(WINDOW_RES_X, WINDOW_RES_Y);
-    glutCreateWindow(argv[0]);
-
-
+    glutCreateWindow("Realtime Raytracing");
 
     // init textures
+	printf("Generating textures...");
     char* buf = new char[1024 * 1024 * 3];
     glGenTextures(2, textures);
 
@@ -88,10 +195,10 @@ int main(int argc, char** argv){
     // cablage des callback
     glutReshapeFunc(reshape);
     glutSetKeyRepeat(false);
-    glutKeyboardFunc(keyboard);
+	glutKeyboardFunc(keyboard);
+	glutKeyboardUpFunc(keyup);
     glutSpecialFunc(specialKeyboard);
     glutSpecialUpFunc(specialKeyboardUp);
-    glutKeyboardUpFunc(keyup);
     glutDisplayFunc(display);
     glutMouseFunc(mouseFunc);
     glutIdleFunc(drawInfo);
@@ -105,10 +212,10 @@ int main(int argc, char** argv){
     if(ret > 0)
         return ret;
 
-    // lancement de la boucle principale
+	// main loop
     glutMainLoop();
 
-    return 0;  // instruction jamais exécutée
+    return 0;
 }
 
 // draw fps
@@ -203,70 +310,13 @@ void display(void){
                 needRebuild = false;
             }
         }
-    }else{
+    } else {
         viewTransform(); // origine et orientation de la scene
         MyScene.draw();
-        if(g_debug)
+		if (g_flags[DEBUG])
             MyScene.debugDraw();
     }
 
     glutSwapBuffers();
     glPopAttrib();
 }
-// pour changement de taille ou desiconification
-void reshape(int w, int h){
-    glViewport(0, 0, (GLsizei)w, (GLsizei)h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    //glOrtho (-1.1, 1.1, -1.1,1.1, -1000.0, 1000.0);
-    gluPerspective(50, (float)w / h, 1, 1000);
-    glMatrixMode(GL_MODELVIEW);
-}
-
-// prise en compte du clavier
-void keyboard(unsigned char key, int x, int y){
-    switch(key){
-        case 't':
-            cout << "Deprecated, 'b' toggles raytracing" << endl;
-            isDrawingTexture = 0;
-            isRealtimeRaytracing = 0;
-            break;
-        case 'L':
-            MyScene.addLightPoint(MyScene.cam.pos);
-            break;
-        case 'l':
-            MyScene.lights[0] = MyScene.cam.pos;
-            break;
-        case 'r':
-            needRebuild = true;
-            isDrawingTexture = 1;
-            isRealtimeRaytracing = 0;
-            break;
-        case 'b':
-            if(isRealtimeRaytracing){
-                isDrawingTexture = 0;
-                isRealtimeRaytracing = 0;
-            }else{
-                cout << "Using " << THREADS << " threads and resolution of "
-                        << PREVIEW_RES_X << "x" << PREVIEW_RES_Y << endl;
-                isRealtimeRaytracing = 1;
-                isDrawingTexture = 0;
-            }
-            break;
-        case 27:     // touche ESC
-            isRealtimeRaytracing = false;
-            // TODO: fix this horrible hack to stop segfaults when exiting
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            exit(0);
-        default:
-            if(!yourKeyboardPress(key, x, y)){
-                printf("Unknown key %c\n", key);
-            }
-            break;
-    }
-}
-
-void keyup(unsigned char key, int x, int y){
-    yourKeyboardRelease(key, x, y);
-}
-

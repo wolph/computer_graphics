@@ -1,21 +1,14 @@
-/*
- * Image.cpp
- *
- *  Created on: 12 Jun 2014
- *      Author: rick
- */
-
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-
+#include <cstdio> /* file output */
+#include <cstdint> /* ?? */
+#include <cstdlib> /* ?? */
 #include "Image.hpp"
+using namespace std;
 
 const char* image_exts[] = {"png", "bmp", "ppm"};
 
 #if IMAGE_FORMAT == BMP
 // convert value from little to big-endian
-inline unsigned int htonl_(unsigned int n){
+inline unsigned int htonl_(unsigned int n) {
 	return
 		(n & 0xFF000000 >> 24) |
 		(n & 0xFF0000 >> 8) |
@@ -24,14 +17,14 @@ inline unsigned int htonl_(unsigned int n){
 }
 #endif
 
-bool Image::writeImage(const char * filename2){
-	std::string str = std::string(filename2) + std::string(".") + std::string(image_exts[IMAGE_FORMAT]);
+bool Image::write(const char * filename2){
+	string str = string(filename2) + string(".") + string(image_exts[IMAGE_FORMAT]);
 	const char* filename = str.c_str();
 
     FILE* file;
     file = fopen(filename, "wb");
-    if(!file){
-        printf("dump file problem... file\n");
+    if (!file) {
+		printf("could not open file %s", filename);
         return false;
     }
 
@@ -116,7 +109,7 @@ bool Image::writeImage(const char * filename2){
 	};
 
 	// allocate buffer for converted image
-	int len = _width * _height * 3;
+	int len = width * height * 3;
 	char* buf = new char[len];
 
 	// get pointers to header
@@ -126,14 +119,14 @@ bool Image::writeImage(const char * filename2){
 
 	// modify header
 	*filesize = htonl_(sizeof(header) + len);
-	*w = htonl_(_width);
-	*h = htonl_(_height);
+	*w = htonl_(width);
+	*h = htonl_(height);
 
 	// fill buffer, convert from RGB to BGR
-	for (unsigned int i = 0; i < _image.size() / 3; i++) {
-		buf[i * 3 + 0] = (unsigned char)(_image[i * 3 + 2] * 255.0f);
-		buf[i * 3 + 1] = (unsigned char)(_image[i * 3 + 1] * 255.0f);
-		buf[i * 3 + 2] = (unsigned char)(_image[i * 3 + 0] * 255.0f);
+	for (unsigned int i = 0; i < data.size() / 3; i++) {
+		buf[i * 3 + 0] = (unsigned char)(data[i * 3 + 2] * 255.0f);
+		buf[i * 3 + 1] = (unsigned char)(data[i * 3 + 1] * 255.0f);
+		buf[i * 3 + 2] = (unsigned char)(data[i * 3 + 0] * 255.0f);
 	}
 
 	// write to file
@@ -142,25 +135,11 @@ bool Image::writeImage(const char * filename2){
 
 	// deallocate buffer
 	delete[] buf;
-
-#elif IMAGE_FORMAT == PPM
-    fprintf(file, "P6\n%i %i\n255\n", _width, _height);
-
-    std::vector<unsigned char> imageC(_image.size());
-
-    for(unsigned int i = 0;i < _image.size();++i)
-        imageC[i] = (unsigned char)(_image[i] * 255.0f);
-
-    int t = fwrite(&(imageC[0]), _width * _height * PIXEL_SIZE, 1, file);
-    if(t != 1){
-        printf("Dump file problem... fwrite\n");
-        return false;
-    }
 #else
 	printf("Invalid image format!\n");
 #endif
 
     fclose(file);
-    printf("Wrote raytrace output to %s\n", filename);
+    printf("Image saved to %s!\n", filename);
     return true;
 }
