@@ -20,7 +20,7 @@
 /************************************************************
  * Class de maillage basique
  ************************************************************/
-class Mesh{
+class Mesh {
 public:
     //this is relevant for you:
     //Vertices are the vertex positions, textures, and normals of the mesh.
@@ -31,10 +31,8 @@ public:
     //I might send an update of the code to change this.
     //for convenience, Vec3Df is used, although only 2D tex coordinates are read corresponding to the x,y entry of Vec3Df.
     vector<Texture> texcoords;
-    //Triangles are the indices of the vertices involved in a triangle.
-    //a triplet corresponds to one triangle.
-    //A Triangle contains the indeces of the three vertices that are neighboring
-    vector<Triangle> triangles;
+	
+	vector<Triangle> triangles;
     //These are the material properties
     //each triangle (!) has a material. Use the triangle index to receive a material INDEX
     vector<unsigned int> triangleMaterials;

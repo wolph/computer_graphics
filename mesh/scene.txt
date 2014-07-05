@@ -1,4 +1,4 @@
 light 0 5 -15
-floor 0 0 0
-monkey 0 1 2
-camera 0 1 0 0 -10
+floor 0 -1 0
+sphere 0 3 2 2
+camera 0 4 0 0 -10

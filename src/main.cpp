@@ -76,7 +76,7 @@ void reshape(int w, int h){
 
 // when a key is pressed
 
-#define MOVE_VELOCITY 0.05f
+#define MOVE_VELOCITY 0.5f
 void keyboard(unsigned char key, int x, int y){
 	switch (key){
 	case 'L':

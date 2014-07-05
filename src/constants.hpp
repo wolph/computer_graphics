@@ -12,7 +12,7 @@
 #ifdef PREVIEW_RES
 #define PREVIEW_RES_X PREVIEW_RES
 #else
-#define PREVIEW_RES_X 128
+#define PREVIEW_RES_X 512
 #endif
 #endif
 
@@ -20,12 +20,12 @@
 #ifdef PREVIEW_RES
 #define PREVIEW_RES_Y PREVIEW_RES
 #else
-#define PREVIEW_RES_Y 128
+#define PREVIEW_RES_Y 512
 #endif
 #endif
 
 #define PREVIEW_PARTS 32
-#define PREVIEW_PART_SIZE (PREVIEW_RES_X / PREVIEW_PARTS)
+#define PREVIEW_PART_SIZE 128//(PREVIEW_RES_X / PREVIEW_PARTS)
 
 #ifndef WINDOW_RES_X
 #ifdef WINDOW_RES

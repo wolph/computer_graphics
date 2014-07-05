@@ -74,18 +74,18 @@ int init(int argc, char **argv) {
         return 2;
     }
 
-    if(options[SCENE]){
+    if (options[SCENE]) {
         // dostuff
     }
 
-    if(options[RAYTRACE_X]){
+    if (options[RAYTRACE_X]) {
         const char* arg = options[RAYTRACE_X].last()->arg;
         if(arg != 0){
             alternateX = stoi(arg);
         }
     }
 
-    if(options[RAYTRACE_Y]){
+    if (options[RAYTRACE_Y]) {
         const char* arg = options[RAYTRACE_Y].last()->arg;
         if(arg != 0){
             alternateY = stoi(arg);
@@ -103,7 +103,7 @@ int init(int argc, char **argv) {
     	throw("Error loading hardwood floor file.");
     }
 
-    for(int i = 0;i < 720 * 720;i++){
+    for(int i = 0; i < 720 * 720; i++){
         hardwood[i * 3 + 0] = buf[i * 3 + 2] / 255.0f;
         hardwood[i * 3 + 1] = buf[i * 3 + 1] / 255.0f;
         hardwood[i * 3 + 2] = buf[i * 3 + 0] / 255.0f;
@@ -160,7 +160,7 @@ int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
     return yb;
 }
 
-// thread routine for raytrcing
+// raytrace multithreaded
 void threadedTrace(Image* result, int w, int h, const bool background = true){
     Timer timer(10, 1);
     printf("preview part size: %d\n", PREVIEW_PART_SIZE);
@@ -188,7 +188,7 @@ void threadedTrace(Image* result, int w, int h, const bool background = true){
             results.pop();
         }
         if(timer.needsDisplay()){
-            //printf("Rendering took %.3f seconds\n", timer.avg());
+            printf("Rendering took %.3f seconds\n", timer.avg());
             timer.updateLastDisplay();
         }
     }
@@ -236,9 +236,8 @@ void startRayTracing(int texIndex, bool needsRebuild) {
 
         if (needsRebuild) {
             vector<pair<unsigned int, unsigned int>> parts;
-            for(unsigned int i = 0;i < w;i += PREVIEW_PART_SIZE) {
-                for(unsigned int j = 0;j < h;j +=
-                    PREVIEW_PART_SIZE){
+            for(unsigned i = 0; i < w; i += PREVIEW_PART_SIZE) {
+                for(unsigned j = 0; j < h; j += PREVIEW_PART_SIZE){
                     parts.push_back(pair<unsigned int, unsigned int>(i, j));
                 }
             }
@@ -320,8 +319,8 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 	Vec3Df tocam = Vec3Df(x, 0, z) - orig;
 
 	float fogVar = -(tocam.getLength() * 0.05f + 1.0f);
-	fogVar = (1.0f + fogVar ) / fogVar / 1.2f;
-	Vec3Df fog = Vec3Df(1, 1, 1) * -fogVar; // Remove the minus for white fog
+	fogVar = (1.0f + fogVar) / fogVar / 1.2f;
+	Vec3Df fog = Vec3Df(1, 1, 1) * fogVar; // Remove the minus for white fog
 
 	if (dir.p[Y] < MyScene.floorheight){
 
@@ -351,7 +350,7 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
             bool white = true;
             if(x > floor(x) + 0.5f)
                 white = !white;
-            if(z > floor(z) + 0.1f)
+            if(z > floor(z) + 0.5f)
                 white = !white;
 
             if(white)
@@ -359,8 +358,8 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
             else
                 return Vec3Df(0.9f, 0.9f, 0.9f) * ratio;
         }else{
-            int xidx = (int)(x * 720 * 0.125) % 720;
-            int zidx = (int)(z * 720 * 0.125) % 720;
+            int xidx = (int)(x * 720 * 0.06125) % 720;
+            int zidx = (int)(z * 720 * 0.06125) % 720;
             if(xidx < 0)
                 xidx += 720;
             if(zidx < 0)
@@ -461,9 +460,9 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
         }
 
         // reflect
-        if(g_flags[REFLECT] && mat.reflection){
+		if (g_flags[REFLECT] && mat.reflection){
             const Vec3Df r = dir - 2 * dot(dir, normal) * normal;
-            color += performRayTracing(impact, r, depth - 1) * mat.Ni;
+			color += performRayTracing(impact, r, depth - 1);// *mat.Ni;
         }
 
         // occlusion
