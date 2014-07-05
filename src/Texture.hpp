@@ -5,11 +5,8 @@
  *      Author: rick
  */
 
-#ifndef TEXTURE_H_
-#define TEXTURE_H_
-
+#pragma once
 #include "Vec3D.hpp"
 
 typedef Vec3Df Texture;
-
-#endif /* TEXTURE_H_ */
+void drawTexture(int texIndex);

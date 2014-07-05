@@ -1,18 +1,7 @@
-/*
- * Image.hpp
- *
- *  Created on: 12 Jun 2014
- *      Author: rick
- */
-
-#ifndef IMAGE_H_
-#define IMAGE_H_
-
-/* fixed recursive includes */
-class Image;
-
+#pragma once
 #include <vector>
 #include "Vec3D.hpp"
+using namespace std;
 
 #define PIXEL_SIZE 3
 #define COLOR_DEPTH 8
@@ -31,17 +20,15 @@ class Image;
 #include <png.h>
 #endif
 
-class Image{
+class Image {
 public:
-    const unsigned int _width;
-    const unsigned int _height;
-    std::vector<float> _image;
+	const unsigned int width;
+    const unsigned int height;
+	vector<float> data;
 
     inline Image(const int width, const int height) :
-        _width(width), _height(height), _image(3 * width * height, 0){}
+        width(width), height(height), data(3 * width * height, 0) {}
     inline virtual ~Image(){};
 
-    bool writeImage(const char * filename);
+    bool write(const char * filename);
 };
-
-#endif /* IMAGE_H_ */

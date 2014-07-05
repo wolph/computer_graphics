@@ -15,6 +15,9 @@ lib/
 *.a
 *.lib
 
+# Library headers
+include/
+
 # Executables
 bin/
 *.exe
@@ -28,7 +31,6 @@ bin/
 raytracer
 .*
 /Default
-/Debug
 frameworks
 *.dSYM
 result.*
@@ -41,7 +43,11 @@ result.*
 *.sdf
 *.vcsproj.user
 *.suo
+*.sln
+*.filters
 ~$*.pptx
 Thumbs.db
 Makefile.local
+Release/
+Debug/
 */scene.txt
