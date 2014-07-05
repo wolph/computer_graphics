@@ -1,12 +1,4 @@
-/*
- * constants.hpp
- *
- *  Created on: 18 Jun 2014
- *      Author: rick
- */
-
-#ifndef CONSTANTS_HPP_
-#define CONSTANTS_HPP_
+#pragma once
 
 #ifndef THREADS
 #define THREADS 4
@@ -78,5 +70,3 @@
 #define X 0
 #define Y 1
 #define Z 2
-
-#endif /* CONSTANTS_HPP_ */

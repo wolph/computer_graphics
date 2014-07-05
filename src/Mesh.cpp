@@ -49,15 +49,15 @@ const void Mesh::draw(){
     glEnd();
 }
 
-bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
+bool Mesh::loadMesh(string filename, bool randomizeTriangulation){
     Timer timer;
     vertices.clear();
     triangles.clear();
     texcoords.clear();
 
-    std::vector<unsigned int> vhandles;
-    std::vector<unsigned int> texhandles;
-    std::vector<std::vector<unsigned int>> tempTriangles;
+    vector<unsigned int> vhandles;
+    vector<unsigned int> texhandles;
+    vector<vector<unsigned int>> tempTriangles;
 
     if(randomizeTriangulation)
         /* Randomization should use an actual _RANDOM_ thing */
@@ -74,21 +74,21 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
 	defaultMat.name = "StandardMaterialInitFromTriMesh";
     materials.push_back(defaultMat);
 
-    std::map<std::string, unsigned int> materialIndex;
+    map<string, unsigned int> materialIndex;
     char s[LINE_LEN];
     float x, y, z;
 
     //we replace the \ by /
-    std::string realFilename(filename);
+    string realFilename(filename);
     for(unsigned int i = 0;i < realFilename.length();++i){
         if(realFilename[i] == '\\')
             realFilename[i] = '/';
     }
 
-    std::vector<Vec3Df> normals;
-    std::string matname;
-    std::string path_;
-    std::string temp(realFilename);
+    vector<Vec3Df> normals;
+    string matname;
+    string path_;
+    string temp(realFilename);
     int pos = (int)temp.rfind("/");
 
     if (pos < 0){
@@ -113,14 +113,14 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
             while(isspace(*++p0))
                 ;
             p1 = p0;
-            std::string t = p1;
+            string t = p1;
             unsigned int i;
             for(i = 0;i < t.length();++i){
                 if(t[i] < 32 || t[i] == (char)255){
                     break;
                 }
             }
-            std::string file;
+            string file;
             if(t.length() == i)
                 file = path_.append(t);
             else
@@ -322,7 +322,7 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
                     const int t1 = (k + i + 1) % vhandles.size();
                     const int t2 = (k + i + 2) % vhandles.size();
 
-                    tempTriangles.push_back(std::vector<unsigned int> {vhandles[v0],
+                    tempTriangles.push_back(vector<unsigned int> {vhandles[v0],
                             vhandles[v1], vhandles[v2], texhandles[t0],
                             texhandles[t1], texhandles[t2],
                             mat});
@@ -330,7 +330,7 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
                 }
             }else if(vhandles.size() == 3){
                 triangleMaterials.push_back(mat);
-                tempTriangles.push_back(std::vector<unsigned int> {vhandles[0],
+                tempTriangles.push_back(vector<unsigned int> {vhandles[0],
                         vhandles[1], vhandles[2], texhandles[0], texhandles[1],
                         texhandles[2], mat});
 
@@ -408,7 +408,7 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
 }
 
 bool Mesh::loadMtl(const char * filename,
-        std::map<std::string, unsigned int> & materialIndex){
+        map<string, unsigned int> & materialIndex){
     FILE * _in;
     _in = fopen(filename, "r");
 
@@ -418,9 +418,9 @@ bool Mesh::loadMtl(const char * filename,
     }
 
     char line[LINE_LEN];
-    std::string textureName;
+    string textureName;
 
-    std::string key;
+    string key;
     Material mat;
     float f1, f2, f3;
     bool indef = false;
@@ -490,7 +490,7 @@ bool Mesh::loadMtl(const char * filename,
 			if (mat.illum >= 9) { mat.refraction = true; mat.reflection = false; }
 			if (mat.illum >= 10) { /* casts shadow on invisible surfaces */ }
         }else if(strncmp(line, "map_Kd ", 7) == 0){ // map images
-            std::string t = &(line[7]);
+            string t = &(line[7]);
             if(!t.empty() && t[t.length() - 1] == '\n'){
                 t.erase(t.length() - 1);
             }

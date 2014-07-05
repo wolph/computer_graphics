@@ -5,11 +5,11 @@
 #include <vector>
 #include <numeric>
 
-using namespace std::chrono;
+using namespace chrono;
 
 class Timer{
 private:
-    std::vector<duration<double>> measurements;
+    vector<duration<double>> measurements;
     unsigned int index = 0;
     const float displayInterval;
     time_point<high_resolution_clock> first;
@@ -42,7 +42,7 @@ public:
         double count = 0.;
         for(auto measurement: measurements){
             if(measurement.count() > 0){
-                total += std::chrono::duration_cast<milliseconds>(measurement).count();
+                total += chrono::duration_cast<milliseconds>(measurement).count();
                 count++;
             }
         }
@@ -59,7 +59,7 @@ public:
 
     double total(){
         time_point<high_resolution_clock> now(high_resolution_clock::now());
-        return std::chrono::duration_cast<milliseconds>(now - first).count();
+        return chrono::duration_cast<milliseconds>(now - first).count();
     }
 
     time_point<high_resolution_clock> updateLastDisplay(){

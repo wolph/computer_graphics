@@ -19,9 +19,9 @@ struct PolyIdx {
 
 class Model {
 public:
-	std::vector<Vec3Df> vertices;
-	std::vector<PolyIdx> polygons;
-	void load(std::string file);
+	vector<Vec3Df> vertices;
+	vector<PolyIdx> polygons;
+	void load(string file);
 };
 
 static const char* nil = 0;
@@ -39,7 +39,7 @@ public:
     }
 	virtual void draw();
 	virtual float raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Vec3Df* color=NULL);
-    virtual std::string getName(){
+    virtual string getName(){
         if(&mesh == NULL)return "Unknown object";
         else return mesh.name;
     }
@@ -54,15 +54,15 @@ public:
 	}
 	void draw();
 	float raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Vec3Df* color=NULL);
-    std::string getName(){
+    string getName(){
         return "Sphere";
     }
 };
 
 class Scene {
 public:
-	std::vector<Vec3Df> lights;
-	std::vector<Object*> objects;
+	vector<Vec3Df> lights;
+	vector<Object*> objects;
     Object* object;
 	Camera cam;
 	float floorheight;

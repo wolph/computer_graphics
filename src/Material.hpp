@@ -57,9 +57,9 @@ public:
 	int illum; // illumination model
 	float Tr; // transparency
 	float n; // density index
-    std::string name;
-    std::string textureName;
-    std::vector<Vec3Df> map_Kd;
+    string name;
+    string textureName;
+    vector<Vec3Df> map_Kd;
 
 	// illum
 	bool color;
@@ -70,7 +70,7 @@ public:
 
 	bool is_valid();
 	void cleanup();
-    void loadTexture(std::string textureName);
+    void loadTexture(string textureName);
 };
 
 #endif /* MATERIAL_H_ */

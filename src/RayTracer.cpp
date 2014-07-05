@@ -30,6 +30,7 @@ char* flagstrs[10] = {
 
 bool threadsStarted = false;
 
+// rays
 Vec3Df origin00, dest00;
 Vec3Df origin01, dest01;
 Vec3Df origin10, dest10;
@@ -42,7 +43,7 @@ Timer asyncTimer;
 
 
 //use this function for any preprocessing of the mesh.
-int init(int argc, char **argv){
+int init(int argc, char **argv) {
     srand(unsigned(time(0)));
 
     printf("Preview %dx%d@%d msaa using %d threads\n", PREVIEW_RES_X,
@@ -64,11 +65,11 @@ int init(int argc, char **argv){
 
     option::Parser parse(usage, argc, argv, options, buffer);
 
-    if(parse.error())
+    if (parse.error())
         return 1;
 
-    if(options[HELP]){
-        int columns = getenv("COLUMNS") ? std::stoi(getenv("COLUMNS")) : 80;
+    if (options[HELP]) {
+        int columns = getenv("COLUMNS") ? stoi(getenv("COLUMNS")) : 80;
         option::printUsage(fwrite, stdout, usage, columns);
         return 2;
     }
@@ -80,14 +81,14 @@ int init(int argc, char **argv){
     if(options[RAYTRACE_X]){
         const char* arg = options[RAYTRACE_X].last()->arg;
         if(arg != 0){
-            alternateX = std::stoi(arg);
+            alternateX = stoi(arg);
         }
     }
 
     if(options[RAYTRACE_Y]){
         const char* arg = options[RAYTRACE_Y].last()->arg;
         if(arg != 0){
-            alternateY = std::stoi(arg);
+            alternateY = stoi(arg);
         }
     }
 
@@ -112,6 +113,7 @@ int init(int argc, char **argv){
     return 0;
 }
 
+// raytrace a small part of the image
 int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
         const unsigned int xa, const unsigned int ya, const unsigned int xb,
         const unsigned int yb) {
@@ -154,22 +156,21 @@ int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
     return yb;
 }
 
-void threadedTrace(Image* result, const unsigned int w, const unsigned int h, const bool background=true){
+// thread routine for raytrcing
+void threadedTrace(Image* result, int w, int h, const bool background = true){
     Timer timer(10, 1);
     printf("preview part size: %d\n", PREVIEW_PART_SIZE);
 
-    std::vector<std::pair<unsigned int, unsigned int>>parts;
-    for(unsigned int i = 0;i < w;i +=
-        PREVIEW_PART_SIZE){
-        for(unsigned int j = 0;j < h;j +=
-            PREVIEW_PART_SIZE){
-            parts.push_back(pair<unsigned int, unsigned int>(i, j));
+    vector<pair<int, int>> parts;
+    for(unsigned i = 0; i < w; i += PREVIEW_PART_SIZE) {
+        for(unsigned j = 0; j < h; j += PREVIEW_PART_SIZE) {
+            parts.push_back(pair<int, int>(i, j));
         }
     }
 
     while(isRealtimeRaytracing && pool.running() && background) {
-        std::queue<std::future<int>> results;
-        std::random_shuffle(parts.begin(), parts.end());
+        queue<future<int>> results;
+        random_shuffle(parts.begin(), parts.end());
         for(pair<unsigned int, unsigned int> p: parts){
             results.push(
                          pool.enqueue(threadedTracePart, result, w, h,
@@ -183,7 +184,7 @@ void threadedTrace(Image* result, const unsigned int w, const unsigned int h, co
             results.pop();
         }
         if(timer.needsDisplay()){
-            printf("Rendering took %.3f seconds\n", timer.avg());
+            //printf("Rendering took %.3f seconds\n", timer.avg());
             timer.updateLastDisplay();
         }
     }
@@ -214,36 +215,33 @@ void createRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest){
 void startRayTracing(int texIndex, bool needsRebuild) {
     // update scene
     Image& result = isRealtimeRaytracing ? preview_image : output_image;
-    std::future_status status = std::future_status::deferred;
+    future_status status = future_status::deferred;
 
     unsigned int w = isRealtimeRaytracing ? PREVIEW_RES_X : RAYTRACE_RES_X;
     unsigned int h = isRealtimeRaytracing ? PREVIEW_RES_Y : RAYTRACE_RES_Y;
     w = alternateX ? alternateX : w;
     h = alternateY ? alternateY : h;
 
-    if (needsRebuild)
-        printf("Raytracing image with resolution of %d by %d\n", w, h);
-
     createRay(0, 0, &origin00, &dest00);
     createRay(0, WINDOW_RES_X - 1, &origin01, &dest01);
     createRay(WINDOW_RES_X - 1, 0, &origin10, &dest10);
     createRay(WINDOW_RES_X - 1, WINDOW_RES_Y - 1, &origin11, &dest11);
 
-    if(!isRealtimeRaytracing){
+    if (!isRealtimeRaytracing) {
         Timer timer(1, 0.2);
 
-        if(needsRebuild){
-            std::vector<std::pair<unsigned int, unsigned int>>parts;
-            for(unsigned int i = 0;i < w;i +=
-                PREVIEW_PART_SIZE){
+        if (needsRebuild) {
+            vector<pair<unsigned int, unsigned int>> parts;
+            for(unsigned int i = 0;i < w;i += PREVIEW_PART_SIZE) {
                 for(unsigned int j = 0;j < h;j +=
                     PREVIEW_PART_SIZE){
                     parts.push_back(pair<unsigned int, unsigned int>(i, j));
                 }
             }
 
+			// add the parts to different threads
             random_shuffle(parts.begin(), parts.end());
-            for(pair<unsigned int, unsigned int> p: parts){
+            for(auto p: parts){
                 asyncResults.push(pool.enqueue(
                     threadedTracePart, &result, w, h,
                     p.first, p.second,
@@ -257,7 +255,7 @@ void startRayTracing(int texIndex, bool needsRebuild) {
 
         while (!asyncResults.empty()){
             status = asyncResults.front().wait_for(chrono::milliseconds(25));
-            if(status == std::future_status::ready){
+            if(status == future_status::ready){
                 asyncResults.pop();
             } else if(status == future_status::timeout){
                 break;
@@ -278,8 +276,8 @@ void startRayTracing(int texIndex, bool needsRebuild) {
                 timer.updateLastDisplay();
             }
         }
-    }else if(!threadsStarted){
-        new std::thread(threadedTrace, &result, w, h, true);
+    } else if (!threadsStarted) {
+        new thread(threadedTrace, &result, w, h, true);
         threadsStarted = true;
     }
 
@@ -294,15 +292,15 @@ void startRayTracing(int texIndex, bool needsRebuild) {
                  GL_FLOAT,           // type
                  &result.data[0]); // data
 
-    if(isRealtimeRaytracing || asyncResults.empty()){
-        if(!isRealtimeRaytracing && status == std::future_status::ready){
+    if (isRealtimeRaytracing || asyncResults.empty()) {
+        if (!isRealtimeRaytracing && status == future_status::ready) {
             result.write("result");
             printf("Rendered %d in %.1f seconds\n",
                 asyncResultsSize,
                 asyncTimer.next().count()
             );
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(25));
+        this_thread::sleep_for(chrono::milliseconds(25));
     }
 }
 
@@ -482,43 +480,6 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
     }
 
     return global_color;
-}
-
-void drawCube(AABB* cube){
-    if (cube->sub) {
-        //glColor3f(1, 0.5, 0.5);
-        for(int i = 0;i < 8;i++)
-            drawCube(cube->sub[i]);
-    }
-    if (!cube->leaves.empty()) {
-        //glColor3f(0, 0.5, 0.5);
-        float dim = cube->radius * 2;
-        for(int axis = 0;axis < 3;axis++){
-            for(int x = 0;x < 2;x++){
-                for(int y = 0;y < 2;y++){
-                    Vec3Df v = cube->pos;
-                    v.p[(axis + 1) % 3] += x * dim;
-                    v.p[(axis + 2) % 3] += y * dim;
-                    glVertex3f(v.p[X], v.p[Y], v.p[Z]);
-                    glVertex3f(v.p[X] + ((axis == 0) ? dim : 0),
-                            v.p[Y] + ((axis == 1) ? dim : 0),
-                            v.p[Z] + ((axis == 2) ? dim : 0));
-                }
-            }
-        }
-    }
-}
-
-void yourDebugDraw(){
-    // draw octree
-    for(Object* obj : MyScene.objects){
-        glPushAttrib(GL_ALL_ATTRIB_BITS);
-        glTranslatef(obj->pos.p[0], obj->pos.p[1], obj->pos.p[2]);
-        glBegin(GL_LINES);
-        drawCube(obj->tree.root);
-        glEnd();
-        glPopAttrib();
-    }
 }
 
 inline Vec3Df pow(Vec3Df in1, float in2){

@@ -129,10 +129,44 @@ void Scene::add(Object* object) {
 	objects.push_back(object);
     this->object = objects[objectIndex];
 }
+void drawCube(AABB* cube){
+	if (cube->sub) {
+		//glColor3f(1, 0.5, 0.5);
+		for (int i = 0; i < 8; i++)
+			drawCube(cube->sub[i]);
+	}
+	if (!cube->leaves.empty()) {
+		//glColor3f(0, 0.5, 0.5);
+		float dim = cube->radius * 2;
+		for (int axis = 0; axis < 3; axis++){
+			for (int x = 0; x < 2; x++){
+				for (int y = 0; y < 2; y++){
+					Vec3Df v = cube->pos;
+					v.p[(axis + 1) % 3] += x * dim;
+					v.p[(axis + 2) % 3] += y * dim;
+					glVertex3f(v.p[X], v.p[Y], v.p[Z]);
+					glVertex3f(v.p[X] + ((axis == 0) ? dim : 0),
+						v.p[Y] + ((axis == 1) ? dim : 0),
+						v.p[Z] + ((axis == 2) ? dim : 0));
+				}
+			}
+		}
+	}
+}
 
 void Scene::draw() {
 	for (Object* obj : objects)
 		obj->draw();
+
+	// draw octree
+	for (Object* obj : objects){
+		glPushAttrib(GL_ALL_ATTRIB_BITS);
+		glTranslatef(obj->pos.p[0], obj->pos.p[1], obj->pos.p[2]);
+		glBegin(GL_LINES);
+		drawCube(obj->tree.root);
+		glEnd();
+		glPopAttrib();
+	}
 }
 
 void Scene::update() {
@@ -193,7 +227,6 @@ void drawNormals(Object* obj) {
 void Scene::debugDraw() {
     glColor3f(1, 0.5, 0.5);
     glLineWidth(3);
-    yourDebugDraw();
 
     //glBegin(GL_LINES);
     //for (Object* obj : objects)

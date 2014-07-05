@@ -94,7 +94,7 @@ void keyboard(unsigned char key, int x, int y){
 			isDrawingTexture = 0;
 			isRealtimeRaytracing = 0;
 		}
-		else{
+		else {
 			cout << "Using " << THREADS << " threads and resolution of "
 				<< PREVIEW_RES_X << "x" << PREVIEW_RES_Y << endl;
 			isRealtimeRaytracing = 1;
@@ -106,7 +106,7 @@ void keyboard(unsigned char key, int x, int y){
 	case 27:
 		isRealtimeRaytracing = false;
 		// TODO: fix this horrible hack to stop segfaults when exiting
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		this_thread::sleep_for(chrono::milliseconds(1000));
 		exit(0);
 
 		/* Movement */
@@ -122,7 +122,7 @@ void keyboard(unsigned char key, int x, int y){
 		if ('0' <= key && key <= '9') {
 			int flag = key - '0';
 			g_flags[flag] = !g_flags[flag];
-			printf("%s := %s", flagstrs[flag], g_flags[flag] ? "on" : "off");
+			printf("%s := %s\n", flagstrs[flag], g_flags[flag] ? "on" : "off");
 		}
 		break;
 	}

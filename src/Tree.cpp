@@ -189,7 +189,7 @@ void Tree::calcSize(Mesh& mesh) {
 }
 
 void Tree::build(Mesh& mesh) {
-    max_depth = (int)(std::log(mesh.triangles.size()) / std::log(2));
+    max_depth = (int)(log(mesh.triangles.size()) / log(2));
     printf("building tree with size %d\n", max_depth);
 	calcSize(mesh);
 

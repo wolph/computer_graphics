@@ -42,12 +42,12 @@ private:
 };
 
 // the constructor just launches some amount of workers
-inline ThreadPool::ThreadPool(size_t threads) :
+inline ThreadPool::ThreadPool(size_t numthreads) :
 stop_(false) {
-    for(size_t i = 0; i < threads; ++i)
+    for(size_t i = 0; i < numthreads; ++i)
         workers.emplace_back([this]{
          while(1) {
-             unique_lock<std::mutex> lock(queue_mutex);
+             unique_lock<mutex> lock(queue_mutex);
              while(!stop_ && tasks.empty()){
                  this->condition.wait(lock);
              }
@@ -65,7 +65,7 @@ stop_(false) {
 // add new work item to the pool
 template<class F, class ... Args>
 auto ThreadPool::enqueue(F&& f, Args&&... args)
--> std::future<typename result_of<F(Args...)>::type>{
+-> future<typename result_of<F(Args...)>::type>{
     typedef typename result_of<F(Args...)>::type return_type;
 
     // don't allow enqueueing after stopping the pool

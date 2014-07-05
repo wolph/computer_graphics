@@ -29,7 +29,7 @@ bool Material::is_valid(void) {
 	return Kd.getLength() > 0 || Ka.getLength() > 0 || Ks.getLength() > 0 || Tr > 0;
 }
 
-void Material::loadTexture(std::string textureName){
+void Material::loadTexture(string textureName){
     // load texture
     FILE* fp;
     fp = fopen(("mesh/" + textureName).c_str(), "rb");
@@ -47,8 +47,8 @@ void Material::loadTexture(std::string textureName){
     
     unsigned int width;
     unsigned int height;
-    std::memcpy(&width, &info[18], 4);
-    std::memcpy(&height, &info[22], 4);
+    memcpy(&width, &info[18], 4);
+    memcpy(&height, &info[22], 4);
 
     map_Kd.resize(width * height);
 

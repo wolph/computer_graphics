@@ -139,18 +139,18 @@
  *     return 1;
  *
  *   if (options[HELP] || argc == 0) {
- *     option::printUsage(std::cout, usage);
+ *     option::printUsage(cout, usage);
  *     return 0;
  *   }
  *
- *   std::cout << "--plus count: " <<
+ *   cout << "--plus count: " <<
  *     options[PLUS].count() << "\n";
  *
  *   for (option::Option* opt = options[UNKNOWN]; opt; opt = opt->next())
- *     std::cout << "Unknown option: " << opt->name << "\n";
+ *     cout << "Unknown option: " << opt->name << "\n";
  *
  *   for (int i = 0; i < parse.nonOptionsCount(); ++i)
- *     std::cout << "Non-option #" << i << ": " << parse.nonOption(i) << "\n";
+ *     cout << "Non-option #" << i << ": " << parse.nonOption(i) << "\n";
  * }
  * @endcode
  *
@@ -1677,7 +1677,7 @@ namespace option {
         /**
          * @internal
          * @brief Encapsulates a reference to an object with a <code>write(string, size)</code>
-         * method like that of @c std::ostream.
+         * method like that of @c ostream.
          */
         template<typename OStream>
         struct OStreamWriter: public IStringWriter{
@@ -1732,7 +1732,7 @@ namespace option {
 
         /**
          * @internal
-         * @brief Encapsulates a function with the same signature as @c std::fwrite().
+         * @brief Encapsulates a function with the same signature as @c fwrite().
          */
         template<typename Function, typename Stream>
         struct StreamWriter: public IStringWriter{

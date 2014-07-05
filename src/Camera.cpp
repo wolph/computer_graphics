@@ -2,9 +2,10 @@
 #include "matrix.hpp"
 #include <cstring>
 
+const static GLdouble identity2[] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 Camera::Camera() {
-	memcpy(&viewmat, &identity, sizeof(identity));
-	memcpy(&invmat, &identity, sizeof(identity));
+	memcpy(&viewmat, &identity2, sizeof(identity2));
+	memcpy(&invmat, &identity2, sizeof(identity2));
 
 	xrot = 0;
 	yrot = 0;

@@ -2,6 +2,7 @@
 //3D vectorial computations 
 #include <cmath>
 #include <iostream>
+using namespace std;
 
 template<typename T> class Vec3D;
 
@@ -289,13 +290,13 @@ template<class T> inline Vec3D<T> swap(Vec3D<T> & P, Vec3D<T> & Q){
     Q = tmp;
 }
 
-template<class T> std::ostream & operator<<(std::ostream & output,
+template<class T> ostream & operator<<(ostream & output,
         const Vec3D<T> & v){
     output << v[0] << " " << v[1] << " " << v[2];
     return output;
 }
 
-template<class T> std::istream & operator>>(std::istream & input, Vec3D<T> & v){
+template<class T> istream & operator>>(istream & input, Vec3D<T> & v){
     input >> v[0] >> v[1] >> v[2];
     return input;
 }
