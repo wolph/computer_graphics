@@ -37,7 +37,7 @@ void drawFPS();
 
 
 #include "constants.hpp"
-#include "traqueboule.hpp"
+#include "mouse.hpp"
 #include "RayTracer.hpp"
 
 #endif /* MAIN_HPP_ */

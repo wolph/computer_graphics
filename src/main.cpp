@@ -57,29 +57,7 @@ int main(int argc, char** argv){
     glutInitWindowSize(WINDOW_RES_X, WINDOW_RES_Y);
     glutCreateWindow(argv[0]);
 
-    // Initialisation du point de vue
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    initViewTransform();
 
-    glEnable( GL_LIGHTING);
-    glEnable( GL_LIGHT0);
-    glEnable(GL_COLOR_MATERIAL);
-    int LightPos[4] = {0, 0, 3, 1};
-    glLightiv(GL_LIGHT0, GL_POSITION, LightPos);
-    //glMaterialiv(GL_FRONT_AND_BACK,GL_SPECULAR,MatSpec);
-    //glMateriali(GL_FRONT_AND_BACK,GL_SHININESS,10);
-
-    glEnable(GL_NORMALIZE);
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-
-    // Details sur le mode de tracé
-    glEnable( GL_DEPTH_TEST);            // effectuer le test de profondeur
-    //glEnable(GL_CULL_FACE);
-    //glCullFace(GL_BACK);
-    glPolygonMode(GL_FRONT, GL_FILL);
-    glPolygonMode(GL_BACK, GL_LINE);
-    glShadeModel(GL_SMOOTH);
 
     // init textures
     char* buf = new char[1024 * 1024 * 3];
