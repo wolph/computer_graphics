@@ -120,8 +120,13 @@ int main(int argc, char** argv){
 
 	glutMotionFunc(mouseMotionFunc);
 	glutPassiveMotionFunc(mouseMotionFunc);
-
-    int ret = init(argc, argv);
+	int ret;
+    try {
+    	 ret = init(argc, argv);
+    } catch (const char* s) {
+    	printf("%s\n", s);
+    	exit(-1);
+    }
     if(ret == 255)
         return 0;
     if(ret > 0)

@@ -126,7 +126,12 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
             else
                 file = path_.append(t.substr(0, i));
             printf("Load material file %s\n", file.c_str());
-            loadMtl(file.c_str(), materialIndex);
+            try {
+            	loadMtl(file.c_str(), materialIndex);
+            } catch (const char* str) {
+            	printf("%s\n", str);
+            	exit(-1);
+            }
         }
         // usemtl
         else if(strncmp(s, "usemtl ", 7) == 0){
@@ -409,122 +414,72 @@ bool Mesh::loadMesh(std::string filename, bool randomizeTriangulation){
 
 bool Mesh::loadMtl(const char * filename,
         std::map<std::string, unsigned int> & materialIndex){
-    FILE * _in;
-    _in = fopen(filename, "r");
-
-    if(!_in){
-        printf("  Warning! Material file '%s' not found!\n", filename);
-        return false;
-    }
-
-    char line[LINE_LEN];
-    std::string textureName;
-
-    std::string key;
-    Material mat;
+    std::ifstream ifStream(filename, std::ifstream::in);
     float f1, f2, f3;
-    bool indef = false;
+    Material mat;
+    do {
+    	std::string word;
+    	ifStream >> word;
+    	if(word == "#") { //skip comment
+    		ifStream.ignore(LINE_LEN, '\n');
+    	} else if (word == "newmtl"){
 
-    memset(line, 0, LINE_LEN);
-    while(_in && !feof(_in)){
-        fgets(line, LINE_LEN, _in);
-        if(line[0] == '#') // skip comments
-                {
-            memset(line, 0, LINE_LEN);
-            continue;
-        }
-
-        else if(isspace(line[0]) || line[0] == '\0'){
-            if(indef && !key.empty() && mat.is_valid()){
-                if(materialIndex.find(key) == materialIndex.end()){
-					mat.name = key;
-                    materials.push_back(mat);
-                    materialIndex[key] = (unsigned int)materials.size() - 1;
-                }
-                mat.cleanup();
-            }
-            if(line[0] == '\0')
-                break;
-        }else if(strncmp(line, "newmtl ", 7) == 0) // begin new material definition
-                {
-
-            char *p0 = line + 6, *p1;
-            while(isspace(*++p0))
-                ;
-            p1 = p0;
-            while(!isspace(*p1))
-                ++p1;
-            *p1 = '\0';
-            key = p0;
-            indef = true;
-        }else if(strncmp(line, "Kd ", 3) == 0) // diffuse color
-                {
-            sscanf(line, "Kd %f %f %f", &f1, &f2, &f3);
-            mat.Kd = Vec3Df(f1, f2, f3);
-        }else if(strncmp(line, "Ka ", 3) == 0) // ambient color
-                {
-			sscanf(line, "Ka %f %f %f", &f1, &f2, &f3);
-			mat.Ka = Vec3Df(f1, f2, f3);
-        }else if(strncmp(line, "Ks ", 3) == 0) // specular color
-                {
-			sscanf(line, "Ks %f %f %f", &f1, &f2, &f3);
-			mat.Ks = Vec3Df(f1, f2, f3);
-        }else if(strncmp(line, "Ns ", 3) == 0) // Shininess [0..200]
-                {
-            sscanf(line, "Ns %f", &f1);
-            mat.Ns = f1;
-        }else if(strncmp(line, "Ni ", 3) == 0) // Shininess [0..200]
-                {
-            sscanf(line, "Ni %f", &f1);
-			mat.Ni = f1;
-        }else if(strncmp(line, "illum ", 6) == 0) // diffuse/specular shading model
-                {
-            int illum = -1;
-            sscanf(line, "illum %i", &illum);
-			mat.illum = illum;
-			if (mat.illum >= 0) { mat.color = true; mat.ambient = false; }
-			if (mat.illum >= 1) { mat.color = true; mat.ambient = true; }
-			if (mat.illum >= 2) { mat.highlight = true; }
-			if (mat.illum >= 3) { mat.reflection = true; }
-			if (mat.illum >= 8) { mat.refraction = true; }
-			if (mat.illum >= 9) { mat.refraction = true; mat.reflection = false; }
-			if (mat.illum >= 10) { /* casts shadow on invisible surfaces */ }
-        }else if(strncmp(line, "map_Kd ", 7) == 0){ // map images
-            std::string t = &(line[7]);
-            if(!t.empty() && t[t.length() - 1] == '\n'){
-                t.erase(t.length() - 1);
-            }
-
-            // map_Kd, diffuse map
-            // map_Ks, specular map
-            // map_Ka, ambient map
-            // map_Bump, bump map
-            // map_d,  opacity map
-            // just skip this
-            mat.loadTexture(t);
-
-        }else if(strncmp(line, "Tr ", 3) == 0) // transparency value
-                {
-            sscanf(line, "Tr %f", &mat.Tr);
-        }else if(strncmp(line, "d ", 2) == 0) // transparency value
-                {
-            sscanf(line, "d %f", &mat.Tr);
-		}
-		else if (strncmp(line, "n ", 2) == 0) // refraction index
-		{
-			sscanf(line, "n %f", &mat.n);
-		}
-
-        if(feof(_in) && indef && mat.is_valid() && !key.empty()){
-            if(materialIndex.find(key) == materialIndex.end()){
-				mat.name = key;
-                materials.push_back(mat);
-                materialIndex[key] = (unsigned int)materials.size() - 1;
-            }
-        }
-        memset(line, 0, LINE_LEN);
-    }
+    		/*if name is empty we haven't (correctly) loaded a material yet,
+    		 * so no need to save. This is probably the first occurrence of newmtl*/
+    		if(mat.name != "empty") {
+    			materials.push_back(mat);
+    			materialIndex[mat.name] = (unsigned int)materials.size() - 1;
+    		}
+    		mat.cleanup();
+    		ifStream >> mat.name;
+    		//printf("new material found: %s", mat.name);
+    	} else if (word == "Kd") {
+    		ifStream >> f1 >> f2 >> f3;
+    		mat.Kd = Vec3Df(f1, f2, f3);
+    	} else if (word == "Ks") {
+    		ifStream >> f1 >> f2 >> f3;
+    		mat.Ks = Vec3Df(f1, f2, f3);
+    	} else if (word == "Ka") {
+    		ifStream >> f1 >> f2 >> f3;
+    		mat.Kd = Vec3Df(f1, f2, f3);
+    	} else if (word == "Ns") {
+    		ifStream >> mat.Ns;
+    	} else if (word == "Ni") {
+    		ifStream >> mat.Ni;
+    	} else if (word ==  "d" || word == "Tr") {
+    		ifStream >> mat.Tr;
+    	} else if (word == "illum") {
+    		ifStream >> mat.illum;
+    		if (mat.illum >= 0) { mat.color = true; mat.ambient = false; }
+    		if (mat.illum >= 1) { mat.color = true; mat.ambient = true; }
+   			if (mat.illum >= 2) { mat.highlight = true; }
+   			if (mat.illum >= 3) { mat.reflection = true; }
+   			if (mat.illum >= 6) { mat.refraction = true; }
+   			if (mat.illum >= 9) { mat.refraction = true; mat.reflection = false; }
+   			if (mat.illum >= 10) { /* casts shadow on invisible surfaces*/  }
+    	} else if (word == "map_Ks") {
+    	} else if (word == "n") {
+    		ifStream >> mat.n;
+    	} else if (word == "map_Kd") {
+    		std::string t;
+    		ifStream >> t;
+    		try {
+    			mat.loadTexture(t);
+    		} catch (const char* s) {
+    			printf("%s\n", s);
+    			exit(-1);
+    		}
+    	} else if (word == "map_Ka") {
+    	} else if (word == "map_Ns") {
+    	} else if (word == "map_d") {
+    	} else if (word == "map_bump") {
+    	}
+    } while (ifStream);
+    ifStream.close();
+    if(mat.name != "empty") {
+    	materials.push_back(mat);
+        materialIndex[mat.name] = (unsigned int)materials.size() - 1;
+	}
     printf("%d  materials loaded.\n", (int)materials.size());
-    fclose(_in);
     return true;
 }
