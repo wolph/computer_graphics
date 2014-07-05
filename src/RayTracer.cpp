@@ -14,7 +14,7 @@ extern unsigned int textures[2];
 extern Scene MyScene;
 int alternateX, alternateY;
 
-ThreadPool pool(THREADS);
+ThreadPool pool(getNumberOfCores());
 Image preview_image(PREVIEW_RES_X, PREVIEW_RES_Y);
 Image output_image(RAYTRACE_RES_X, RAYTRACE_RES_Y);
 
@@ -47,9 +47,9 @@ int init(int argc, char **argv) {
     srand(unsigned(time(0)));
 
     printf("Preview %dx%d@%d msaa using %d threads\n", PREVIEW_RES_X,
-    PREVIEW_RES_Y, PREVIEW_MSAA, THREADS);
+    PREVIEW_RES_Y, PREVIEW_MSAA, getNumberOfCores());
     printf("Raytrace %dx%d@%d msaa using %d threads\n", RAYTRACE_RES_X,
-    RAYTRACE_RES_Y, MSAA, THREADS);
+		RAYTRACE_RES_Y, MSAA, getNumberOfCores());
     printf("Window %dx%d\n", WINDOW_RES_X, WINDOW_RES_Y);
 
     string mesh;
@@ -312,7 +312,7 @@ void startRayTracing(int texIndex, bool needsRebuild) {
 
 inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 
-    float height = orig.p[Y] + 1,
+    float height = orig.p[Y] + MyScene.floorheight,
 		a = -height / dir.p[Y],
 		x = orig.p[X] + a * dir.p[X],
 		z = orig.p[Z] + a * dir.p[Z];
@@ -359,8 +359,8 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
             else
                 return Vec3Df(0.9f, 0.9f, 0.9f) * ratio;
         }else{
-            int xidx = (int)(x * 720 * 0.025) % 720;
-            int zidx = (int)(z * 720 * 0.025) % 720;
+            int xidx = (int)(x * 720 * 0.125) % 720;
+            int zidx = (int)(z * 720 * 0.125) % 720;
             if(xidx < 0)
                 xidx += 720;
             if(zidx < 0)

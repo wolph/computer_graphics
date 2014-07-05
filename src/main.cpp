@@ -1,3 +1,4 @@
+#include <Windows.h>
 #include <cstdlib>
 #include <cmath>
 #include <ctime>
@@ -95,7 +96,7 @@ void keyboard(unsigned char key, int x, int y){
 			isRealtimeRaytracing = 0;
 		}
 		else {
-			cout << "Using " << THREADS << " threads and resolution of "
+			cout << "Using " << getNumberOfCores() << " threads and resolution of "
 				<< PREVIEW_RES_X << "x" << PREVIEW_RES_Y << endl;
 			isRealtimeRaytracing = 1;
 			isDrawingTexture = 0;

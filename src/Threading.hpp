@@ -19,6 +19,8 @@
 #include <stdexcept>
 using namespace std;
 
+int getNumberOfCores();
+
 class ThreadPool {
 public:
     ThreadPool(size_t);

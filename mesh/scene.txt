@@ -1,4 +1,4 @@
 light 0 5 -15
 floor 0 0 0
-dragon 0 0 0
-camera 0 0 0 0 -10
+monkey 0 1 2
+camera 0 1 0 0 -10

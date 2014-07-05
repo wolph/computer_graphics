@@ -1,11 +1,7 @@
 #pragma once
 
-#ifndef THREADS
-#define THREADS 4
-#endif
-
 #ifndef MSAA
-#define MSAA 1
+#define MSAA 2
 #endif
 
 #ifndef PREVIEW_MSAA

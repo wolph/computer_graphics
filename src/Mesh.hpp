@@ -1,5 +1,4 @@
-#ifndef MESH_H
-#define MESH_H
+#pragma once
 
 #ifdef WIN32
 #include <windows.h>
@@ -49,13 +48,11 @@ public:
         loadMesh(filename, true);
     }
 
-    const void draw();
-    const void drawSmooth();
+	inline const void draw() {}
+	inline const void drawSmooth() {}
 
 private:
     bool loadMesh(string filename, bool randomizeTriangulation);
     bool loadMtl(const char * filename,
             map<string, unsigned int> & materialIndex);
 };
-
-#endif // MESH_H
