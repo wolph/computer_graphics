@@ -465,8 +465,8 @@ bool Mesh::loadMtl(const char * filename,
     		ifStream >> t;
     		try {
     			mat.loadTexture(t);
-    		} catch (const char* s) {
-    			printf("%s\n", s);
+    		} catch (string s) {
+    			printf("%s\n", s.c_str());
     			exit(-1);
     		}
     	} else if (word == "map_Ka") {

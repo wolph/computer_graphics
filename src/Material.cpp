@@ -38,7 +38,7 @@ void Material::loadTexture(std::string textureName){
     FILE* fp;
     fp = fopen(("mesh/" + textureName).c_str(), "rb");
     if (!fp) fp = fopen(textureName.c_str(), "rb");
-    if (!fp) throw "could not open file";
+    if (!fp) throw ("could not open file: " + textureName);
 
     cout << "Loading " << textureName << endl;
 
