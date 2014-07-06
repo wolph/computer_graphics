@@ -60,7 +60,7 @@
 #endif
 
 #ifndef MAX_TRACE_DEPTH
-#define MAX_TRACE_DEPTH 20
+#define MAX_TRACE_DEPTH 200
 #endif
 
 #define X 0

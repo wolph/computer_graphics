@@ -322,7 +322,7 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 	fogVar = (1.0f + fogVar) / fogVar / 1.2f;
 	Vec3Df fog = Vec3Df(1, 1, 1) * fogVar; // Remove the minus for white fog
 
-	if (dir.p[Y] < MyScene.floorheight){
+	if (1){//dir.p[Y] < MyScene.floorheight){
 
 		unsigned int shadows = (int)MyScene.lights.size();
 
