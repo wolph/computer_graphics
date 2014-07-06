@@ -142,7 +142,7 @@ int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
                     dest = yscale * (xscale * dest00 + (1 - xscale) * dest10)
                             + (1 - yscale)
                                     * (xscale * dest01 + (1 - xscale) * dest11);
-
+					dest.normalize();
                     total += performRayTracing(origin, dest);
                 }
             }
@@ -316,7 +316,7 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 		x = orig.p[X] + a * dir.p[X],
 		z = orig.p[Z] + a * dir.p[Z];
 
-	Vec3Df tocam = Vec3Df(x, 0, z) - orig;
+	Vec3Df tocam = Vec3Df(x, MyScene.floorheight, z) - orig;
 
 	float fogVar = -(tocam.getLength() * 0.05f + 1.0f);
 	fogVar = (1.0f + fogVar) / fogVar / 1.2f;
@@ -382,16 +382,16 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
         return Vec3Df(0, 0, 0);
 
     Vec3Df global_color;
-    Vec3Df impact;
+	Vec3Df impact;
     Vec3Df normal;
     Material* mat2;
     MyScene.raytrace(orig, dir, &impact, &normal, &mat2, &obj, &global_color);
     Material& mat = *mat2;
 
     // background
-    if(!obj || impact.p[1] < MyScene.floorheight) {
-        return background(orig, dir);
-    }
+    if (!obj || impact.p[1] < MyScene.floorheight) {
+		return background(orig, dir);
+	}
 
     Vec3Df tocam = orig - impact;
     tocam.normalize();
@@ -460,7 +460,7 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
         }
 
         // reflect
-		if (g_flags[REFLECT] && mat.reflection){
+		if (g_flags[REFLECT]){// && mat.reflection){
             const Vec3Df r = dir - 2 * dot(dir, normal) * normal;
 			color += performRayTracing(impact, r, depth - 1);// *mat.Ni;
         }

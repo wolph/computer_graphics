@@ -81,6 +81,8 @@ const char* idstrs[] = {
 	"HIERARCHYPOS", // 0xB030: Hierarchy Position
 };
 
+extern Scene MyScene;
+
 void Scene::load(string path) {
 	floorheight = 0;
 
@@ -324,46 +326,66 @@ float Object::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Ve
 	return dist;
 }
 
+float intersect(const Vec3Df& p, const Vec3Df& d, const Vec3Df& c, float r, Vec3Df* ins) {
+	Vec3Df vpc = c - p;  // this is the vector from p to c
 
-inline float intersectSphere(const Vec3Df& orig, const Vec3Df& dir, const Vec3Df& center, float r) {
-	
-	//float a = dot(dir, dir), b = 2 * dot(dir, orig),c = dot(orig, orig) - (r * r);
-	Vec3Df L = (center - orig);
-	float a = Vec3Df::dotProduct(dir, dir);
-	float b = 2 * Vec3Df::dotProduct(dir, L);
-	float c = Vec3Df::dotProduct(L, L) - r*r;
-	// ABC formula
-	float discr = ( b * b ) - ( 4 * a * c );
-	if (discr < 0)
-		return 1e10f;
+	if (dot(vpc, d) < 0) {
+		// when the sphere is behind the origin p
+		// note that this case may be dismissed if it is 
+		// considered that p is outside the sphere 	
+		if (vpc.getSquaredLength() > r * r) {
+			// there is no intersection
+			return 1e10f;
+		}
+		else if (vpc.getSquaredLength() == r * r) {
+			// found the intersection
+			*ins = p;
+		}
+		else {
+			// occurs when p is inside the sphere
+			//pc = projection of c on the line;
+			Vec3Df pc = dot(c, d) * d;
+			// distance from pc to i1
+			float dist = sqrt(r*r - (pc-c).getSquaredLength());
+			float di1 = dist - (pc-p).getLength();
+			*ins = p + d * di1;
+			return dist;
+		}
 
-	float discrSqrt = sqrtf(discr);
-	//float q = ((b < 0) ? (-b - discrSqrt) / 2.0f : (-b + discrSqrt)) / 2.0f;
-	float q = (b > 0) ? -0.5 * (b + discrSqrt) : -0.5 * (b - discrSqrt);
-	
-	float t0 = q / a;
-	float t1 = c / q;
-
-	float distance = (t0 < t1) ? t0 : t1;
-	return distance;
-	
-	/*float check = pow(Vec3Df::dotProduct(dir, (orig - center)), 2) - (orig - center).getSquaredLength() + (r*r);
-	if (check < 0)
-		return 1e10f;
-	float a = sqrt(check);
-	float b = -(Vec3Df::dotProduct(dir, (orig - center)));
-	float d1 = b + a;
-	float d2 = b - a;
-
-	float distance = (d1 > d2) ? d2 : d1;
-	return distance;*/
+	}
+	else {
+		// center of sphere projects on the ray
+		// pc = projection of c on the line
+		Vec3Df pc = dot(c, d) * d;
+		if ((c - pc).getSquaredLength() > r*r) {
+			// there is no intersection
+			return 1e10f;
+		}
+		else {
+			// distance from pc to i1
+			float dist = sqrt(r*r - (pc - c).getSquaredLength());
+			float di1;
+			if (vpc.getSquaredLength() > r * r) {
+				// origin is outside sphere	
+				di1 = (pc - p).getLength() - dist;
+			}
+			else {// origin is inside sphere
+				di1 = (pc - p).getLength() + dist;
+			}
+			*ins = p + d * di1;
+			return dist;
+		}
+	}
 }
 
 float Sphere::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Vec3Df* color) {
-	float dist = intersectSphere(orig, dir, center, radius);
-	*impact = orig + dist * dir;
+	//float dist = intersectSphere(orig, dir, center, radius, impact);
+	float dist = intersect(orig, dir, center + MyScene.cam.pos, radius, impact);
+
 	*mat = &defaultMat;
 	*normal = *impact - center;
+	//float d = impact->getLength();
+	//printf("%f\n", d);
 	normal->normalize();
 	return dist;
 }
