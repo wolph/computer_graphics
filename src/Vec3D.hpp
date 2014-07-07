@@ -281,7 +281,14 @@ public:
         return p;
     }
 
-    T p[3];
+	union {
+		T p[3];
+		struct {
+			T x;
+			T y;
+			T z;
+		};
+	};
 };
 
 template<class T> inline Vec3D<T> swap(Vec3D<T> & P, Vec3D<T> & Q){

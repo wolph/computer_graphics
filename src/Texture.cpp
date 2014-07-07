@@ -1,10 +1,8 @@
 #include "Texture.hpp"
 #include <GL/glut.h>
 
-/**
-* draw a full-screen texture
-*/
 extern unsigned int textures[2];
+
 void drawTexture(int texIndex) {
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
@@ -20,20 +18,46 @@ void drawTexture(int texIndex) {
 	glEnd();
 }
 
-Texture2::Texture2(char* path) {
-	FILE* fp = fopen(path, "rb");
-	unsigned char* buf = new unsigned char[720 * 720 * 3];
-	fseek(fp, 54, SEEK_SET);
-	if (fread(buf, 1, 720 * 720 * 3, fp) != 720 * 720 * 3) {
-		fclose(fp);
-		throw("Error loading hardwood floor file.");
-	}
+Texture::Texture() {
+}
 
-	for (int i = 0; i < 720 * 720; i++){
-		//hardwood[i * 3 + 0] = buf[i * 3 + 2] / 255.0f;
-		//hardwood[i * 3 + 1] = buf[i * 3 + 1] / 255.0f;
-		//hardwood[i * 3 + 2] = buf[i * 3 + 0] / 255.0f;
-	}
-	delete[] buf;
-	fclose(fp);
+void Texture::init() {
+	glGenTextures(1, &id);
+	glBindTexture(GL_TEXTURE_2D, id);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	if (glGetError() != GL_NO_ERROR)
+		throw string("failed to create texture");
+}
+
+Texture::~Texture() {
+	glDeleteTextures(1, &id);
+}
+
+/**
+* draw a full-screen texture
+*/
+void Texture::draw() {
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, id);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0);
+	glVertex3f(0, 0, 0);
+	glTexCoord2f(1, 0);
+	glVertex3f(4, 0, 0);
+	glTexCoord2f(1, 1);
+	glVertex3f(4, 4, 0);
+	glTexCoord2f(0, 1);
+	glVertex3f(0, 4, 0);
+	glEnd();
+}
+
+void Texture::upload(Image& image) {
+	glBindTexture(GL_TEXTURE_2D, id);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB,
+		GL_FLOAT, &image.data[0]);
 }

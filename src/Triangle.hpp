@@ -16,15 +16,15 @@ class Triangle;
 #include "Texture.hpp"
 #include "Material.hpp"
 
-class Triangle{
+class Triangle {
 public:
     Vertex vertices[3];
-    Texture textures[3];
+    Vec3Df textures[3];
     Vec3Df normal;
 	const Material& material;
     Triangle(const Triangle & triangle);
     Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2,
-                const Texture & t0, const Texture & t1, const Texture & t2, const Material & m);
+                const Vec3Df & t0, const Vec3Df & t1, const Vec3Df & t2, const Material & m);
     Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2, const Material & m);
     inline ~Triangle(){};
     void calculateNormal();

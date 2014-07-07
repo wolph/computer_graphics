@@ -9,7 +9,6 @@ using namespace std;
 // image format
 #define PNG 0
 #define BMP 1
-#define PPM 2
 
 /* just add -D IMAGE_FORMAT=0 to the compiler to write png files */
 #ifndef IMAGE_FORMAT
@@ -22,13 +21,14 @@ using namespace std;
 
 class Image {
 public:
-	const unsigned int width;
-    const unsigned int height;
+	int width;
+    int height;
 	vector<float> data;
 
-    inline Image(const int width, const int height) :
-        width(width), height(height), data(3 * width * height, 0) {}
-    inline virtual ~Image(){};
-
+	Image();
+	Image(int width, int height);
+	~Image();
+	
+	void load(char* path);
     bool write(const char * filename);
 };

@@ -17,6 +17,35 @@ inline unsigned int htonl_(unsigned int n) {
 }
 #endif
 
+Image::Image() : width(0), height(0), data(0, 0) {
+}
+
+Image::Image(int width, int height) :
+	width(width), height(height), data(3 * width * height, 0) {
+}
+
+Image::~Image() {
+
+}
+
+void Image::load(char* path) {
+	FILE* fp = fopen(path, "rb");
+	unsigned char* buf = new unsigned char[720 * 720 * 3];
+	fseek(fp, 54, SEEK_SET);
+	if (fread(buf, 1, 720 * 720 * 3, fp) != 720 * 720 * 3) {
+		fclose(fp);
+		throw("Error loading hardwood floor file.");
+	}
+
+	for (int i = 0; i < 720 * 720; i++){
+		//hardwood[i * 3 + 0] = buf[i * 3 + 2] / 255.0f;
+		//hardwood[i * 3 + 1] = buf[i * 3 + 1] / 255.0f;
+		//hardwood[i * 3 + 2] = buf[i * 3 + 0] / 255.0f;
+	}
+	delete[] buf;
+	fclose(fp);
+}
+
 bool Image::write(const char * filename2){
 	string str = string(filename2) + string(".") + string(image_exts[IMAGE_FORMAT]);
 	const char* filename = str.c_str();

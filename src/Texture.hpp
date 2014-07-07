@@ -1,14 +1,17 @@
 #pragma once
+#include "Image.hpp"
 #include "Vec3D.hpp"
 
-typedef Vec3Df Texture;
-
-class Texture2 {
+class Texture {
 public:
-	char* data;
+	unsigned int id;
 
-	Texture2(char* path);
-	~Texture2();
+	Texture();
+	~Texture();
+
+	void init();
+	void upload(Image& image);
+	void draw();
 };
 
 void drawTexture(int texIndex);
