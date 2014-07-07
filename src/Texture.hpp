@@ -3,12 +3,12 @@
 
 typedef Vec3Df Texture;
 
-class Texture {
+class Texture2 {
 public:
 	char* data;
 
-	Texture(char* path);
-	~Texture();
+	Texture2(char* path);
+	~Texture2();
 };
 
 void drawTexture(int texIndex);

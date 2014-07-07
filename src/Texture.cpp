@@ -20,7 +20,7 @@ void drawTexture(int texIndex) {
 	glEnd();
 }
 
-Texture::Texture(char* path) {
+Texture2::Texture2(char* path) {
 	FILE* fp = fopen(path, "rb");
 	unsigned char* buf = new unsigned char[720 * 720 * 3];
 	fseek(fp, 54, SEEK_SET);
