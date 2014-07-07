@@ -46,8 +46,10 @@ result.*
 *.sln
 *.filters
 ~$*.pptx
+*.psess
 Thumbs.db
 Makefile.local
 Release/
 Debug/
-*scene.txt
+
+mesh/scene.txt

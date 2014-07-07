@@ -1,10 +1,3 @@
-/*
- * Texture.cpp
- *
- *  Created on: 16 Jun 2014
- *      Author: rick
- */
-
 #include "Texture.hpp"
 #include <GL/glut.h>
 
@@ -25,4 +18,22 @@ void drawTexture(int texIndex) {
 	glTexCoord2f(0, 1);
 	glVertex3f(0, 4, 0);
 	glEnd();
+}
+
+Texture::Texture(char* path) {
+	FILE* fp = fopen(path, "rb");
+	unsigned char* buf = new unsigned char[720 * 720 * 3];
+	fseek(fp, 54, SEEK_SET);
+	if (fread(buf, 1, 720 * 720 * 3, fp) != 720 * 720 * 3) {
+		fclose(fp);
+		throw("Error loading hardwood floor file.");
+	}
+
+	for (int i = 0; i < 720 * 720; i++){
+		//hardwood[i * 3 + 0] = buf[i * 3 + 2] / 255.0f;
+		//hardwood[i * 3 + 1] = buf[i * 3 + 1] / 255.0f;
+		//hardwood[i * 3 + 2] = buf[i * 3 + 0] / 255.0f;
+	}
+	delete[] buf;
+	fclose(fp);
 }

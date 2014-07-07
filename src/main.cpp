@@ -1,4 +1,7 @@
+#ifdef _WIN32
 #include <Windows.h>
+#endif
+
 #include <cstdlib>
 #include <cmath>
 #include <ctime>
