@@ -89,10 +89,15 @@ inline float intersect(const Vec3Df& orig, const Vec3Df& dir, const Triangle* co
 	const Vec3Df& v1 = vertices[1].position;
 	const Vec3Df& v2 = vertices[2].position;
 
-	Vec3Df e1 = v1;
-	e1 -= v0;
-	Vec3Df e2 = v2;
-	e2 -= v0;
+	Vec3Df e1;
+	e1.p[0] = v1.p[0] - v0.p[0];
+	e1.p[1] = v1.p[1] - v0.p[1];
+	e1.p[2] = v1.p[2] - v0.p[2];
+
+	Vec3Df e2;
+	e2.p[0] = v2.p[0] - v0.p[0];
+	e2.p[1] = v2.p[1] - v0.p[1];
+	e2.p[2] = v2.p[2] - v0.p[2];
 
 	const Vec3Df P = cross(dir, e2);
 	const float det = dot(e1, P);

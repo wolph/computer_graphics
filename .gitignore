@@ -47,6 +47,7 @@ result.*
 *.filters
 ~$*.pptx
 *.psess
+*.vspx
 Thumbs.db
 Makefile.local
 Release/

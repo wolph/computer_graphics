@@ -31,27 +31,8 @@ void Camera::Update() {
 }
 
 void Camera::BuildMatrix() {
-	//*(Vec3Df*)&viewmat[12] = pos;
-
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
-	// get direction
-	/*glPushMatrix();
-		glTranslated(1, 0, 0);
-		//glRotated(xrot, 0, 1, 0);
-		glTranslated(1, 0, 0);
-		glRotated(yrot, cos(xrot / 180.0 * 3.14), 0, sin(xrot / 180.0 * 3.14));
-		glTranslated(1, 0, 0);
-		double mat[16];
-		glGetDoublev(GL_MODELVIEW_MATRIX, mat);
-		dir.p[X] = mat[12] - 2;
-		dir.p[Y] = mat[13];
-		dir.p[Z] = mat[14];
-		//dir.normalize();
-		printf("%f %f %f\n", dir.p[X], dir.p[Y], dir.p[Z]);
-	glPopMatrix();*/
-
 
 	// translate to pos
 	glRotated(xrot, 0, 1, 0);

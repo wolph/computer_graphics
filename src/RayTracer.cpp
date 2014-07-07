@@ -280,7 +280,7 @@ void startRayTracing(int texIndex, bool needsRebuild) {
                  GL_RGB,             // format
                  GL_FLOAT,           // type
                  &result.data[0]); // data
-
+				 
     if (isRealtimeRaytracing || asyncResults.empty()) {
         if (!isRealtimeRaytracing && status == future_status::ready) {
             result.write("result");
