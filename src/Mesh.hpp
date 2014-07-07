@@ -30,7 +30,7 @@ public:
     //in the current version, if you use textures, then you have to use texture coords everywhere...
     //I might send an update of the code to change this.
     //for convenience, Vec3Df is used, although only 2D tex coordinates are read corresponding to the x,y entry of Vec3Df.
-    vector<Texture> texcoords;
+    vector<Vec3Df> texcoords;
 	
 	vector<Triangle> triangles;
     //These are the material properties

@@ -20,7 +20,8 @@ Triangle::Triangle(const Triangle & triangle) : material(triangle.material){
 }
 
 Triangle::Triangle(const Vertex & v0, const Vertex & v1, const Vertex & v2,
-                   const Texture & t0, const Texture & t1, const Texture & t2, const Material & m) : material(m){
+                   const Vec3Df & t0, const Vec3Df & t1, const Vec3Df & t2,
+				   const Material & m) : material(m) {
     if(&v0 != 0)
         vertices[0] = v0;
     if(&v1 != 0)
