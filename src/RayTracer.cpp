@@ -114,7 +114,9 @@ int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
 
     for (float y = ya; y < yb; y++) {
         for (float x = xa; x < xb; x++) {
-            Vec3Df total(0, 0, 0);
+			COLOR total;
+			SETCOLOR(total, 0, 0, 0);
+
             float step = 1.0 / msaa;
             for(float xs = 0; xs < 1.0f; xs += step){
                 for(float ys = 0; ys < 1.0f; ys += step){
@@ -129,18 +131,26 @@ int threadedTracePart(Image* result, const unsigned int w, const unsigned int h,
                             + (1 - yscale)
                                     * (xscale * dest01 + (1 - xscale) * dest11);
 					dest.normalize();
-                    total += performRayTracing(origin, dest);
+
+					SRAY ray;
+					COPY3(ray + 0, origin.p);
+					COPY3(ray + 3, dest.p);
+
+					SVEC color;
+
+					performRayTracing(color, ray, 1.0f, false);
+					ADD(total, total, color);
                 }
             }
 
             // calculate average color
-            total /= msaa;
-            total /= msaa;
+            //total /= msaa;
+            //total /= msaa;
 
 			// save it
-            image[(y * w + x) * 3] = total.p[X];
-            image[(y * w + x) * 3 + 1] = total.p[Y];
-            image[(y * w + x) * 3 + 2] = total.p[Z];
+			image[(y * w + x) * 3] = total[0];
+            image[(y * w + x) * 3 + 1] = total[1];
+            image[(y * w + x) * 3 + 2] = total[2];
         }
     }
     return yb;
@@ -295,24 +305,24 @@ void startRayTracing(int texIndex, bool needsRebuild) {
 
 #define VEWY_HIGH 10e6f
 
-inline Vec3Df background(Vec3Df orig, Vec3Df dir){
+void background(RAY ray, OUT COLOR color){
 
-    float height = orig.p[Y] + MyScene.floorheight,
-		a = -height / dir.p[Y],
-		x = orig.p[X] + a * dir.p[X],
-		z = orig.p[Z] + a * dir.p[Z];
+	float height = ray[1] + MyScene.floorheight;
+	float a = -height / ray[4];
+	float x = ray[0] + a * ray[3];
+	float z = ray[2] + a * ray[5];
 
-	Vec3Df tocam = Vec3Df(x, MyScene.floorheight, z) - orig;
+	//Vec3Df tocam = Vec3Df(x, MyScene.floorheight, z) - orig;
 
-	float fogVar = -(tocam.getLength() * 0.05f + 1.0f);
-	fogVar = (1.0f + fogVar) / fogVar / 1.2f;
-	Vec3Df fog = Vec3Df(1, 1, 1) * fogVar; // Remove the minus for white fog
+	//float fogVar = -(tocam.getLength() * 0.05f + 1.0f);
+	//fogVar = (1.0f + fogVar) / fogVar / 1.2f;
+	//Vec3Df fog = Vec3Df(1, 1, 1) * fogVar; // Remove the minus for white fog
 
 	if (1){//dir.p[Y] < MyScene.floorheight){
 
 		unsigned int shadows = (int)MyScene.lights.size();
 
-		if (g_flags[SHADOW]){
+		/*if (g_flags[SHADOW]){
         for(Vec3Df& light : MyScene.lights){
             Vec3Df impact = Vec3Df(x, MyScene.floorheight, z);
             Vec3Df tolight = light - impact;
@@ -326,12 +336,12 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
 				shadows--;
 			}
         }
-        float ratio = (float)shadows / (float)MyScene.lights.size();
+        float ratio = (float)shadows / (float)MyScene.lights.size();*/
 
-        if(height < 0)
-            return Vec3Df(0, 0.3f, 0) * ratio;
+        //if(height < 0)
+         //   return Vec3Df(0, 0.3f, 0) * ratio;
 
-        if(g_flags[CHECK]){
+		if (true){// g_flags[CHECK]){
             // checkerboard
             bool white = true;
             if(x > floor(x) + 0.5f)
@@ -339,51 +349,54 @@ inline Vec3Df background(Vec3Df orig, Vec3Df dir){
             if(z > floor(z) + 0.5f)
                 white = !white;
 
-            if(white)
-                return Vec3Df(0.1f, 0.1f, 0.1f) * ratio;
-            else
-                return Vec3Df(0.9f, 0.9f, 0.9f) * ratio;
-        }else{
+			if (white) {
+				SETCOLOR(color, 0.1, 0.1, 0.1);
+				//return Vec3Df(0.1f, 0.1f, 0.1f) * ratio;
+			}
+			else {
+				SETCOLOR(color, 0.9, 0.9, 0.9);
+			}
+			return;
+        } else {
             int xidx = (int)(x * 720 * 0.06125) % 720;
             int zidx = (int)(z * 720 * 0.06125) % 720;
             if(xidx < 0)
                 xidx += 720;
             if(zidx < 0)
                 zidx += 720;
-			return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio + fog;
+			//return *(Vec3Df*)&hardwood[(zidx * 720 + xidx) * 3] * ratio + fog;
         }
 	} else {
 		//if (!g_flags[CHECK])
         //    fog += Vec3Df(0, 0.6f, 0.99f);
-        return fog;
+        //return fog;
 	}
 }
 
-Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
-        const unsigned int depth, bool inside) {
+void performRayTracing(COLOR color, RAY ray, float weight, bool inside) {
     // calculate nearest triangle
-    Object* obj;
 
-    if(!depth)
-        return Vec3Df(0, 0, 0);
-
-    Vec3Df global_color;
-	Vec3Df impact;
-    Vec3Df normal;
-    Material* mat2;
-    MyScene.raytrace(orig, dir, &impact, &normal, &mat2, &obj, &global_color);
-    Material& mat = *mat2;
-
-    // background
-    if (!obj || impact.p[1] < MyScene.floorheight) {
-		return background(orig, dir);
+	if (weight < 0.01f) {
+		SETCOLOR(color, 0.5, 0.5, 0.5);
+		return;
 	}
 
-    Vec3Df tocam = orig - impact;
-    tocam.normalize();
+	SVEC impact, normal;
+
+	SVEC ambient, diffuse;
+	SETCOLOR(ambient, 0.5, 0.5, 0.5);
+	SETCOLOR(diffuse, 0.2, 0.4, 0.5);
+
+	MyScene.raytrace(ray, impact, normal);
+
+    // background
+    if (impact[1] < MyScene.floorheight) {
+		background(color, ray);
+		return;
+	}
 
     // refraction
-	if (g_flags[REFRACT]) {
+	/*if (g_flags[REFRACT]) {
 		float idx = mat.refraction;
 		if (!inside) idx = 1.0f / idx;
 		float costh = dot(tocam, normal);
@@ -392,35 +405,38 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
 		refr = -refr;
 
 		global_color += performRayTracing(impact, refr, depth - 1, true);
-    }
+    }*/
 
     Vec3Df lightColor(1, 1, 1);
 
     unsigned int shadows = (int)MyScene.lights.size();
 
-    for (Vec3Df& light : MyScene.lights){
-        Vec3Df color(global_color);
-        Vec3Df tolight = light - impact;
-        tolight.normalize();
+    for (Vec3Df& light : MyScene.lights) {
+		SVEC color, tolight;
+        //Vec3Df color(global_color);
+        //Vec3Df tolight = light - impact;
+        //tolight.normalize();
+
+		SUB(tolight, light, impact);
 
         // ambient
-        if(g_flags[AMBIENT] && mat.ambient){
-            color += mat.Kd;
+        if(g_flags[AMBIENT]) {
+			ADD(color, color, ambient);
         }
 
         // shadow
-		if (g_flags[SHADOW]){
+		/*if (g_flags[SHADOW]){
         Vec3Df tempImpact, tempNormal;
         Material* tempMat;
         Object* tempObj;
         if(MyScene.raytrace(impact, tolight, &tempImpact, &tempNormal, &tempMat,
                 &tempObj))
 				shadows--;
-		}
+		}*/
 
 		// phong illumination
 		// model source: http://www.cpp-home.com/tutorials/211_1.htm
-		if (g_flags[PHONG]) {
+		/*if (g_flags[PHONG]) {
 			Vec3Df refl = 2 * normal * dot(normal, tolight) - tolight;
 			Vec3Df res1 = mat.Kd * dot(normal, tolight);
 			res1 += pow(mat.Ns * mat.Ks * dot(refl, dir), (float)(mat.Ns / mat.Ni));
@@ -428,25 +444,31 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
 			if (g_flags[AMBIENT])
 				res1 += mat.Ka * mat.Kd;
 			color += res1;
-		}
+		}*/
 
         // diffuse
-        if (g_flags[DIFFUSE] && mat.color) {
-            color += mat.Kd * lightColor * max(0.f, dot(normal, tolight));
+        if (g_flags[DIFFUSE]) {
+			SVEC diffuse2;
+			float dot2;
+
+			DOT(dot2, normal, tolight);
+			MULS(diffuse, dot2);
+
+			ADD(color, diffuse);
         }
 
         // specular
-        if(g_flags[SPECULAR] && mat.highlight){
+        /*if(g_flags[SPECULAR] && mat.highlight){
             float LN = dot(tolight, normal);
             Vec3Df R = 2 * LN * normal - tolight;
             if(LN > 0){
                 R.normalize();
                 color += mat.Ks * pow(max(0.f, dot(tocam, R)), mat.Ns);
             }
-        }
+        }*/
 
         // reflect
-		if (g_flags[REFLECT]){// && mat.reflection){
+		/*if (g_flags[REFLECT]){// && mat.reflection){
             const Vec3Df r = dir - 2 * dot(dir, normal) * normal;
 			color += performRayTracing(impact, r, depth - 1);// *mat.Ni;
         }
@@ -454,21 +476,19 @@ Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir,
         // occlusion
         global_color[0] = max(global_color[0], color[0]);
         global_color[1] = max(global_color[1], color[1]);
-        global_color[2] = max(global_color[2], color[2]);
+        global_color[2] = max(global_color[2], color[2]);*/
     }
 
     // shadow
-    if (g_flags[SHADOW]) {
-        global_color *= ((float)shadows / (float)MyScene.lights.size());
-    }
+    //if (g_flags[SHADOW]) {
+    //    global_color *= ((float)shadows / (float)MyScene.lights.size());
+    //}
 
     // return color
-    for(int i = 0;i < 3;i++){
-        if(global_color.p[i] > 1)
-            global_color.p[i] = 1;
-    }
-
-    return global_color;
+    //for(int i = 0;i < 3;i++){
+    //    if(global_color.p[i] > 1)
+    //        global_color.p[i] = 1;
+    //}
 }
 
 inline Vec3Df pow(Vec3Df in1, float in2){

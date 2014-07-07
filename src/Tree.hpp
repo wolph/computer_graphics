@@ -5,27 +5,28 @@
 #pragma once
 #include "Mesh.hpp"
 #include "constants.hpp"
+#include "Vec3D.hpp"
 
 struct AABB {
 	// the subtrees, if any
 	AABB** sub;
-    vector<Triangle*> leaves; // triangle indices
+    vector<POLY> leaves; // triangle indices
 
 	// top left up corner
-	Vec3Df pos;
+	SVEC pos;
 
 	// half dimension!
 	float radius;
 
 	AABB();
-	AABB(Vec3Df& pos, float radius);
+	AABB(POS pos, float radius);
 	~AABB();
 
-	bool hit(const Vec3Df& orig, const Vec3Df& dir);
+	bool hit(RAY ray);
 	void split();
-	int follow(const Vec3Df& v);
-	float collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr);
-	bool collidePlane(int axis, const Vec3Df& orig, const Vec3Df& dir);
+	int follow(VEC vec);
+	float collide(RAY ray, OUT POLY* p);
+	bool collidePlane(RAY ray, int axis);
 };
 
 class Tree {
@@ -37,6 +38,7 @@ public:
 	AABB* root;
 
 	void build(Mesh& mesh);
+	void add(POLY p);
 	void add(Triangle& tr);
-	float collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** tr);
+	float collide(RAY ray, OUT POLY* p);
 };

@@ -3,7 +3,9 @@
 
 AABB::AABB() : sub(0), radius(-1) { }
 
-AABB::AABB(Vec3Df& pos, float radius) : sub(0), pos(pos), radius(radius) {
+AABB::AABB(POS pos, float radius) {
+	COPY3(this->pos, pos);
+	this->radius = radius;
 }
 
 AABB::~AABB() {
@@ -11,10 +13,10 @@ AABB::~AABB() {
 	delete[] sub;
 }
 
-int AABB::follow(const Vec3Df& v) {
+int AABB::follow(VEC vec) {
 	int axis = 0;
 	for (int a = 0; a < 3; a++) {
-		if (v.p[a] > pos.p[a] + radius)
+		if (vec[a] > pos[a] + radius)
 			axis |= 1 << a;
 	}
 
@@ -31,7 +33,9 @@ void AABB::split() {
 	for (int x = 0; x < 2; x++){
 		for (int y = 0; y < 2; y++){
 			for (int z = 0; z < 2; z++){
-				Vec3Df subpos(pos + Vec3Df(x * radius, y * radius, z * radius));
+				SVEC diff, subpos;
+				SETVEC(diff, x * radius, y * radius, z * radius);
+				ADD(subpos, pos, diff);
 				float subradius = radius * 0.5f;
 
 				sub[z * 4 + y * 2 + x] = new AABB(subpos, subradius);
@@ -40,22 +44,22 @@ void AABB::split() {
 	}
 }
 
-bool AABB::collidePlane(int axis, const Vec3Df& orig, const Vec3Df& dir) {
+bool AABB::collidePlane(RAY ray, int axis) {
 	// check axis plane
-	float v1 = pos.p[axis];
+	float v1 = pos[axis];
 
 	// flip
-	bool flip = (dir.p[axis] < 0);
+	bool flip = (ray[axis + 3] < 0);
 	//if (dir.p[axis] > 0 && orig.p[axis] > v1) flip = !flip;
 	//if (dir.p[axis] < 0 && orig.p[axis] < v1 + 2 * radius) flip = !flip;
 	v1 += flip * 2 * radius;
 
 	// skip
-	if ((v1 - orig.p[axis] - flip * 2 * radius) / dir.p[axis] < 0)
+	if ((v1 - ray[axis] - flip * 2 * radius) / ray[axis + 3] < 0)
 		return false;
 
 	// factor
-	float a = (v1 - orig.p[axis]) / dir.p[axis];
+	float a = (v1 - ray[axis]) / ray[axis + 3];
 
 	// behind the plane
 	//if (a < 0)
@@ -66,41 +70,36 @@ bool AABB::collidePlane(int axis, const Vec3Df& orig, const Vec3Df& dir) {
 	int axis3 = (axis + 2) % 3;
 
 	// other axis values
-	float v2 = a * dir.p[axis2] + orig.p[axis2];
-	float v3 = a * dir.p[axis3] + orig.p[axis3];
+	float v2 = a * ray[axis2 + 3] + ray[axis2];
+	float v3 = a * ray[axis3 + 3] + ray[axis3];
 
 	// check 2D aabb
-	if (pos.p[axis2] < v2 && v2 < pos.p[axis2] + 2 * radius)
-	if (pos.p[axis3] < v3 && v3 < pos.p[axis3] + 2 * radius)
+	if (pos[axis2] < v2 && v2 < pos[axis2] + 2 * radius)
+	if (pos[axis3] < v3 && v3 < pos[axis3] + 2 * radius)
 		return true;
 	return false;
 }
 
-bool AABB::hit(const Vec3Df& orig, const Vec3Df& dir) {
+bool AABB::hit(RAY ray) {
 	for (int i = 0; i < 3; i++)
-		if (collidePlane(i, orig, dir))
+		if (collidePlane(ray, i))
 			return true;
 	return false;
 }
 
-inline float intersect(const Vec3Df& orig, const Vec3Df& dir, const Triangle* const triangle) {
-	const Vertex* vertices = triangle->vertices;
-	const Vec3Df& v0 = vertices[0].position;
-	const Vec3Df& v1 = vertices[1].position;
-	const Vec3Df& v2 = vertices[2].position;
+inline float intersect(RAY ray, POLY* poly) {
+	VEC v0 = *poly + 0;
+	VEC v1 = *poly + 3;
+	VEC v2 = *poly + 6;
 
-	Vec3Df e1;
-	e1.p[0] = v1.p[0] - v0.p[0];
-	e1.p[1] = v1.p[1] - v0.p[1];
-	e1.p[2] = v1.p[2] - v0.p[2];
+	VEC e1, e2, P, T, Q;
+	float det, u, v, t;
 
-	Vec3Df e2;
-	e2.p[0] = v2.p[0] - v0.p[0];
-	e2.p[1] = v2.p[1] - v0.p[1];
-	e2.p[2] = v2.p[2] - v0.p[2];
-
-	const Vec3Df P = cross(dir, e2);
-	const float det = dot(e1, P);
+	SUB(e1, v1, v0);
+	SUB(e2, v2, v0);
+	
+	CROSS(P, (ray+3), e2);
+	DOT(det, e1, P);
 
 	if (det < 0.000000001 && det > -0.000000001)
 		return 0;
@@ -108,41 +107,42 @@ inline float intersect(const Vec3Df& orig, const Vec3Df& dir, const Triangle* co
 	float inv_det = 1.0f;
 	inv_det /= det;
 
-	Vec3Df T = orig;
-	T -= vertices[0].position;
+	SUB(T, ray, v0);
 
-	float u = dot(T, P);
+	DOT(u, T, P);
+
 	u *= inv_det;
+
 	if (u < 0.0f || u > 1.0f)
 		return 0;
 
-	const Vec3Df Q = cross(T, e1);
+	CROSS(Q, T, e1);
 
-	float v = dot(dir, Q);
+	DOT(v, (ray+3), Q);
 	v *= inv_det;
 	if (v < 0.0f || u + v > 1.0f)
 		return 0;
 
-	float t = dot(e2, Q);
+	DOT(t, e2, Q);
 	t *= inv_det;
 
 	return t;
 }
 
-float AABB::collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** out) {
+float AABB::collide(RAY ray, OUT POLY* poly) {
 	// check hit with this cube
-	if (!hit(orig, dir)) {
-		*out = 0;
+	if (!hit(ray)) {
+		*poly = 0;
 		return 1e10f;
 	}
 
 	// current closest triangle
 	float shortest = 1e10f;
-	Triangle* res = 0;
+	POLY res = 0;
 
 	// check with leaves
 	for (unsigned int i = 0; i < leaves.size(); i++) {
-		const float dist = intersect(orig, dir, leaves[i]);
+		const float dist = intersect(ray, poly);
 		if (dist && dist < shortest) {
 			shortest = dist;
 			res = leaves[i];
@@ -153,8 +153,8 @@ float AABB::collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** out) {
 	// TODO: skip irrelevant subnodes
 	if (sub) {
 		for (int i = 0; i < 8; i++) {
-			Triangle* res2;
-			float dist = sub[i]->collide(orig, dir, &res2);
+			POLY res2;
+			float dist = sub[i]->collide(ray, poly);
 			if (dist < shortest) {
 				res = res2;
 				shortest = dist;
@@ -163,7 +163,7 @@ float AABB::collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** out) {
 	}
 
 	// hit
-	*out = res;
+	*poly = res;
 	return shortest;
 }
 
@@ -182,15 +182,13 @@ void Tree::calcSize(Mesh& mesh) {
 			}
 		}
 	}
-//	printf("min: (%.1f,%.1f,%.1f)\n", p1.p[X], p1.p[Y], p1.p[Z]);
-//	printf("max: (%.1f,%.1f,%.1f)\n", p2.p[X], p2.p[Y], p2.p[Z]);
 
 	Vec3Df dim = p2 - p1;
-	float sdim = dim.p[X];
-	sdim = fmax(sdim, dim.p[Y]);
-	sdim = fmax(sdim, dim.p[Z]);
+	float sdim = dim.x;
+	sdim = fmax(sdim, dim.y);
+	sdim = fmax(sdim, dim.z);
 
-	root = new AABB(p1, sdim * 0.5f);
+	root = new AABB(p1.p, sdim * 0.5f);
 }
 
 void Tree::build(Mesh& mesh) {
@@ -206,11 +204,17 @@ void Tree::add(Triangle& tr) {
 	AABB* current = root;
 	int a0, a1, a2;
 
+	SPOLY spoly;
+	POLY p = spoly;
+	COPY3((p + 0), tr.vertices[0].position.p);
+	COPY3((p + 3), tr.vertices[1].position.p);
+	COPY3((p + 6), tr.vertices[2].position.p);
+
 	unsigned int depth = 0;
 	while (depth < max_depth) {
-		a0 = current->follow(tr.vertices[0].position);
-		a1 = current->follow(tr.vertices[1].position);
-		a2 = current->follow(tr.vertices[2].position);
+		a0 = current->follow(tr.vertices[0].position.p);
+		a1 = current->follow(tr.vertices[1].position.p);
+		a2 = current->follow(tr.vertices[2].position.p);
 
 		if (a0 != a1 || a1 != a2)
 			break;
@@ -220,9 +224,13 @@ void Tree::add(Triangle& tr) {
 		depth++;
 	}
 
-	current->leaves.push_back(&tr);
+	//current->leaves.push_back(spoly);
+	//current->leaves.emplace_back({ 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+	float* dyn = new float[9];
+	memcpy(dyn, spoly, 9 * sizeof(float));
+	current->leaves.push_back(dyn);
 }
 
-float Tree::collide(const Vec3Df& orig, const Vec3Df& dir, Triangle** out) {
-	return root->collide(orig, dir, out);
+float Tree::collide(RAY ray, OUT POLY* p) {
+	return root->collide(ray, p);
 }

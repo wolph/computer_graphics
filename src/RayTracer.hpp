@@ -15,6 +15,7 @@
 #include "OptionParser.hpp"
 #include "Threading.hpp"
 #include "Timer.hpp"
+#include "Vec3D.hpp"
 #include <algorithm>
 
 extern unsigned int texture;
@@ -75,7 +76,7 @@ void startRayTracing(int texIndex, bool needsRebuild=false);
 void yourDebugDraw();
 
 //your main function to rewrite
-Vec3Df performRayTracing(const Vec3Df& orig, const Vec3Df& dir, const unsigned int depth=MAX_TRACE_DEPTH, bool inside = false);
+void performRayTracing(COLOR out, RAY ray, float importance, bool inside = false);
 
 //want keyboard interaction? Here it is...
 bool yourKeyboardPress(char t, int x, int y);

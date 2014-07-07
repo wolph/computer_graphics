@@ -314,3 +314,48 @@ typedef Vec3D<int> Vec3Di;
 
 #define dot Vec3Df::dotProduct
 #define cross Vec3Df::crossProduct
+
+// efficient 3D vectorial computations 
+/*
+
+Vector = float[3]
+
+*/
+#define OUT
+#define IN
+typedef float* VEC;
+typedef float* POLY;
+
+// concrete vector
+typedef float SPOLY[9];
+typedef float SVEC[3];
+typedef float SRAY[6];
+
+#define DOT(a,b) (a[0]*b[0]+a[1]*b[1]+a[2]*b[2])
+#define ADD(a,b,c) a[0]=b[0]+c[0];a[1]=b[1]+c[1];a[2]=b[2]+c[2];
+#define ADD(a,b) a[0]+=b[0];a[1]+=b[1];a[2]+=b[2];
+#define SUB(a,b,c) a[0]=b[0]-c[0];a[1]=b[1]-c[1];a[2]=b[2]-c[2];
+#define DIV(a,b) a[0]/=b;a[1]/=b;a[2]/=b;
+#define DOT(a,b,c) a=b[0]*c[0]+b[1]*c[1]+b[2]*c[2];
+#define LENSQ(a) a[0]*a[0]+a[1]*a[1]+a[2]*a[2]
+#define LEN(a) sqrtf(LENSQ(a))
+#define NORM(a) {float _l=LEN(a); DIV(a,_l);}
+
+#define MULS(a,b) a[0]*=b;a[1]*=b;a[2]*=b;
+
+#define CROSS(r,a,b) \
+	r[0] = a[1] * b[2] - a[2] * b[1];\
+	r[1] = a[2] * b[0] - a[0] * b[2];\
+	r[2] = a[0] * b[1] - a[1] * b[0];
+
+#define COPY3(a,b) (a)[0]=(b)[0];(a)[1]=(b)[1];(a)[2]=(b)[2];
+
+typedef float* RAY;
+
+// color
+typedef float* COLOR;
+#define SETVEC(out, r, g, b) out[0] = r; out[1] = g; out[2] = b;
+#define SETCOLOR(out, r, g, b) out[0] = r; out[1] = g; out[2] = b;
+
+// position
+typedef float* POS;

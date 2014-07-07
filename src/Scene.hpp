@@ -37,26 +37,8 @@ public:
 	inline Object(Vec3Df& pos, Mesh& mesh) : mesh(mesh), pos(pos), vel(0, 0, 0) {
 	    tree.build(mesh);
     }
-	virtual void draw();
-	virtual float raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Vec3Df* color=NULL);
-    virtual string getName(){
-        if(&mesh == NULL)return "Unknown object";
-        else return mesh.name;
-    }
-};
-
-class Sphere : public Object {
-	float radius;
-	Vec3Df center;
-public:
-	inline Sphere(Vec3Df& center, float radius) : center(center) {
-		this->radius = radius;
-	}
 	void draw();
-	float raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Vec3Df* color=NULL);
-    string getName(){
-        return "Sphere";
-    }
+	float raytrace(RAY ray, OUT POS impact, OUT POS normal);
 };
 
 class Scene {
@@ -74,8 +56,7 @@ public:
 	void update();
 	void add(Object* object);
 	void addLightPoint(Vec3Df& lightPos);
-	bool raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact,
-                  Vec3Df* normal, Material** mat, Object** obj, Vec3Df* color=NULL);
+	bool raytrace(RAY ray, OUT POS impact, OUT VEC normal);
 
     Object* nextObject();
     Object* prevObject();
