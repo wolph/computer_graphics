@@ -20,7 +20,7 @@
 
 enum { SHADOW, CHECK, DEBUG, AMBIENT, DIFFUSE, SPECULAR, REFLECT, REFRACT, OCCLUSION, PHONG };
 extern bool g_flags[10];
-extern char* flagstrs[10];
+extern const char* flagstrs[10];
 
 // double buffered
 unsigned int textures[2];
@@ -234,8 +234,8 @@ void drawInfo(){
 
     float fps = 1. / fpsTimer.avg();
     fpsTimer.updateLastDisplay();
-  //  sprintf(infoString, "%06.1f fps - Current object : %s", fps,
-//            MyScene.object->getName().c_str());
+    sprintf(infoString, "%06.1f fps - Current object : %s", fps,
+            MyScene.object->getName().c_str());
 
     int i = 0;
     while(infoString[i] != '\0'){

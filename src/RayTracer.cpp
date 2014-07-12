@@ -23,7 +23,7 @@ float hardwood[720 * 720 * 3];
 // runtime options
 enum {SHADOW, CHECK, DEBUG, AMBIENT, DIFFUSE, SPECULAR, REFLECT, REFRACT, OCCLUSION, PHONG};
 bool g_flags[10];
-char* flagstrs[10] = {
+const char* flagstrs[10] = {
 	"shadow", "checkerboard", "debug", "ambient", "diffuse", "specular", "reflect", "refract",
 	"occlusion", "phong"
 };
