@@ -1,22 +1,5 @@
-#include "Texture.hpp"
+#include "texture.hpp"
 #include <GL/glut.h>
-
-extern unsigned int textures[2];
-
-void drawTexture(int texIndex) {
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, textures[texIndex]);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0);
-	glVertex3f(0, 0, 0);
-	glTexCoord2f(1, 0);
-	glVertex3f(4, 0, 0);
-	glTexCoord2f(1, 1);
-	glVertex3f(4, 4, 0);
-	glTexCoord2f(0, 1);
-	glVertex3f(0, 4, 0);
-	glEnd();
-}
 
 Texture::Texture() {
 }

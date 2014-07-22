@@ -4,7 +4,7 @@
 
 const unsigned int LINE_LEN = 256;
 
-bool Mesh::loadMesh(string filename, bool randomizeTriangulation){
+bool Mesh::loadMesh(string filename, bool randomizeTriangulation) {
 	Timer timer;
 	vertices.clear();
 	triangles.clear();

@@ -3,8 +3,7 @@
  Utilitaires pour appliquer une traqueboule a une fenetre OpenGL.
  
  */
-#ifndef TRAQUEBOULE
-#define TRAQUEBOULE
+#pragma once
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -15,9 +14,10 @@
 #include "Vec3D.hpp"
 #include "Scene.hpp"
 #include "Timer.hpp"
-extern Scene MyScene;
+#include "program.hpp"
 
 static const float speedfact = 0.2f;
+extern Program* prog;
 
 /** votre fonction d'affichage */
 void display();
@@ -32,17 +32,6 @@ bool leftButton, rightButton;
 double angleX, angleY;
 bool mouseMode = false;
 Timer startDrag(1);
-
-
-/** Initialize model view matrix */
-void initViewTransform() {
-}
-
-/** Tranform view */
-void viewTransform() {
-	MyScene.cam.BuildMatrix();
-    glMultMatrixd(MyScene.cam.viewmat);
-}
 
 /** Mouse button click */
 void mouseFunc(int button, int state, int x, int y){ 
@@ -87,13 +76,13 @@ void mouseMotionFunc(int x, int y){
     }
 	nrm = sqrt(dx * dx + dy * dy + dx * dx + dy * dy) * 0.002;// speedfact;
 
-	MyScene.cam.xrot += dx * nrm;
-	MyScene.cam.yrot += dy * nrm;
+	prog->scene.cam.xrot += dx * nrm;
+	prog->scene.cam.yrot += dy * nrm;
 
-	if (MyScene.cam.yrot < -90)
-	    MyScene.cam.yrot = -90;
-	if (MyScene.cam.yrot > 90)
-	    MyScene.cam.yrot = 90;
+	if (prog->scene.cam.yrot < -90)
+		prog->scene.cam.yrot = -90;
+	if (prog->scene.cam.yrot > 90)
+		prog->scene.cam.yrot = 90;
 
     if(mouseMode)
 	    glutWarpPointer(WINDOW_RES_X / 2, WINDOW_RES_Y / 2);
@@ -159,4 +148,3 @@ Vec3Df getWorldPositionOfPixel(unsigned int px, unsigned int py){
 
     return Vec3Df(x, y, z);
 }
-#endif

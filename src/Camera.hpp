@@ -5,8 +5,8 @@
 
 class Camera {
 public:
-	double viewmat[16];
-	double invmat[16];
+	float viewmat[16];
+	float invmat[16];
 	int forward;
 	int side;
 	int alt;

@@ -35,11 +35,11 @@ void Camera::BuildMatrix() {
 	glLoadIdentity();
 
 	// translate to pos
-	glRotated(xrot, 0, 1, 0);
-	glRotated(yrot, cos(xrot / 180.0 * 3.14), 0, sin(xrot / 180.0 * 3.14));
+	glRotatef(xrot, 0, 1, 0);
+	glRotatef(yrot, cos(xrot / 180.0 * 3.14), 0, sin(xrot / 180.0 * 3.14));
 	glTranslatef(pos.p[X], pos.p[Y], pos.p[Z]);
 
-	glGetDoublev(GL_MODELVIEW_MATRIX, viewmat);
+	glGetFloatv(GL_MODELVIEW_MATRIX, viewmat);
 }
 
 Vec3Df Camera::GetWorldPos(int px, int py) {

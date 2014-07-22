@@ -1,15 +1,29 @@
-#include "raytracer.hpp"
-#include "tree.hpp"
-#include "scene.hpp"
-#include "threading.hpp"
-#include "program.hpp"
+#include "RayTracer.hpp"
+#include "Tree.hpp"
+#include "Scene.hpp"
+#include "Threading.hpp"
 
 #include <ctime>
 #include <algorithm>
 #include <cmath>
+
 using namespace std;
 
-extern Program* prog;
+//temporary variables
+extern unsigned int textures[2];
+extern Scene MyScene;
+
+ThreadPool pool(getNumberOfCores());
+Image preview_image(PREVIEW_RES_X, PREVIEW_RES_Y);
+Image output_image(RAYTRACE_RES_X, RAYTRACE_RES_Y);
+
+// runtime options
+enum {SHADOW, CHECK, DEBUG, AMBIENT, DIFFUSE, SPECULAR, REFLECT, REFRACT, OCCLUSION, PHONG};
+bool g_flags[10];
+char* flagstrs[10] = {
+	"shadow", "checkerboard", "debug", "ambient", "diffuse", "specular", "reflect", "refract",
+	"occlusion", "phong"
+};
 
 // rays
 //SRAY ray00, ray01, ray10, ray11;
@@ -17,6 +31,61 @@ Vec3Df origin00, dest00;
 Vec3Df origin01, dest01;
 Vec3Df origin10, dest10;
 Vec3Df origin11, dest11;
+
+//use this function for any preprocessing of the mesh.
+int init(int argc, char **argv) {
+    srand(time(0));
+
+    string mesh;
+    // skip program name argv[0] if present
+    argc -= (argc > 0);
+    argv += (argc > 0);
+
+    option::Stats stats(usage, argc, argv);
+    option::Option* options = (option::Option*)calloc(stats.options_max,
+            sizeof(option::Option));
+    option::Option* buffer = (option::Option*)calloc(stats.buffer_max,
+            sizeof(option::Option));
+
+    option::Parser parse(usage, argc, argv, options, buffer);
+
+    if (parse.error())
+        return 1;
+
+    if (options[HELP]) {
+        int columns = getenv("COLUMNS") ? stoi(getenv("COLUMNS")) : 80;
+        option::printUsage(fwrite, stdout, usage, columns);
+        return 2;
+    }
+
+    if (options[SCENE]) {
+        // dostuff
+    }
+
+    if (options[RAYTRACE_X]) {
+        const char* arg = options[RAYTRACE_X].last()->arg;
+        if(arg != 0){
+            //alternateX = stoi(arg);
+        }
+    }
+
+    if (options[RAYTRACE_Y]) {
+        const char* arg = options[RAYTRACE_Y].last()->arg;
+        if(arg != 0){
+            //alternateY = stoi(arg);
+        }
+    }
+
+    MyScene.load("mesh/scene.txt");
+
+    // load texture
+    
+
+    isRealtimeRaytracing = 1;
+    isDrawingTexture = 0;
+
+    return 0;
+}
 
 
 // make a 3D ray from screen positions
@@ -28,7 +97,7 @@ void createRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest) {
 	int y_new = viewport[3] - y_I;
 
 	double x, y, z;
-	float* modelview = prog->scene.cam.viewmat;
+	float* modelview = MyScene.cam.viewmat;
 
 	double modelview2[16];
 	double projection2[16];
@@ -50,7 +119,7 @@ void createRay(int x_I, int y_I, Vec3Df* origin, Vec3Df* dest) {
 
 void singleBgTrace(RAY ray, OUT COLOR color) {
 
-	float height = ray[1];
+	float height = ray[1] + MyScene.floorheight;
 	float a = -height / ray[4];
 	float x = ray[0] + a * ray[3];
 	float z = ray[2] + a * ray[5];
@@ -63,7 +132,7 @@ void singleBgTrace(RAY ray, OUT COLOR color) {
 
 	if (1){//dir.p[Y] < MyScene.floorheight){
 
-		unsigned int shadows = (int)prog->scene.lights.size();
+		unsigned int shadows = (int)MyScene.lights.size();
 
 		/*if (g_flags[SHADOW]){
 		for(Vec3Df& light : MyScene.lights){
@@ -133,7 +202,7 @@ void singleTrace(COLOR color, RAY ray, float weight, bool inside) {
 	SETCOLOR(ambient, 0.5, 0.5, 0.5);
 	SETCOLOR(diffuse, 0.2, 0.4, 0.5);
 
-	bool bg = prog->scene.raytrace(ray, impact, normal);
+	bool bg = MyScene.raytrace(ray, impact, normal);
 
 	// background
 	if (bg) {
@@ -155,9 +224,9 @@ void singleTrace(COLOR color, RAY ray, float weight, bool inside) {
 
 	Vec3Df lightColor(1, 1, 1);
 
-	unsigned int shadows = (int)prog->scene.lights.size();
+	unsigned int shadows = (int)MyScene.lights.size();
 
-	for (Vec3Df& light : prog->scene.lights) {
+	for (Vec3Df& light : MyScene.lights) {
 		SVEC color, tolight;
 		//Vec3Df color(global_color);
 		//Vec3Df tolight = light - impact;
@@ -166,7 +235,7 @@ void singleTrace(COLOR color, RAY ray, float weight, bool inside) {
 		//SUB(tolight, light, impact);
 
 		// ambient
-		if (prog->flags[AMBIENT]) {
+		if (g_flags[AMBIENT]) {
 			ADD(color, ambient);
 		}
 
@@ -193,7 +262,7 @@ void singleTrace(COLOR color, RAY ray, float weight, bool inside) {
 		}*/
 
 		// diffuse
-		//if (g_flags[DIFFUSE]) {
+		if (g_flags[DIFFUSE]) {
 			SVEC diffuse2;
 			float dot2;
 
@@ -201,7 +270,7 @@ void singleTrace(COLOR color, RAY ray, float weight, bool inside) {
 			MULS(diffuse, dot2);
 
 			ADD(color, diffuse);
-		//}
+		}
 
 		// specular
 		/*if(g_flags[SPECULAR] && mat.highlight){
@@ -242,7 +311,7 @@ int renderPart(Image* result, int w, int h, int xa, int ya, int xb, int yb) {
 	Vec3Df origin, dest;
 	vector<float>& image = result->data;
 
-	const unsigned int msaa = PREVIEW_MSAA;
+	const unsigned int msaa = isRealtimeRaytracing ? PREVIEW_MSAA : MSAA;
 
 	for (float y = ya; y < yb; y++) {
 		for (float x = xa; x < xb; x++) {
@@ -302,13 +371,13 @@ void renderChunks(Image* result, int w, int h) {
 	queue<future<int>> results;
 	for (pair<int, int> p : parts){
 		results.push(
-			prog->pool.enqueue(renderPart, result, w, h,
+			pool.enqueue(renderPart, result, w, h,
 			p.first, p.second,
 			p.first + PREVIEW_PART_SIZE, p.second + PREVIEW_PART_SIZE));
 	}
 
 	// wait for all parts to finish
-	while (!results.empty()) {
+	while (!results.empty() && isRealtimeRaytracing) {
 		results.front().wait();
         results.pop();
     }
@@ -330,4 +399,15 @@ void render(Image& image) {
 	createRay(WINDOW_RES_X - 1, WINDOW_RES_Y - 1, &origin11, &dest11);
 
 	renderChunks(&result, w, h);
+
+	glTexImage2D(
+		GL_TEXTURE_2D,      // target
+		0,                  // level
+		GL_RGB,             // internalFormat
+		w,                  // width
+		h,                  // height
+		0,                  // border
+		GL_RGB,             // format
+		GL_FLOAT,           // type
+		&result.data[0]); // data
 }

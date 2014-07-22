@@ -40,6 +40,8 @@ void Scene::load(string path) {
 	}
 
     scene.close();
+
+	printf("Done loading scene!\n");
 }
 
 void Scene::add(Object* object) {

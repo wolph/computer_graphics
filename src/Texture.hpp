@@ -13,5 +13,3 @@ public:
 	void upload(Image& image);
 	void draw();
 };
-
-void drawTexture(int texIndex);

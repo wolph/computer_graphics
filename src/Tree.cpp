@@ -6,6 +6,7 @@ AABB::AABB() : sub(0), radius(-1) { }
 AABB::AABB(POS pos, float radius) {
 	COPY3(this->pos, pos);
 	this->radius = radius;
+	sub = 0;
 }
 
 AABB::~AABB() {
@@ -87,12 +88,12 @@ bool AABB::hit(RAY ray) {
 	return false;
 }
 
-inline float intersect(RAY ray, POLY* poly) {
-	VEC v0 = *poly + 0;
-	VEC v1 = *poly + 3;
-	VEC v2 = *poly + 6;
+inline float intersect(RAY ray, POLY poly) {
+	VEC v0 = poly + 0;
+	VEC v1 = poly + 3;
+	VEC v2 = poly + 6;
 
-	VEC e1, e2, P, T, Q;
+	SVEC e1, e2, P, T, Q;
 	float det, u, v, t;
 
 	SUB(e1, v1, v0);
@@ -142,7 +143,7 @@ float AABB::collide(RAY ray, OUT POLY* poly) {
 
 	// check with leaves
 	for (unsigned int i = 0; i < leaves.size(); i++) {
-		const float dist = intersect(ray, poly);
+		const float dist = intersect(ray, leaves[i]);
 		if (dist && dist < shortest) {
 			shortest = dist;
 			res = leaves[i];

@@ -2,6 +2,12 @@
 //3D vectorial computations 
 #include <cmath>
 #include <iostream>
+
+extern "C"
+{
+#include <smmintrin.h>
+}
+
 using namespace std;
 
 template<typename T> class Vec3D;
@@ -321,15 +327,27 @@ typedef Vec3D<int> Vec3Di;
 Vector = float[3]
 
 */
+//#define SSE
+
+#ifdef SSE
+#include <mmintrin.h>
+
 #define OUT
 #define IN
-typedef float* VEC;
-typedef float* POLY;
+typedef __m128 COLOR;
+typedef __m128 VEC;
+typedef __m128* POLY;
+typedef __m128* RAY;
 
 // concrete vector
-typedef float SPOLY[9];
-typedef float SVEC[3];
-typedef float SRAY[6];
+typedef float SPOLY[3];
+typedef __m128 VEC;
+typedef __m128 SRAY[2];
+typedef float SCOLOR[3];
+
+// color
+#define SETVEC(out, r, g, b) out[0] = r; out[1] = g; out[2] = b;
+#define SETCOLOR(out, r, g, b) out[0] = r; out[1] = g; out[2] = b;
 
 #define DOT(a,b) (a[0]*b[0]+a[1]*b[1]+a[2]*b[2])
 #define ADD(a,b,c) a[0]=b[0]+c[0];a[1]=b[1]+c[1];a[2]=b[2]+c[2];
@@ -350,12 +368,46 @@ typedef float SRAY[6];
 
 #define COPY3(a,b) (a)[0]=(b)[0];(a)[1]=(b)[1];(a)[2]=(b)[2];
 
+
+#else
+
+#define OUT
+#define IN
+
+// concrete vector
+typedef float SVEC[3];
+typedef float SPOLY[9];
+typedef float SRAY[6];
+typedef float SCOLOR[3];
+
+// types
+typedef float* VEC;
+typedef float* POS;
+typedef float* POLY;
 typedef float* RAY;
+typedef float* COLOR;
+
+#define DOT(a,b) (a[0]*b[0]+a[1]*b[1]+a[2]*b[2])
+#define ADD(a,b) a[0]+=b[0];a[1]+=b[1];a[2]+=b[2];
+#define SUB(a,b,c) a[0]=b[0]-c[0];a[1]=b[1]-c[1];a[2]=b[2]-c[2];
+#define DIV(a,b) a[0]/=b;a[1]/=b;a[2]/=b;
+#define DOT(a,b,c) a=b[0]*c[0]+b[1]*c[1]+b[2]*c[2];
+#define LENSQ(a) a[0]*a[0]+a[1]*a[1]+a[2]*a[2]
+#define LEN(a) sqrtf(LENSQ(a))
+#define NORM(a) {float _l=LEN(a); DIV(a,_l);}
+
+#define MULS(a,b) a[0]*=b;a[1]*=b;a[2]*=b;
+
+#define CROSS(r,a,b) \
+	r[0] = a[1] * b[2] - a[2] * b[1];\
+	r[1] = a[2] * b[0] - a[0] * b[2];\
+	r[2] = a[0] * b[1] - a[1] * b[0];
+
+#define COPY3(a,b) (a)[0]=(b)[0];(a)[1]=(b)[1];(a)[2]=(b)[2];
+
 
 // color
-typedef float* COLOR;
 #define SETVEC(out, r, g, b) out[0] = r; out[1] = g; out[2] = b;
 #define SETCOLOR(out, r, g, b) out[0] = r; out[1] = g; out[2] = b;
 
-// position
-typedef float* POS;
+#endif

@@ -18,13 +18,6 @@
 #include "Vec3D.hpp"
 #include <algorithm>
 
-extern unsigned int texture;
-
-extern vector<Vec3Df> MyLightPositions;
-extern unsigned int activeTexIndex;
-extern unsigned int isDrawingTexture;
-extern unsigned int isRealtimeRaytracing;
-
 option::ArgStatus checkMeshArg(const option::Option& option, bool msg);
 
 struct Arg: public option::Arg
@@ -70,21 +63,18 @@ int init(int argc, char ** argv);
 //you can use this function to transform a click to an origin and destination
 //the last two values will be changed. There is no need to define this function.
 //it is defined elsewhere
-void produceRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest);
+void createRay(int x_I, int y_I, Vec3Df * origin, Vec3Df * dest);
 
-void startRayTracing(int texIndex, bool needsRebuild=false);
-void yourDebugDraw();
+void render(Image& image);
 
 //your main function to rewrite
-void performRayTracing(COLOR out, RAY ray, float importance, bool inside = false);
+void singleTrace(COLOR out, RAY ray, float importance, bool inside = false);
 
 //want keyboard interaction? Here it is...
 bool yourKeyboardPress(char t, int x, int y);
 bool yourKeyboardRelease(char t, int x, int y);
 void specialKeyboard(int key, int x, int y);
 void specialKeyboardUp(int key, int x, int y);
-
-void drawFPS();
 
 inline Vec3Df pow(Vec3Df in1, float in2);
 
