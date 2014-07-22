@@ -314,3 +314,6 @@ typedef Vec3D<int> Vec3Di;
 
 #define dot Vec3Df::dotProduct
 #define cross Vec3Df::crossProduct
+#define X 0
+#define Y 1
+#define Z 2
