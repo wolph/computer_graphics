@@ -13,8 +13,6 @@ else
 		# Please override this stuff in your Makefile.local file!
         CCFLAGS += -D LINUX
         LFLAGS += -lGL -lGLU -lglut -pthread
-        #LFLAGS += -L /usr/lib/nvidia-319
-        #LFLAGS += -L /usr/lib/nvidia-331
         PNG = true
         PRODUCTION = true
     endif
