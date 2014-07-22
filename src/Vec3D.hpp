@@ -287,7 +287,7 @@ public:
 			T x;
 			T y;
 			T z;
-		} axes;
+		};
 	};
 };
 
