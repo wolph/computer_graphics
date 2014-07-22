@@ -220,7 +220,7 @@ int main(int argc, char** argv){
         return 0;
     if(ret > 0)
         return ret;
-    loadConfig();
+
 	// main loop
     glutMainLoop();
 

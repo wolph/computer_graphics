@@ -1,16 +1,68 @@
 #pragma once
-#include <unordered_map>
-extern int MSAA;
-extern int PREVIEW_MSAA;
-extern int PREVIEW_RES_X;
-extern int PREVIEW_RES_Y;
-extern int PREVIEW_PARTS;
-extern int PREVIEW_PART_SIZE;
-extern int WINDOW_RES_X;
-extern int WINDOW_RES_Y;
-extern int RAYTRACE_RES_X;
-extern int RAYTRACE_RES_Y;
-extern int MAX_TRACE_DEPTH;
-const static std::string configname = "raytrace.cfg";
-extern std::unordered_map<std::string, int*> allowed_variables;
-void loadConfig();
+
+#ifndef MSAA
+#define MSAA 2
+#endif
+
+#ifndef PREVIEW_MSAA
+#define PREVIEW_MSAA 1
+#endif
+
+#ifndef PREVIEW_RES_X
+#ifdef PREVIEW_RES
+#define PREVIEW_RES_X PREVIEW_RES
+#else
+#define PREVIEW_RES_X 128
+#endif
+#endif
+
+#ifndef PREVIEW_RES_Y
+#ifdef PREVIEW_RES
+#define PREVIEW_RES_Y PREVIEW_RES
+#else
+#define PREVIEW_RES_Y 128
+#endif
+#endif
+
+#define PREVIEW_PARTS 32
+#define PREVIEW_PART_SIZE (PREVIEW_RES_X / PREVIEW_PARTS)
+
+#ifndef WINDOW_RES_X
+#ifdef WINDOW_RES
+#define WINDOW_RES_X WINDOW_RES
+#else
+#define WINDOW_RES_X 1024
+#endif
+#endif
+
+#ifndef WINDOW_RES_Y
+#ifdef WINDOW_RES
+#define WINDOW_RES_Y WINDOW_RES
+#else
+#define WINDOW_RES_Y 1024
+#endif
+#endif
+
+#ifndef RAYTRACE_RES_X
+#ifdef RAYTRACE_RES
+#define RAYTRACE_RES_X RAYTRACE_RES
+#else
+#define RAYTRACE_RES_X 1024
+#endif
+#endif
+
+#ifndef RAYTRACE_RES_Y
+#ifdef RAYTRACE_RES
+#define RAYTRACE_RES_Y RAYTRACE_RES
+#else
+#define RAYTRACE_RES_Y 1024
+#endif
+#endif
+
+#ifndef MAX_TRACE_DEPTH
+#define MAX_TRACE_DEPTH 200
+#endif
+
+#define X 0
+#define Y 1
+#define Z 2
