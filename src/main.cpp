@@ -234,6 +234,7 @@ void drawInfo(){
 
     float fps = 1. / fpsTimer.avg();
     fpsTimer.updateLastDisplay();
+    if(MyScene.object != NULL)
     sprintf(infoString, "%06.1f fps - Current object : %s", fps,
             MyScene.object->getName().c_str());
 

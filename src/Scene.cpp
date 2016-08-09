@@ -299,6 +299,7 @@ float intersect(const Vec3Df& p, const Vec3Df& d, const Vec3Df& c, float r, Vec3
 			return dist;
 		}
 	}
+    return 1e10f;
 }
 
 float Sphere::raytrace(const Vec3Df& orig, const Vec3Df& dir, Vec3Df* impact, Vec3Df* normal, Material** mat, Vec3Df* color) {
